@@ -2,12 +2,26 @@
   "runtimes": {
     "nodejs": [
       {
-        "kind": "nodejs:18",
+        "kind": "nodejs:21",
+        "default": false,
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "runtime-nodejs-v21",
+          "tag": "3.1.0-mastrogpt.2405160951"
+        },
+        "deprecated": false,
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        }
+      },
+      {
+        "kind": "nodejs:20",
         "default": true,
         "image": {
           "prefix": "ghcr.io/nuvolaris",
-          "name": "action-nodejs-v18",
-          "tag": "3.0.0-beta.2311231822"
+          "name": "runtime-nodejs-v20",
+          "tag": "3.1.0-mastrogpt.2405160951"
         },
         "deprecated": false,
         "attached": {
@@ -29,14 +43,28 @@
         ]
       },
       {
+        "kind": "nodejs:18",
+        "default": false,
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "runtime-nodejs-v18",
+          "tag": "3.1.0-mastrogpt.2405160951"
+        },
+        "deprecated": false,
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        }
+      },
+      {
         "kind": "nodejs:16",
         "default": false,
         "image": {
           "prefix": "ghcr.io/nuvolaris",
           "name": "action-nodejs-v16",
-          "tag": "3.0.0-beta.2311231822"
+          "tag": "3.0.0-beta.2309081459"
         },
-        "deprecated": false,
+        "deprecated": true,
         "attached": {
           "attachmentName": "codefile",
           "attachmentType": "text/plain"
@@ -49,8 +77,8 @@
         "default": true,
         "image": {
           "prefix": "ghcr.io/nuvolaris",
-          "name": "action-python-v311",
-          "tag": "3.0.0-beta.2401111655"
+          "name": "runtime-python-v3.11",
+          "tag": "3.1.0-mastrogpt.2405160951"
         },
         "deprecated": false,
         "attached": {
@@ -72,12 +100,40 @@
         ]
       },
       {
+        "kind": "python:3.11",
+        "default": false,
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "runtime-python-v3.11",
+          "tag": "3.1.0-mastrogpt.2405160951"
+        },
+        "deprecated": false,
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        }
+      },
+      {
+        "kind": "python:3.12",
+        "default": false,
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "runtime-python-v3.12",
+          "tag": "3.1.0-mastrogpt.2405160951"
+        },
+        "deprecated": false,
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        }
+      },
+      {
         "kind": "python:310",
         "default": false,
         "image": {
           "prefix": "ghcr.io/nuvolaris",
-          "name": "action-python-v310",
-          "tag": "3.0.0-beta.2401111655"
+          "name": "runtime-python-v3.10",
+          "tag": "3.1.0-mastrogpt.2405160951"
         },
         "deprecated": false,
         "attached": {
@@ -117,15 +173,87 @@
         "requireMain": true
       }
     ],
+    "go": [
+      {
+        "kind": "go:1.22",
+        "default": true,
+        "deprecated": false,
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        },
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "runtime-golang-v1.22",
+          "tag": "3.1.0-mastrogpt.2405160951"
+        }
+      },
+      {
+        "kind": "go:1.21",
+        "default": false,
+        "deprecated": false,
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        },
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "runtime-golang-v1.21",
+          "tag": "3.1.0-mastrogpt.2405160951"
+        }
+      },
+      {
+        "kind": "go:1.20",
+        "default": false,
+        "deprecated": false,
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        },
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "runtime-golang-v1.20",
+          "tag": "3.1.0-mastrogpt.2405160951"
+        }
+      },
+      {
+        "kind": "go:1.20mf",
+        "default": false,
+        "deprecated": false,
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        },
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "go-nuvolaris-metaflow",
+          "tag": "bc86ab6"
+        }
+      }
+    ],
     "php": [
       {
-        "kind": "php:8.2",
+        "kind": "php:8.3",
         "default": true,
         "deprecated": false,
         "image": {
           "prefix": "ghcr.io/nuvolaris",
-          "name": "action-php-v8.2",
-          "tag": "3.0.0-beta.2311031603"
+          "name": "runtime-php-v8.3",
+          "tag": "3.1.0-mastrogpt.2405160951"
+        },
+        "attached": {
+          "attachmentName": "codefile",
+          "attachmentType": "text/plain"
+        }
+      },
+      {
+        "kind": "php:8.2",
+        "default": false,
+        "deprecated": false,
+        "image": {
+          "prefix": "ghcr.io/nuvolaris",
+          "name": "runtime-php-v8.2",
+          "tag": "3.1.0-mastrogpt.2405160951"
         },
         "attached": {
           "attachmentName": "codefile",
@@ -138,8 +266,8 @@
         "deprecated": false,
         "image": {
           "prefix": "ghcr.io/nuvolaris",
-          "name": "action-php-v8.1",
-          "tag": "3.0.0-beta.2311031603"
+          "name": "runtime-php-v8.1",
+          "tag": "3.1.0-mastrogpt.2405160951"
         },
         "attached": {
           "attachmentName": "codefile",
@@ -152,8 +280,8 @@
         "deprecated": false,
         "image": {
           "prefix": "ghcr.io/nuvolaris",
-          "name": "action-php-v8.0",
-          "tag": "3.0.0-beta.2311031603"
+          "name": "runtime-php-v8.0",
+          "tag": "3.1.0-mastrogpt.2405160951"
         },
         "attached": {
           "attachmentName": "codefile",
@@ -174,36 +302,6 @@
           "prefix": "openwhisk",
           "name": "action-ruby-v2.5",
           "tag": "nightly"
-        }
-      }
-    ],
-    "go": [
-      {
-        "kind": "go:1.17",
-        "default": true,
-        "deprecated": false,
-        "attached": {
-          "attachmentName": "codefile",
-          "attachmentType": "text/plain"
-        },
-        "image": {
-          "prefix": "openwhisk",
-          "name": "action-golang-v1.17",
-          "tag": "nightly"
-        }
-      },
-      {
-        "kind": "go:1.20mf",
-        "default": false,
-        "deprecated": false,
-        "attached": {
-          "attachmentName": "codefile",
-          "attachmentType": "text/plain"
-        },
-        "image": {
-          "prefix": "ghcr.io/nuvolaris",
-          "name": "go-nuvolaris-metaflow",
-          "tag": "bc86ab6"
         }
       }
     ],
