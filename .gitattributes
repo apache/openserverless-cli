@@ -15,31 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
-header:
-  license:
-    spdx-id: Apache-2.0
-    copyright-owner: Apache Software Foundation
-
-  paths-ignore:
-    - nuv
-    - env
-    - go.mod
-    - go.sum
-    - '**/*.help'
-    - 'attic/**'
-    - 'bin/**'
-    - 'tools/*/**'
-    - '**/_*'
-    - '*.off'
-    - 'tryit/**'
-    - '**/*.json'
-    - 'LICENSE'
-    - 'tests/bats/**'
-    - 'tests/test_helper/**'
-
-dependency:
-  files:
-    - go.mod
-    - package.json 
-
+* text=auto
+*.wxs text eol=crlf
+*.cmd text eol=crlf

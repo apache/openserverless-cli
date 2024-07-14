@@ -15,31 +15,28 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
-header:
-  license:
-    spdx-id: Apache-2.0
-    copyright-owner: Apache Software Foundation
-
-  paths-ignore:
-    - nuv
-    - env
-    - go.mod
-    - go.sum
-    - '**/*.help'
-    - 'attic/**'
-    - 'bin/**'
-    - 'tools/*/**'
-    - '**/_*'
-    - '*.off'
-    - 'tryit/**'
-    - '**/*.json'
-    - 'LICENSE'
-    - 'tests/bats/**'
-    - 'tests/test_helper/**'
-
-dependency:
-  files:
-    - go.mod
-    - package.json 
-
+.DS_Store
+.git-hooks/
+.vscode/
+.task/
+attic/
+_*
+bin/nuv
+bin/nuv.exe
+bin/windows/wix
+bin/*/amd64/*
+bin/*/arm64/*
+*-build-*
+*.deb
+*.rpm
+*.msi
+*.pkg
+version.txt
+.latestcheck
+bin/unzip.exe
+bin/*/LICENSE
+.test_fail_then_succeed
+cookie.txt
+actions.zip
+nuv.spec
+nix/result
