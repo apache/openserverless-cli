@@ -1,0 +1,3 @@
+[submodule "openserverless-task"]
+	path = openserverless-task
+	url = https://github.com/apache/openserverless-task
