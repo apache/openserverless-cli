@@ -1,0 +1,154 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+version: "3"
+
+vars:
+  BRANCH: 3.0.0
+  BASEVER: "3.0.1-beta"
+  VERSION:
+    sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
+  S: ""
+  DEBUG: ""
+
+tasks:
+  default:
+    - task: build
+
+  cli-ver:
+    - task: update-runtimes
+    - git tag -d $(git tag)
+    - git tag -f {{.BASEVER}}.$(date +%y%m%d%H%M){{.S}}
+    - git tag
+
+  setup: { silent:true }
+
+  update-runtimes:
+    - >
+      curl -sL https://raw.githubusercontent.com/nuvolaris/olaris/{{.BRANCH}}/runtimes.json 
+      | jq '{"runtimes": .runtimes}' >runtimes.json
+    - |
+      if ! git diff --exit-code runtimes.json 
+      then git add runtimes.json
+           git commit -m "update runtimes"
+      fi
+
+  build:
+    desc: build nuv locally
+    cmds:
+      - task: update-runtimes
+      - go build {{.DEBUG}} -ldflags "-X main.NuvVersion={{.VERSION}} -X main.NuvBranch={{.BRANCH}}"  -o bin/nuv
+    sources:
+      - "*.go"
+      - "tools/*.go"
+    generates:
+      - bin/nuv
+
+  debug:
+    cmds:
+      - task: build
+        vars:
+          DEBUG: "-gcflags '-l -N'"
+      - dlv exec ./bin/nuv -- {{.CLI_ARGS}}
+
+  install:
+    desc: install nuv using a local folder for binaries
+    deps:
+      - build
+    dir: bin
+    cmds:
+      - ./nuv getall
+      - sudo rm -f /usr/bin/nuv /usr/local/bin/nuv
+      - sudo ln -sf $PWD/{{OS}}/{{ARCH}}/nuv /usr/local/bin/nuv
+      - sudo ln -sf $PWD/{{OS}}/{{ARCH}}/nuv /usr/bin/nuv
+
+  test:
+    desc: tests all
+    cmds:
+      - task: install
+      - task: utest
+      - task: itest
+
+  utest:
+    desc: unit test nuv
+    cmds:
+      - rm -Rf ~/.nuv/olaris
+      - go test ./...
+
+  itest:
+    desc: integration tests nuv
+    dir: tests
+    cmds:
+      - rm -Rf ~/.nuv/olaris
+      - bats/bin/bats .
+
+  clean:
+    - rm -f bin/nuv runtimes.json
+    - go clean -cache -modcache
+
+  rebuild:
+    - rm -f bin/nuv
+    - task: build
+
+  utestdiff:
+    cmds:
+      - |-
+        if test -z '{{.N}}'
+        then  go test -v | tee _difftest
+              python3 difftest.py
+        else  python3 difftest.py {{.N}}
+        fi
+
+  sync-wsk:
+    - |
+      NOW=$(date +%y%m%d%H%M)
+      cd tools/openwhisk-wskdeploy
+      git tag -d $(git tag)
+      git commit -m $NOW -a
+      git tag v0.0.0.$NOW
+      git push origin nuvolaris --tags
+      cd ../openwhisk-cli
+      git tag -d $(git tag)
+      go get github.com/nuvolaris/openwhisk-wskdeploy@v0.0.0.$NOW
+      git commit -m $NOW -a
+      git tag v0.0.0.$NOW
+      git push origin nuvolaris --tags
+      cd ../..
+      go get github.com/nuvolaris/openwhisk-cli@v0.0.0.$NOW
+      git add tools/openwhisk-cli
+      git add tools/openwhisk-wskdeploy
+      git add go.mod go.sum
+
+  sync-task:
+    - |
+      NOW=$(date +%y%m%d%H%M)
+      cd tools/sh
+      go get github.com/nuvolaris/nuv@9e76cabec87cc4908fd4c4a6571927283a28a991
+      go mod tidy
+      git tag -d $(git tag)
+      git commit -m $NOW -a
+      git tag v3.7.1-nuv.$NOW
+      git push origin nuvolaris --tags
+      cd ../task
+      git tag -d $(git tag)
+      go get github.com/nuvolaris/sh/v3@v3.7.1-nuv.$NOW
+      git commit -m $NOW -a
+      git tag v3.30.2-nuv.$NOW
+      git push origin nuvolaris --tags
+      cd ../..
+      go get github.com/nuvolaris/task/v3@v3.30.2-nuv.$NOW
+

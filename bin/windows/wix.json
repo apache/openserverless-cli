@@ -1,0 +1,33 @@
+{
+  "product": "Nuvolaris",
+  "company": "Nuvolaris Inc",
+  "license": "LICENSE",
+  "upgrade-code": "0441db59-9732-453b-b452-7200125d62f6",
+  "files": {
+    "guid": "f35fb499-2912-4af7-b7f9-fd8f49a5d552",
+    "items": [
+      "../windows/amd64/nuv.exe",
+      "../windows/amd64/kubectl.exe",
+      "../windows/amd64/kind.exe",
+      "../windows/amd64/k3sup.exe",
+      "../windows/amd64/eksctl.exe",
+      "../windows/amd64/grep.exe"
+    ]
+  },
+  "directories": [],
+  "env": {
+    "guid": "acd45cd4-4cde-45cc-9384-3ac6f4ff3cfd",
+    "vars": [
+      {
+        "name": "PATH",
+        "value": "[INSTALLDIR]",
+        "permanent": "no",
+        "system": "yes",
+        "action": "set",
+        "part": "first"
+      }
+    ]
+  },
+  "shortcuts": {},
+  "choco": {}
+}

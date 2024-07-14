@@ -1,0 +1,7 @@
+{
+    "a-key": "a-value",
+    "nested": {
+        "b-key": "b-value"
+    },
+    "a-number": 1
+}

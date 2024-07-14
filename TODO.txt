@@ -1,0 +1,7 @@
+* setup olaris
+* try to embed some commands
+* run tests
+* download tools in `bin` with `nuv -t nuvtools.yml download`
+* package windows
+* package mac
+* package linux

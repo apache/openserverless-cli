@@ -1,0 +1,116 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+version: 3
+
+dotenv: 
+- env
+
+vars:
+
+  V: p2
+  
+  OP:
+    sh: echo "{{.V}}"
+
+  OE:
+    sh: echo "$V"
+
+
+env:
+  V: e2
+  
+  OE:
+    sh: echo "$V"
+
+  OP:
+    sh: echo "{{.V}}"
+
+  E: 3
+
+  S:
+    sh: echo ${SS:-3}
+
+  V1: "{{or .V1 \"x\"}}"
+
+tasks:
+  
+  simple:
+    silent: true
+    desc: order
+    cmds:
+    - echo eV=$V pV={{.V}}
+
+  inner:
+    silent: true
+    desc: order
+    cmds:
+    - echo eV=$V pV={{.V}}
+    vars:
+      V: p3
+    env:
+      V: e3
+
+  prio:
+    silent: true
+    desc: priority
+    cmds:
+    - echo pOP={{.OP}} pOE={{.OE}}  eOE=$OE eOP=$OP
+
+  env:
+    silent: true
+    desc: env
+    cmds:
+    - echo E=$E EE=$EE
+
+  saved:
+    silent: true
+    desc: saved
+    cmds:
+    - echo S=$S SS=$SS SSS=$SSS overriden SS=${SS:-5}
+    env:
+      SSS:
+        sh: echo ${SS:-4}
+
+  tmp:
+    silent: true
+    cmds:
+    - echo $NUV_TMP
+
+  clean:
+    silent: true
+    cmds:
+    - rm _*_
+
+  v1v2:
+    silent: true
+    cmds:
+    - echo V1={{.V1}} V2={{.V2}}
+
+  save1:
+    silent: true
+    cmds:
+    - echo V1={{.V1}} >_v1_
+    - |
+      if test -n "{{.V2}}"
+      then echo V2="{{.V2}}" >>_v1_
+      fi
+
+  save2:
+    silent: true
+    cmds:
+    - echo V2={{.V2}} >_v2_

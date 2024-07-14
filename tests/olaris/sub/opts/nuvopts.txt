@@ -1,0 +1,7 @@
+Usage:
+  opts hello
+  opts ciao <name>... [-c] [-e $TEST_VAR]
+  opts salve <name> hi <x> <y> [--fl=<flag>]
+  opts sayonara (opt1|opt2) <x> <y> [--fa|--fb]
+  opts -h | --help | --version
+

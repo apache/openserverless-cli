@@ -1,0 +1,359 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+version: "3"
+
+vars:
+  VERSION:
+    sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
+  BRANCH: 3.0.0
+  ARCH: "{{ARCH}}"
+  OS: "{{OS}}"
+  BIN: "{{.OS}}/{{.ARCH}}"
+  EXE: '{{if eq .OS "windows"}}.exe{{end}}'
+  ARC: '{{if eq .OS "windows"}}.zip{{else}}.tgz{{end}}'
+  ARC2: '{{if eq .OS "windows"}}.zip{{else}}.tar.gz{{end}}'
+  BUILD:
+    sh: |-
+      case "{{.OS}}" in
+      (linux) echo "ubuntu-latest" ;;
+      (windows) echo "windows-latest" ;;
+      (darwin) echo "macos-latest" ;;
+      esac
+
+tasks:
+  build:
+    - task: "{{.BUILD}}"
+
+  bin:
+    - mkdir -p {{.BIN}}
+
+  download:
+    dir: "{{.BIN}}"
+    cmds:
+      - curl -sL -ccookie.txt -o{{.TGT}} {{.SRC}}
+      - '{{if eq .OS "windows"}}mv {{.TGT}} {{.TGT}}.exe{{else}}chmod +x {{.TGT}}{{end}}'
+      - rm cookie.txt
+    status:
+      - test -e {{.TGT}}{{.EXE}}
+
+  unzip.exe:
+    cmds:
+      - |-
+        if [[ "{{.OS}}" == "windows" ]]
+        then curl -o unzip.exe http://stahlworks.com/dev/unzip.exe
+        else cp /usr/bin/unzip unzip.exe
+        fi
+    status:
+      - test -e unzip.exe
+
+  grep.exe:
+    cmds:
+      - |-
+        if [[ "{{.OS}}" == "windows" ]]
+        then cp windows/grep.exe {{.BIN}}
+        fi
+    status:
+      - test -e grep.exe
+
+  download-archive:
+    dir: "{{.BIN}}"
+    cmds:
+      - task: unzip.exe
+      - curl -L -ccookie.txt -o{{.TGT}}{{.ARC}} {{.SRC}}
+      - '{{if eq .OS "windows"}}unzip.exe {{.TGT}}{{.ARC}}{{else}}/usr/bin/tar xvzf {{.TGT}}{{.ARC}} {{.TGT}}{{end}}'
+      - rm {{.TGT}}{{.ARC}}
+      - rm cookie.txt
+    status:
+      - test -e {{.TGT}}{{.EXE}}
+
+  download-archive2:
+    dir: "{{.BIN}}"
+    cmds:
+      - task: unzip.exe
+      - curl -L -ccookie.txt -o{{.TGT}}{{.ARC}} {{.SRC}}
+      - '{{if eq .OS "windows"}}unzip.exe {{.TGT}}{{.ARC}}{{else}}/usr/bin/tar xvzf {{.TGT}}{{.ARC}}{{end}}'
+      - mv {{.OS}}-{{.ARCH}}/{{.TGT}}{{.EXE}} .
+      - rm {{.TGT}}{{.ARC}} {{.OS}}-{{.ARCH}}/*
+      - rmdir {{.OS}}-{{.ARCH}}
+      - rm cookie.txt
+    status:
+      - test -e {{.TGT}}{{.EXE}}
+
+  kubectl:
+    cmds:
+      - task: download
+        vars:
+          SRC: "https://dl.k8s.io/release/v1.26.0/bin/{{OS}}/{{.ARCH}}/kubectl{{.EXE}}"
+          TGT: kubectl
+
+  kind:
+    cmds:
+      - task: download
+        vars:
+          SRC: "https://kind.sigs.k8s.io/dl/v0.17.0/kind-{{OS}}-{{.ARCH}}"
+          TGT: kind
+
+  kops:
+    cmds:
+      - task: download
+        vars:
+          SRC: "https://github.com/kubernetes/kops/releases/download/v1.26.2/kops-{{.OS}}-{{.ARCH}}"
+          TGT: kops
+
+  eksctl:
+    vars:
+      BASE: "https://github.com/weaveworks/eksctl/releases/download/v0.134.0/"
+    cmds:
+      - task: download-archive
+        vars:
+          SRC:
+            sh: >
+              case {{.OS}} in
+              (linux)  echo {{.BASE}}eksctl_Linux_{{.ARCH}}.tar.gz ;;
+              (darwin) echo {{.BASE}}eksctl_Darwin_{{.ARCH}}.tar.gz ;;
+              (windows)echo {{.BASE}}eksctl_Windows_{{.ARCH}}.zip ;;
+              esac
+          TGT: eksctl
+
+  k3sup:
+    vars:
+      BASE: "https://github.com/alexellis/k3sup/releases/download/0.12.13/"
+    cmds:
+      - task: download
+        vars:
+          SRC:
+            sh: >
+              case {{.OS}}-{{.ARCH}} in
+              (linux-amd64)   echo {{.BASE}}k3sup ;;
+              (linux-arm64)   echo {{.BASE}}k3sup-arm64 ;;
+              (darwin-amd64)  echo {{.BASE}}k3sup-darwin ;;
+              (darwin-arm64)  echo {{.BASE}}k3sup-darwin-arm64 ;;
+              (windows-amd64) echo {{.BASE}}k3sup.exe ;;
+              esac
+          TGT: k3sup
+
+  mc:
+    vars:
+      BASE: "https://dl.min.io/client/mc/release/"
+      MC_VER: "RELEASE.2023-03-23T20-03-04Z"
+    cmds:
+      - task: download
+        vars:
+          SRC:
+            sh: >
+              case {{.OS}}-{{.ARCH}} in
+              (linux-amd64)   echo {{.BASE}}linux-amd64/archive/mc.{{.MC_VER}} ;;
+              (linux-arm64)   echo {{.BASE}}linux-arm64/archive/mc.{{.MC_VER}} ;;
+              (darwin-amd64)  echo {{.BASE}}darwin-amd64/archive/mc.{{.MC_VER}} ;;
+              (darwin-arm64)  echo {{.BASE}}darwin-arm64/archive/mc.{{.MC_VER}} ;;
+              (windows-amd64) echo {{.BASE}}windows-amd64/archive/mc.{{.MC_VER}} ;;
+              esac
+          TGT: mc
+
+  ntfy:
+    vars:
+      BASE: "https://github.com/binwiederhier/ntfy/releases/download/v2.7.0/"
+      SRC:
+        sh: >
+          case {{.OS}}-{{.ARCH}} in
+          (linux-amd64)   echo {{.BASE}}ntfy_2.7.0_linux_amd64.tar.gz ;;
+          (linux-arm64)   echo {{.BASE}}ntfy_2.7.0_linux_arm64.tar.gz ;;
+          (darwin-amd64)  echo {{.BASE}}ntfy_2.7.0_darwin_all.tar.gz ;;
+          (darwin-arm64)  echo {{.BASE}}ntfy_2.7.0_darwin_all.tar.gz ;;
+          (windows-amd64) echo {{.BASE}}ntfy_2.7.0_windows_amd64.zip ;;
+          esac
+      TGT: ntfy
+    dir: "{{.BIN}}"
+    cmds:
+      - task: unzip.exe
+      - curl -sL -ccookie.txt -o{{.TGT}}{{.ARC}} {{.SRC}}
+      - '{{if eq .OS "windows"}}unzip.exe {{.TGT}}{{.ARC}}{{else}}/usr/bin/tar xvzf {{.TGT}}{{.ARC}}{{end}}'
+      - '{{if eq .OS "darwin"}} mv ntfy_2.7.0_{{.OS}}_all/{{.TGT}} . {{else}} mv ntfy_2.7.0_{{.OS}}_{{.ARCH}}/{{.TGT}}{{.EXE}} . {{end}}'
+      - '{{if eq .OS "darwin"}} rm -r {{.TGT}}{{.ARC}} ntfy_2.7.0_{{.OS}}_all/* {{else}} rm -r {{.TGT}}{{.ARC}} ntfy_2.7.0_{{.OS}}_{{.ARCH}}/* {{end}}'
+      - '{{if eq .OS "darwin"}} rmdir ntfy_2.7.0_{{.OS}}_all {{else}} rmdir ntfy_2.7.0_{{.OS}}_{{.ARCH}} {{end}}'
+      - rm cookie.txt
+    status:
+      - test -e {{.TGT}}{{.EXE}}
+
+  coreutils:
+    vars:
+      BASE: "https://github.com/uutils/coreutils/releases/download/0.0.23/coreutils-0.0.23-"
+      SRC:
+        sh: >
+          case {{.OS}}-{{.ARCH}} in
+          (linux-amd64)   echo {{.BASE}}x86_64-unknown-linux-gnu.tar.gz ;;
+          (linux-arm64)   echo {{.BASE}}aarch64-unknown-linux-gnu.tar.gz ;;
+          (darwin-amd64)  echo {{.BASE}}x86_64-apple-darwin.tar.gz ;;
+          (darwin-arm64)  echo {{.BASE}}aarch64-apple-darwin.tar.gz ;;
+          (windows-amd64) echo {{.BASE}}x86_64-pc-windows-msvc.zip ;;
+          esac
+      TGT: coreutils
+    dir: "{{.BIN}}"
+    cmds:
+      - task: unzip.exe
+      - curl -sL -ccookie.txt -o{{.TGT}}{{.ARC2}} {{.SRC}}
+      - rm cookie.txt
+      - mkdir {{.TGT}}-extract
+      - '{{if eq .OS "windows"}}unzip.exe {{.TGT}}{{.ARC2}}{{else}}/usr/bin/tar xvzf {{.TGT}}{{.ARC2}} -C {{.TGT}}-extract --strip-components 1{{end}}'
+      - '{{if eq .OS "windows"}} mv coreutils-0.0.23-x86_64-pc-windows-msvc/{{.TGT}}{{.EXE}} . {{else}} mv {{.TGT}}-extract/{{.TGT}}{{.EXE}} . {{end}}'
+      - '{{if eq .OS "windows"}} rm -r coreutils-0.0.23-x86_64-pc-windows-msvc {{else}} rm -r {{.TGT}}-extract {{end}}'
+      - rm -r {{.TGT}}{{.ARC2}}
+    status:
+      - test -e {{.TGT}}{{.EXE}}
+
+  echo-download-archive: echo "{{.SRC}}"
+
+  helm:
+    vars:
+      BASE: "https://get.helm.sh/helm-v3.11.2"
+    cmds:
+      - task: download-archive2
+        vars:
+          SRC: "{{.BASE}}-{{.OS}}-{{.ARCH}}{{.ARC2}}"
+          TGT: helm
+
+  nuv:
+    dir: ".."
+    cmds:
+      - >
+        curl -sL https://raw.githubusercontent.com/nuvolaris/olaris/{{.BRANCH}}/runtimes.json
+        | jq '{"runtimes": .runtimes}'
+        >runtimes.json
+      - >
+        GOOS={{.OS}} GOARCH={{.ARCH}} 
+        go build 
+        -ldflags "-X main.NuvVersion={{.VERSION}} -X main.NuvBranch={{.BRANCH}}"
+        -o bin/{{.BIN}}/nuv{{.EXE}}
+
+  clean:
+    desc: cleanup {{.OS}}/{{.ARCH}}
+    ignore_error: true
+    cmds:
+      - rm unzip.exe {{.BIN}}/*
+      - rm -r windows/wix
+      - rmdir {{.OS}}/{{.ARCH}}
+
+  fullclean:
+    - ./nuv clean OS=linux ARCH=amd64
+    - ./nuv clean OS=linux ARCH=arm64
+    - ./nuv clean OS=darwin ARCH=amd64
+    - ./nuv clean OS=darwin ARCH=arm64
+    - ./nuv clean OS=windows ARCH=amd64
+
+  fullgetall:
+    - ./nuv getall OS=linux ARCH=amd64
+    - ./nuv getall OS=linux ARCH=arm64
+    - ./nuv getall OS=darwin ARCH=amd64
+    - ./nuv getall OS=darwin ARCH=arm64
+    - ./nuv getall OS=windows ARCH=amd64
+
+  # remember to update windows/wix.json with the list of files
+  getall:
+    desc: download all tools for {{.OS}}-{{.ARCH}}
+    cmds:
+      - task: nuv
+      - task: kubectl
+      - task: kind
+      - task: k3sup
+      - task: eksctl
+      - task: grep.exe
+      - task: ntfy
+      - task: coreutils
+      # currently not used
+      #- task: mc # it has "licensing complications"
+      #- task: kops
+      # TODO: for some reasons, helm download does not work in github actions
+      #- task: helm
+
+  windows-latest:
+    desc: build a msi installer for windows
+    cmds:
+      - test "{{OS}}" = "windows"
+      - echo {{.VERSION}} >windows/version.txt
+      - cp ../LICENSE windows/LICENSE
+      - task: unzip.exe
+      - ./nuv getall OS=windows ARCH=amd64
+      - ./nuv windows build
+      - cp windows/*.msi ..
+
+  macos-latest:
+    desc: build a pkg installer for macos
+    cmds:
+      - test "{{OS}}" = "darwin"
+      - echo {{.VERSION}} >darwin/version.txt
+      - cp ../LICENSE darwin/LICENSE
+      - ./nuv getall OS=darwin ARCH=amd64
+      - ./nuv getall OS=darwin ARCH=arm64
+      - ./nuv darwin build ARCH=amd64
+      - ./nuv darwin build ARCH=arm64
+      - cp darwin/*.pkg ..
+
+  ubuntu-latest:
+    desc: build a deb and rpm installer for linux
+    cmds:
+      - test "{{OS}}" = "linux"
+      - echo {{.VERSION}} >linux/version.txt
+      - cp ../LICENSE linux/LICENSE
+      - ./nuv getall OS=linux ARCH=amd64
+      - ./nuv getall OS=linux ARCH=arm64
+      - ./nuv linux build ARCH=amd64
+      - ./nuv linux build ARCH=arm64
+      - cp linux/*.deb linux/*.rpm ..
+
+  ubuntu-20.04:
+    desc: build a deb and rpm installer for linux
+    cmds:
+      - test "{{OS}}" = "linux"
+      - echo {{.VERSION}} >linux/version.txt
+      - cp ../LICENSE linux/LICENSE
+      - ./nuv getall OS=linux ARCH=amd64
+      - ./nuv getall OS=linux ARCH=arm64
+      - ./nuv linux build ARCH=amd64
+      - ./nuv linux build ARCH=arm64
+      - |
+        for FILE in linux/*.deb
+        do
+          NEW="$(echo $FILE | sed 's/\(.*\)\(\.[a-zA-Z0-9]*\)$/\1_ubuntu20\2/')"
+          mv "$FILE" "$NEW"
+          echo "renamed $FILE to $NEW"
+        done
+      - |
+        for FILE in linux/*.rpm
+        do
+          NEW="$(echo $FILE | sed 's/\(.*\)\(\.[a-zA-Z0-9]*\)$/\1_redhat8\2/')"
+          mv "$FILE" "$NEW"
+          echo "renamed $FILE to $NEW"
+        done
+      - cp linux/*.deb linux/*.rpm ..
+
+
+  linux:
+    desc: commands to build linux setup
+  windows:
+    desc: commands to build windows setup
+  darwin:
+    desc: commands to build macos setup
+
+  local-build-ubuntu:
+    desc: local build linux ubuntu
+    cmds:
+      - test "{{OS}}" = "linux"
+      - echo {{.VERSION}} >linux/version.txt
+      - cp ../LICENSE linux/LICENSE
+      - ./nuv getall OS=linux ARCH=$(dpkg --print-architecture)
