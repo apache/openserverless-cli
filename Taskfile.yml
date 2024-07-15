@@ -18,8 +18,8 @@
 version: "3"
 
 vars:
-  BRANCH: 3.0.0
-  BASEVER: "3.0.1-beta"
+  BRANCH: main
+  BASEVER: "0.1-dev"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
   S: ""
@@ -39,7 +39,7 @@ tasks:
 
   update-runtimes:
     - >
-      curl -sL https://raw.githubusercontent.com/nuvolaris/olaris/{{.BRANCH}}/runtimes.json 
+      curl -sL https://raw.githubusercontent.com/apache/openserverless-task/{{.BRANCH}}/runtimes.json 
       | jq '{"runtimes": .runtimes}' >runtimes.json
     - |
       if ! git diff --exit-code runtimes.json 
