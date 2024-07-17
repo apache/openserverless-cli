@@ -23,6 +23,26 @@ in
 
 pkgs.mkShellNoCC {
   packages = with pkgs; [
-   go
+    go
+    gotools
+    gopls
+    go-outline
+    gocode
+    gopkgs
+    gocode-gomod
+    godef
+    golint   
+    silver-searcher
+    jq
   ];
+  buildInputs = [
+    pkgs.uutils-coreutils
+    (pkgs.writeShellScriptBin "coreutils" ''
+      #!/bin/bash
+      exec ${pkgs.uutils-coreutils}/bin/uutils-coreutils "$@"
+    '')
+  ];
+  shellHook = ''
+    cat cli.code-workspace | jq '.settings."go.goroot" = "'$(go env GOROOT)'"' >cli.code-workspace
+  '';
 }
