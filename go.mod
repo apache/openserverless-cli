@@ -44,7 +44,6 @@ require (
 	github.com/nuvolaris/goja_nodejs v0.0.0-20231014102937-c453e3fed097 // indirect
 	github.com/nuvolaris/openwhisk-cli/commands v0.0.0-20240322185850-dd1d7107d5b6
 	github.com/nuvolaris/openwhisk-cli/wski18n v0.0.0-20240322185850-dd1d7107d5b6
-	github.com/nuvolaris/openwhisk-wskdeploy v0.0.0-20230916104531-c4bc982185e9 // indirect
 	github.com/nuvolaris/sh/v3 v3.7.1-nuv.2309151614 // indirect
 	github.com/nwidger/jsoncolor v0.0.0-20170215171346-75a6de4340e5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

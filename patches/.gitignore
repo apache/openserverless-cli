@@ -1,4 +1,5 @@
 task
 gosh
 wsk
-wskdeploy
+openwhisk-wskdeploy
+openwhisk-cli

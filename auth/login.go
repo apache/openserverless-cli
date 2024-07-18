@@ -30,7 +30,7 @@ import (
 	"path/filepath"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/nuvolaris/nuv/config"
+	"github.com/apache/openserverless-cli/config"
 	"github.com/zalando/go-keyring"
 )
 

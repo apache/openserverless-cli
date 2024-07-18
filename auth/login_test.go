@@ -26,7 +26,7 @@ import (
 	"testing"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/nuvolaris/nuv/config"
+	"github.com/apache/openserverless-cli/config"
 	"github.com/stretchr/testify/require"
 	"github.com/zalando/go-keyring"
 )

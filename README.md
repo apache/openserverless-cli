@@ -69,6 +69,7 @@ The following environment variables allows to ovverride certain defaults.
 - `NUV_PWD` is the folder where `nuv` is executed (the current working directory). It is used to preserve the original working directory when `nuv` is used again in tasks (e.g. nuv -realpath to retrieve the correct path). Change it only if you know what you are doing!
 - `NUV_ROOT_PLUGIN` is the folder where `nuv` looks for plugins. If not defined, it defaults to the same directory where  `nuv` is located.
 - `NUV_OLARIS` holds the head commit hash of the used olaris repo. You can see the hash with `nuv -info`.
+
 ## Where `nuv` looks for binaries 
 - `NUV_USE_COREUTILS` enables the use of [coreutils](https://github.com/uutils/coreutils) instead of the current unix tools implementation. They will eventually replace the current tools.
 
@@ -81,6 +82,15 @@ If this environment variable is not defined, it defaults to the same folder wher
 Nuv is normally distributed with an installer that includes all the tools for the various operating systems (linux, windows, osx).
 
 **NOTE**: You can download the relevant tools when you run from source code executing `task install`. This task will download the command line tools and setup a link in `/usr/local/bin` to invoke `nuv`.
+
+## Internal environment variables
+
+`OPS_RUNTIMES_JSON` is used for the values of the runtimes json if the system is unable to read in other ways the current runtimes json. It is normally compiled in when you buid from the current version of the runtimes.json. It can be overriden
+
+`OPS_COREUTILS` is a string, a space separated list, which lists all the commands the coreutils binary provided. It should be kept updated with the values of the current version used. It can be overriden
+
+`OPS_TOOLS` is a string, a space separated list, which lists all the commands provided as internal tool by the ops binary. It shold be kept updated with the current list of tools provided. It can be overriden defining externally
+
 
 ## Where `nuv` looks for tasks
 
@@ -186,7 +196,6 @@ Basic unix like tools (`nuv -<tool> -help for details`):
 - wc
 - which
 - zip
-
 
 
 

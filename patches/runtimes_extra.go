@@ -97,7 +97,7 @@ func ParseOpenWhisk(apiHost string) (op OpenWhiskInfo, err error) {
 	if err != nil {
 		stdout := wski18n.T(wski18n.ID_MSG_UNMARSHAL_LOCAL)
 		wskprint.PrintOpenWhiskVerbose(utils.Flags.Verbose, stdout)
-		runtimes := []byte(os.Getenv("WSK_RUNTIMES_JSON"))
+		runtimes := []byte(os.Getenv("OPS_RUNTIMES_JSON"))
 		err = json.Unmarshal(runtimes, &op)
 		if err != nil {
 			fmt.Printf("cannot parse this json: ===\n%s\n===\n", runtimes)

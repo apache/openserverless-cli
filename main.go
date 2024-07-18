@@ -28,9 +28,9 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/nuvolaris/nuv/auth"
-	"github.com/nuvolaris/nuv/config"
-	"github.com/nuvolaris/nuv/tools"
+	"github.com/apache/openserverless-cli/auth"
+	"github.com/apache/openserverless-cli/config"
+	"github.com/apache/openserverless-cli/tools"
 
 	_ "embed"
 )
