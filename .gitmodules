@@ -6,11 +6,11 @@
 	path = tools/sh
 	url = https://github.com/sciabarracom/sh
 	branch = openserverless
-[submodule "tools/openwhisk-cli"]
-	path = tools/openwhisk-cli
+[submodule "tools/wsk"]
+	path = tools/wsh
 	url = https://github.com/sciabarracom/openwhisk-cli
-[submodule "tools/openwhisk-deploy"]
-	path = tools/openwhisk-wskdeploy
+[submodule "tools/wskdeploy"]
+	path = tools/wskdeploy
 	url = https://github.com/sciabarracom/openwhisk-cli
 [submodule "openserverless-task"]
 	path = openserverless-task
