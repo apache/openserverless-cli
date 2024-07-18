@@ -8,7 +8,6 @@ require (
 	github.com/apache/openwhisk-client-go v0.0.0-20230421081559-13fc65f65684
 	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
 	github.com/go-git/go-git/v5 v5.9.0
-	github.com/go-task/task/v3 v3.38.0
 	github.com/itchyny/gojq v0.12.13
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nicksnyder/go-i18n v1.10.1
@@ -19,15 +18,13 @@ require (
 	github.com/nuvolaris/someutils v0.0.0-20230406090008-39e94b70e1ae
 	github.com/nuvolaris/task/v3 v3.30.2-nuv.2309151614
 	github.com/stretchr/testify v1.9.0
-	mvdan.cc/sh/v3 v3.8.0
 )
 
 require (
-	github.com/Ladicle/tabwriter v1.0.0 // indirect
-	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
-	github.com/dominikbraun/graph v0.23.0 // indirect
-	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
-	github.com/go-task/template v0.0.0-20240602015157-960e6f576656 // indirect
+	github.com/creack/pty v1.1.21 // indirect
+	github.com/frankban/quicktest v1.14.6 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/rogpeppe/go-internal v1.12.0 // indirect
 )
 
 require (
@@ -44,7 +41,7 @@ require (
 	github.com/nuvolaris/goja_nodejs v0.0.0-20231014102937-c453e3fed097 // indirect
 	github.com/nuvolaris/openwhisk-cli/commands v0.0.0-20240322185850-dd1d7107d5b6
 	github.com/nuvolaris/openwhisk-cli/wski18n v0.0.0-20240322185850-dd1d7107d5b6
-	github.com/nuvolaris/openwhisk-wskdeploy v0.0.0-20230916104531-c4bc982185e9 // indirect
+	github.com/nuvolaris/openwhisk-wskdeploy v0.0.0-20230916104531-c4bc982185e9
 	github.com/nuvolaris/sh/v3 v3.7.1-nuv.2309151614 // indirect
 	github.com/nwidger/jsoncolor v0.0.0-20170215171346-75a6de4340e5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -110,12 +107,12 @@ require (
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/skeema/knownhosts v1.2.0 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
-	github.com/spf13/pflag v1.0.5
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/zalando/go-keyring v0.2.3
-	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
-	golang.org/x/net v0.20.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/term v0.21.0
