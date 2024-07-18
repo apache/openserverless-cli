@@ -5,7 +5,7 @@ HERE=$PWD
 STAG="v3.38.0"
 DTAG="$STAG-openserverless"
 cd ../tools/task
-git checkout "$STAG" -B openserverless
+git checkout "$TAG" -B openserverless
 mkdir -p cmd/taskmain
 cat cmd/task/task.go \
 | sed -e 's/package main/package taskmain/' \

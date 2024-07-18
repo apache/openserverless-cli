@@ -27,7 +27,8 @@ vars:
 
 tasks:
   default:
-    - task: build
+    - task -l
+
 
   cli-ver:
     - task: update-runtimes

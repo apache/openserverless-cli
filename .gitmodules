@@ -6,12 +6,6 @@
 	path = tools/sh
 	url = https://github.com/sciabarracom/sh
 	branch = openserverless
-[submodule "tools/wsk"]
-	path = tools/wsh
-	url = https://github.com/sciabarracom/openwhisk-cli
-[submodule "tools/wskdeploy"]
-	path = tools/wskdeploy
-	url = https://github.com/sciabarracom/openwhisk-cli
 [submodule "openserverless-task"]
 	path = openserverless-task
 	url = https://github.com/apache/openserverless-task
@@ -28,3 +22,9 @@
 	path = tools/envsubst
 	url = https://github.com/nuvolaris/envsubst
 	branch = openserverless
+[submodule "tools/wsk"]
+	path = tools/wsk
+	url = https://github.com/sciabarracom/openwhisk-cli
+[submodule "tools/wskdeploy"]
+	path = tools/wskdeploy
+	url = https://github.com/sciabarracom/openwhisk-wskdeploy
