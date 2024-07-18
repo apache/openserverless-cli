@@ -1,21 +1,21 @@
 [submodule "tools/task"]
 	path = tools/task
 	url = https://github.com/sciabarracom/task
+	branch = openserverless
 [submodule "tools/sh"]
 	path = tools/sh
 	url = https://github.com/sciabarracom/sh
+	branch = openserverless
+[submodule "tools/openwhisk-cli"]
+	path = tools/openwhisk-cli
+	url = https://github.com/sciabarracom/openwhisk-cli
+[submodule "tools/openwhisk-deploy"]
+	path = tools/openwhisk-wskdeploy
+	url = https://github.com/sciabarracom/openwhisk-cli
 [submodule "openserverless-task"]
 	path = openserverless-task
 	url = https://github.com/apache/openserverless-task
 	branch = main
-[submodule "tools/openwhisk-cli"]
-	path = tools/openwhisk-cli
-	url = https://github.com/nuvolaris/openwhisk-cli
-	branch = openserverless
-[submodule "tools/openwhisk-deploy"]
-	path = tools/openwhisk-wskdeploy
-	url = https://github.com/nuvolaris/openwhisk-cli
-	branch = openserverless
 [submodule "tools/goawk"]
 	path = tools/goawk
 	url = https://github.com/nuvolaris/goawk
