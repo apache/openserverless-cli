@@ -1,0 +1,25 @@
+{
+  "folders": [
+    {
+      "name": "ops",
+      "path": "."
+    },
+    {
+      "name": "task",
+      "path": "tools/task"
+    },
+    {
+      "name": "sh",
+      "path": "tools/sh"
+    }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#28075d",
+      "titleBar.activeBackground": "#28075d",
+      "titleBar.activeForeground": "#28075d",
+      "statusBar.background": "#28075d"
+    },
+    "go.goroot": "/nix/store/nnh57s7m672k6snkanhz1kb18skwjpbg-go-1.21.11/share/go"
+  }
+}
