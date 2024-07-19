@@ -37,7 +37,7 @@ func isBuiltin(name string) bool {
 	if isTools(name) {
 		return true
 	}
-	return _isBuiltin(name)
+	return IsBuiltin1(name)
 }
 
 func (r *Runner) builtinCode(ctx context.Context, pos syntax.Pos, name string, args []string) int {
@@ -62,6 +62,5 @@ func (r *Runner) builtinCode(ctx context.Context, pos syntax.Pos, name string, a
 		return r.exit
 
 	}
-
-	return _builtinCode(ctx, pos, name, args)
+	return r.BuiltinCode1(ctx, pos, name, args)
 }
