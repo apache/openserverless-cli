@@ -34,6 +34,8 @@ import (
 	"github.com/apache/openwhisk-wskdeploy/wskprint"
 )
 
+var Version = "openserverless"
+
 func GetRuntimesByUrl(opURL string, pop *OpenWhiskInfo) error {
 
 	// configure transport
