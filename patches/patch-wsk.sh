@@ -18,14 +18,13 @@ do echo $file
    sed -i 's!apache/openwhisk-cli$!sciabarracom/openwhisk-cli!' $file
    sed -i 's!apache/openwhisk-wskdeploy!sciabarracom/openwhisk-wskdeploy!' $file
 done
-go clean -modcache -cache -testcache -fuzzcache
 sed -i '/openwhisk-wskdeploy/d' go.mod
 DEPLOYVER=$(git ls-remote https://github.com/sciabarracom/openwhisk-wskdeploy | awk '/refs\/heads\/openserverless/{print $1}')
 go get github.com/sciabarracom/openwhisk-wskdeploy@$DEPLOYVER
 go mod tidy
 git commit -m "patching sh for ops" -a
 git push origin-auth openserverless -f
+go clean -modcache -cache -testcache -fuzzcache
 VER=$(git rev-parse HEAD)
-
-GOBIN=$HERE go install github.com/sciabarracom/task/v3/cmd/task@$VER
+GOBIN=$HERE go install github.com/sciabarracom/openwhisk-cli@$VER
 
