@@ -24,8 +24,8 @@ import (
 
 	"github.com/apache/openwhisk-client-go/whisk"
 	goi18n "github.com/nicksnyder/go-i18n/i18n"
-	"github.com/nuvolaris/openwhisk-cli/commands"
-	"github.com/nuvolaris/openwhisk-cli/wski18n"
+	"github.com/sciabarracom/openwhisk-cli/commands"
+	"github.com/sciabarracom/openwhisk-cli/wski18n"
 )
 
 // prepare wsk execution
@@ -49,7 +49,6 @@ func Wsk(command []string, args ...string) error {
 
 	// set wsk variable
 	//setWskEnvVariable(false)
-
 	//debug("WSK_CONFIG_FILE=" + os.Getenv("WSK_CONFIG_FILE"))
 
 	// compose the command

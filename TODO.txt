@@ -1,18 +1,18 @@
-- recompile
+* recompile
+* upgrade task and sh
+- udpdate wsk and task
 
-- upgrade task and sh
-
-rm -Rvf sh task
-git submodule update --init --recursive
-cd task
-git remote add upstream https://github.com/go-task/task
-git fetch --all
-git rebase v3.38.0
+- remove old stuff
+js (goja&c)
+mkdir
+realpath
+zipf
+deploy
+someutils
 
 
 - apply diff one by one to sh and task
 
-- use coreutils and remove someutils
 - run tests and subtests
 
 - move everything in the ops package and add cmd/ops/main.go

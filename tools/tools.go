@@ -33,14 +33,13 @@ import (
 // available in taskfiles
 // note some of them are implemented in main.go (config, retry)
 var tools = []string{
-	"awk", "die", "jq", "js",
-	"envsubst", "wsk", "mkdir",
+	"awk", "die", "jq",
+	"envsubst", "wsk",
 	"filetype", "random", "datefmt",
 	"config", "retry", "urlenc",
 	"replace", "base64", "validate",
 	"echoif", "echoifempty", "echoifexists",
-	"realpath", "zipf", "needupdate",
-	"gron", "jj", "deploy",
+	"needupdate", "gron", "jj", "deploy",
 }
 
 // not available in taskfiles
@@ -49,9 +48,6 @@ var extraTools = []string{
 }
 
 func IsTool(name string) bool {
-	if IsUtil(name) {
-		return true
-	}
 	for _, s := range tools {
 		if s == name {
 			return true
@@ -74,9 +70,6 @@ func GetNuvCmd() string {
 }
 
 func RunTool(name string, args []string) (int, error) {
-	if IsUtil(name) {
-		return RunUtil(name, args)
-	}
 	switch name {
 	case "wsk":
 		//fmt.Println("=== wsk ===")
@@ -93,19 +86,9 @@ func RunTool(name string, args []string) (int, error) {
 	case "jq":
 		os.Args = append([]string{"gojq"}, args...)
 		return gojq.Run(), nil
-	case "js":
-		os.Args = append([]string{"goja"}, args...)
-		if err := jsToolMain(); err != nil {
-			return 1, err
-		}
 	case "envsubst":
 		os.Args = append([]string{"envsubst"}, args...)
 		if err := envsubst.EnvsubstMain(); err != nil {
-			return 1, err
-		}
-	case "mkdir":
-		os.Args = append([]string{"mkdir"}, args...)
-		if err := Mkdirs(); err != nil {
 			return 1, err
 		}
 	case "filetype":
@@ -145,11 +128,6 @@ func RunTool(name string, args []string) (int, error) {
 		if err := validateTool(); err != nil {
 			return 1, err
 		}
-	case "scan":
-		os.Args = append([]string{"scan"}, args...)
-		if err := scanTool(); err != nil {
-			return 1, err
-		}
 	case "echoif":
 		os.Args = append([]string{"echoif"}, args...)
 		if err := echoIfTool(); err != nil {
@@ -165,16 +143,6 @@ func RunTool(name string, args []string) (int, error) {
 		if err := echoIfExistsTool(); err != nil {
 			return 1, err
 		}
-	case "realpath":
-		os.Args = append([]string{"realpath"}, args...)
-		if err := realpathTool(); err != nil {
-			return 1, err
-		}
-
-	case "zipf":
-		if err := zipfTool(args); err != nil {
-			return 1, err
-		}
 
 	case "needupdate":
 		if err := needUpdateTool(args); err != nil {
@@ -188,12 +156,6 @@ func RunTool(name string, args []string) (int, error) {
 	case "jj":
 		os.Args = append([]string{"jj"}, args...)
 		return jj.JJMain()
-
-	case "deploy":
-		if err := DeployTool(); err != nil {
-			return 1, err
-		}
-	}
 
 	return 0, nil
 }

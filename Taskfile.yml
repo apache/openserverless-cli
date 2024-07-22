@@ -19,61 +19,49 @@ version: "3"
 
 vars:
   BRANCH: main
-  BASEVER: "0.1-dev"
+  BASEVER: "0.1-snapshot"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
-  S: ""
   DEBUG: ""
 
 tasks:
-  default:
-    - task -l
 
+  default: task -l
+  setup: { silent:true }
 
-  cli-ver:
-    - task: update-runtimes
+  cli-tag:
+    desc: tag the cli to generate the build
+    - >
+      curl -sL https://raw.githubusercontent.com/apache/openserverless-task/{{.BRANCH}}/runtimes.json 
+      | jq '{"runtimes": .runtimes}' >runtimes.json
+    - git add runtimes.json
     - git tag -d $(git tag)
     - git tag -f {{.BASEVER}}.$(date +%y%m%d%H%M){{.S}}
     - git tag
 
-  setup: { silent:true }
-
-  update-runtimes:
-    - >
-      curl -sL https://raw.githubusercontent.com/apache/openserverless-task/{{.BRANCH}}/runtimes.json 
-      | jq '{"runtimes": .runtimes}' >runtimes.json
-    - |
-      if ! git diff --exit-code runtimes.json 
-      then git add runtimes.json
-           git commit -m "update runtimes"
-      fi
 
   build:
-    desc: build nuv locally
-    cmds:
-      - task: update-runtimes
-      - go build {{.DEBUG}} -ldflags "-X main.NuvVersion={{.VERSION}} -X main.NuvBranch={{.BRANCH}}"  -o bin/nuv
+    desc: build ops locally
+      - go build {{.DEBUG}} -ldflags "-X main.NuvVersion={{.VERSION}} -X main.NuvBranch={{.BASEVER}}"  -o bin/nuv
     sources:
       - "*.go"
       - "tools/*.go"
     generates:
-      - bin/nuv
+      - ops
 
   debug:
     cmds:
       - task: build
         vars:
           DEBUG: "-gcflags '-l -N'"
-      - dlv exec ./bin/nuv -- {{.CLI_ARGS}}
+      - dlv exec ./ops -- {{.CLI_ARGS}}
 
   install:
-    desc: install nuv using a local folder for binaries
+    desc: install ops in usr/local/bin
     deps:
       - build
-    dir: bin
     cmds:
-      - ./nuv getall
-      - sudo rm -f /usr/bin/nuv /usr/local/bin/nuv
+      - sudo cp ops /usr/local/bin
       - sudo ln -sf $PWD/{{OS}}/{{ARCH}}/nuv /usr/local/bin/nuv
       - sudo ln -sf $PWD/{{OS}}/{{ARCH}}/nuv /usr/bin/nuv
 
