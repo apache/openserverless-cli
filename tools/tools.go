@@ -156,7 +156,8 @@ func RunTool(name string, args []string) (int, error) {
 	case "jj":
 		os.Args = append([]string{"jj"}, args...)
 		return jj.JJMain()
-
+	default:
+	}
 	return 0, nil
 }
 
