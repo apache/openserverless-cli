@@ -7,6 +7,7 @@ toolchain go1.21.11
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/apache/openwhisk-client-go v0.0.0-20220811044404-a6921af2f086
+	github.com/apache/openwhisk-wskdeploy v0.0.0-20221221215944-0e9b45ff5ff3
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
 	github.com/go-git/go-git/v5 v5.9.0
@@ -43,7 +44,7 @@ require (
 	github.com/acomagu/bufpipe v1.0.4 // indirect
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
-	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/danieljoos/wincred v1.2.0 // indirect
