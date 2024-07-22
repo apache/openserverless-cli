@@ -27,7 +27,7 @@ This is the procedure we followed to build the patched versions of:
    fork github.com/apache/openwhisk-wskdeploy in github.com/sciabarracom/openwhisk-wskdeploy
 
 3. git submodule update --init, 
-   then add remote orig-auth ian authentication token so you can push it  back
+   then add remote orig-auth with an url with an authentication token so you can push it  back
    then add remote upstream to the original repos to fetch tags
    then git fetch --all
 
@@ -37,3 +37,7 @@ This is the procedure we followed to build the patched versions of:
    bash patch-task.sh
    bash patch-wskdeploy.sh
    bash patch-wsk.sh
+
+4. update the main repo
+
+
