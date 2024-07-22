@@ -19,7 +19,7 @@ require (
 	github.com/nuvolaris/gron v0.0.0-20231020134423-84e679ea6aad
 	github.com/nuvolaris/jj v0.0.0-20231020143327-10b90948a5d2
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
-	github.com/sciabarracom/openwhisk-cli v1.2.1-openserverless
+	github.com/sciabarracom/openwhisk-cli v1.2.1
 	github.com/sciabarracom/task/v3 v3.38.1
 	github.com/stretchr/testify v1.9.0
 	github.com/zalando/go-keyring v0.2.5
@@ -82,7 +82,7 @@ require (
 	github.com/remeh/sizedwaitgroup v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sajari/fuzzy v1.0.0 // indirect
-	github.com/sciabarracom/openwhisk-wskdeploy v1.2.0-openserverless // indirect
+	github.com/sciabarracom/openwhisk-wskdeploy v1.2.1 // indirect
 	github.com/sciabarracom/sh/v3 v3.8.1-0.20240719132627-8b997d445efa // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.2.2 // indirect
