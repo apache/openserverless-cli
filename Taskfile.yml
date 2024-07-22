@@ -100,44 +100,5 @@ tasks:
         then  go test -v | tee _difftest
               python3 difftest.py
         else  python3 difftest.py {{.N}}
-        fi
-
-  sync-wsk:
-    - |
-      NOW=$(date +%y%m%d%H%M)
-      cd tools/openwhisk-wskdeploy
-      git tag -d $(git tag)
-      git commit -m $NOW -a
-      git tag v0.0.0.$NOW
-      git push origin nuvolaris --tags
-      cd ../openwhisk-cli
-      git tag -d $(git tag)
-      go get github.com/nuvolaris/openwhisk-wskdeploy@v0.0.0.$NOW
-      git commit -m $NOW -a
-      git tag v0.0.0.$NOW
-      git push origin nuvolaris --tags
-      cd ../..
-      go get github.com/nuvolaris/openwhisk-cli@v0.0.0.$NOW
-      git add tools/openwhisk-cli
-      git add tools/openwhisk-wskdeploy
-      git add go.mod go.sum
-
-  sync-task:
-    - |
-      NOW=$(date +%y%m%d%H%M)
-      cd tools/sh
-      go get github.com/nuvolaris/nuv@9e76cabec87cc4908fd4c4a6571927283a28a991
-      go mod tidy
-      git tag -d $(git tag)
-      git commit -m $NOW -a
-      git tag v3.7.1-nuv.$NOW
-      git push origin nuvolaris --tags
-      cd ../task
-      git tag -d $(git tag)
-      go get github.com/nuvolaris/sh/v3@v3.7.1-nuv.$NOW
-      git commit -m $NOW -a
-      git tag v3.30.2-nuv.$NOW
-      git push origin nuvolaris --tags
-      cd ../..
-      go get github.com/nuvolaris/task/v3@v3.30.2-nuv.$NOW
+x        fi
 
