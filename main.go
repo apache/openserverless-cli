@@ -27,6 +27,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/apache/openserverless-cli/tools"
+	"github.com/apache/openserverless-cli/auth"
+	"github.com/apache/openserverless-cli/config"
+
 	"github.com/mitchellh/go-homedir"
 
 	_ "embed"
