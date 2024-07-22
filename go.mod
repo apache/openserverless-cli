@@ -7,9 +7,10 @@ toolchain go1.21.11
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/apache/openwhisk-client-go v0.0.0-20220811044404-a6921af2f086
+	github.com/apache/openwhisk-wskdeploy v0.0.0-20221221215944-0e9b45ff5ff3
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
-	github.com/go-git/go-git/v5 v5.9.0
+	github.com/go-git/go-git/v5 v5.11.0
 	github.com/google/uuid v1.6.0
 	github.com/h2non/filetype v1.1.3
 	github.com/itchyny/gojq v0.12.13
@@ -40,7 +41,6 @@ require (
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230828082145-3c4c8a2d2371 // indirect
 	github.com/a8m/envsubst v1.4.2 // indirect
-	github.com/acomagu/bufpipe v1.0.4 // indirect
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
@@ -88,7 +88,7 @@ require (
 	github.com/sajari/fuzzy v1.0.0 // indirect
 	github.com/sciabarracom/openwhisk-wskdeploy v0.0.0-20240722090825-60e821cec51f // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/skeema/knownhosts v1.2.0 // indirect
+	github.com/skeema/knownhosts v1.2.1 // indirect
 	github.com/spf13/cobra v1.1.3 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tidwall/gjson v1.14.0 // indirect
