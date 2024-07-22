@@ -5,7 +5,7 @@ go clean -cache -modcache -testcache
 HERE=$PWD
 STAG="v3.8.0"
 DTAG="v3.8.1"
-cd ../tools/sh
+cd sh
 git checkout "$STAG" -B openserverless
 cp $HERE/builtin_extra.go interp/builtin_extra.go
 git add interp/builtin_extra.go

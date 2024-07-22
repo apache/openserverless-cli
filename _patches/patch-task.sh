@@ -4,7 +4,8 @@ cd "$(dirname $0)"
 HERE=$PWD
 SHVER=$(git ls-remote https://github.com/sciabarracom/sh | awk '/refs\/heads\/openserverless/{print $1}')
 STAG="v3.38.0"
-cd ../tools/task
+DTAG="v3.38.1"
+cd taskfile
 git checkout "$STAG" -B openserverless
 mkdir -p cmd/taskmain
 cat cmd/task/task.go \
@@ -25,7 +26,8 @@ sed -i -e '/mvdan.cc/g' go.mod
 go get github.com/sciabarracom/sh/v3@$SHVER
 go mod tidy
 git commit -m "patching sh for ops" -a
-git push origin-auth openserverless -f
+git tag $DTAG
+git push origin-auth openserverless -f --tags
 VER=$(git rev-parse HEAD)
 GOBIN=$HERE go install github.com/sciabarracom/task/v3/cmd/task@$VER
 

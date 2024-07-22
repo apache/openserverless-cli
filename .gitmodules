@@ -28,3 +28,6 @@
 [submodule "tools/wskdeploy"]
 	path = _patches/wskdeploy
 	url = https://github.com/sciabarracom/openwhisk-wskdeploy
+[submodule "_patches/sh"]
+	path = _patches/sh
+	url = https://github.com/sciabarracom/sh

@@ -3,7 +3,8 @@ cd "$(dirname $0)"
 # any suggestion how to avoid this rename and use just replaces in go.mod is welcome
 HERE=$PWD
 STAG="1.2.0"
-cd ../tools/wsk
+DTAG="v1.2.1"
+cd wsk
 #git reset --hard
 git checkout "$STAG" -B openserverless
 cp $HERE/i18n_resources.go wski18n/i18n_resources.go
@@ -23,7 +24,8 @@ DEPLOYVER=$(git ls-remote https://github.com/sciabarracom/openwhisk-wskdeploy | 
 go get github.com/sciabarracom/openwhisk-wskdeploy@$DEPLOYVER
 go mod tidy
 git commit -m "patching sh for ops" -a
-git push origin-auth openserverless -f
+git tag $DTAG
+git push origin-auth openserverless -f --tags
 go clean -modcache -cache -testcache -fuzzcache
 VER=$(git rev-parse HEAD)
 GOBIN=$HERE go install github.com/sciabarracom/openwhisk-cli@$VER
