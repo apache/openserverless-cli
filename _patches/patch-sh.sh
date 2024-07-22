@@ -4,6 +4,7 @@ cd "$(dirname $0)"
 go clean -cache -modcache -testcache
 HERE=$PWD
 STAG="v3.8.0"
+DTAG="v3.8.1"
 cd ../tools/sh
 git checkout "$STAG" -B openserverless
 cp $HERE/builtin_extra.go interp/builtin_extra.go
@@ -16,7 +17,8 @@ done
 go clean -modcache -cache -testcache -fuzzcache
 go mod tidy
 git commit -m "patching sh for ops" -a
-git push -f origin-auth openserverless
+git tag $DTAG
+git push -f origin-auth openserverless --tags
 VER=$(git rev-parse --short HEAD)
 GOBIN=$HERE go install github.com/sciabarracom/sh/v3/cmd/gosh@$VER
 
