@@ -19,7 +19,7 @@ version: "3"
 
 vars:
   BRANCH: main
-  BASEVER: "v1.3-snapshot"
+  BASEVER: "v1.3.0-snapshot"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
   DEBUG: ""
@@ -33,7 +33,7 @@ tasks:
     desc: tag the cli to generate the build
     cmds:
     - git tag -d $(git tag)
-    - git tag -f {{.BASEVER}}.$(date +%y%m%d%H%M){{.S}}
+    - git tag -f {{.BASEVER}}.$(date +%y%m%d%H%M)
     - git tag
 
 
