@@ -30,7 +30,8 @@ pkgs.mkShellNoCC {
     gopkgs
     gocode-gomod
     godef
-    golint   
+    golint
+    delve
     silver-searcher
     jq
   ];

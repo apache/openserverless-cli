@@ -42,3 +42,11 @@ nuv.spec
 nix/result
 .direnv/
 ops
+tests/bats/
+tests/test_helper/bats-assert/
+tests/test_helper/bats-support/
+_patch/task
+_patch/gosh
+_patch/wsk
+_patch/openwhisk-wskdeploy
+_patch/openwhisk-cli

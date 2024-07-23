@@ -37,9 +37,15 @@ tasks:
     - git tag
 
 
+  rebuild:
+    - rm -f ops
+    - task: build
+
   build:
     desc: build ops locally
-      - go build {{.DEBUG}} -ldflags "-X main.NuvVersion={{.VERSION}} -X main.NuvBranch={{.BASEVER}}"  -o bin/nuv
+    cmds:
+      - echo building {{.VERSION}}
+      - go build  {{.DEBUG}} -ldflags "-X main.NuvVersion={{.VERSION}} -X main.NuvBranch={{.BASEVER}}" cmd/ops/ops.go
     sources:
       - "*.go"
       - "tools/*.go"
@@ -59,8 +65,7 @@ tasks:
       - build
     cmds:
       - sudo cp ops /usr/local/bin
-      - sudo ln -sf $PWD/{{OS}}/{{ARCH}}/nuv /usr/local/bin/nuv
-      - sudo ln -sf $PWD/{{OS}}/{{ARCH}}/nuv /usr/bin/nuv
+      - sudo ln -sf /usr/local/bin/ops /usr/local/bin/nuv
 
   test:
     desc: tests all
@@ -75,16 +80,26 @@ tasks:
       - rm -Rf ~/.nuv/olaris
       - go test ./...
 
+  bats:
+    dir: tests
+    cmds:
+    - git clone https://github.com/bats-core/bats-core bats
+    - git clone https://github.com/bats-core/bats-support test_helper/bats-support
+    - git clone https://github.com/bats-core/bats-assert test_helper/bats-assert
+    status:
+    - test -d bats
+
   itest:
     desc: integration tests nuv
     dir: tests
     cmds:
+      - task: bats
       - rm -Rf ~/.nuv/olaris
       - bats/bin/bats .
 
   clean:
+    - rm ops || true
     - go clean -cache -modcache -testcache -fuzzcache
-
 
   utestdiff:
     cmds:

@@ -22,7 +22,7 @@ require (
 	github.com/nuvolaris/jj v0.0.0-20231020143327-10b90948a5d2
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/sciabarracom/openwhisk-cli v1.2.1
-	github.com/sciabarracom/task/v3 v3.38.4
+	github.com/sciabarracom/task/v3 v3.38.6
 	github.com/stretchr/testify v1.9.0
 	github.com/zalando/go-keyring v0.2.5
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
