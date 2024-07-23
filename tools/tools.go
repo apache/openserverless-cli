@@ -164,7 +164,6 @@ func RunTool(name string, args []string) (int, error) {
 func Help() {
 	fmt.Println("Available tools:")
 	availableTools := append(tools, extraTools...)
-	availableTools = append(availableTools, Utils...)
 	slices.Sort(availableTools)
 	for _, x := range availableTools {
 		fmt.Printf("-%s\n", x)

@@ -17,7 +17,7 @@
 #
 
 let
-  nixpkgs = fetchTarball "https://github.com/NixOS/nixpkgs/tarball/nixos-23.11";
+  nixpkgs = fetchTarball "https://github.com/NixOS/nixpkgs/tarball/nixos-24.05";
   pkgs = import nixpkgs { config = {}; overlays = []; };
 in
 
@@ -27,7 +27,6 @@ pkgs.mkShellNoCC {
     gotools
     gopls
     go-outline
-    gocode
     gopkgs
     gocode-gomod
     godef

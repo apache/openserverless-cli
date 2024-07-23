@@ -20,6 +20,6 @@
       "titleBar.activeForeground": "#28075d",
       "statusBar.background": "#28075d"
     },
-    "go.goroot": "/nix/store/nnh57s7m672k6snkanhz1kb18skwjpbg-go-1.21.11/share/go"
+    "go.goroot": "/nix/store/16g3awzjv3341s27hkkkv1vk5dw4206m-go-1.22.5/share/go"
   }
 }
