@@ -34,14 +34,14 @@ setup() {
 
 @test "nuv sub simple invoked with prefixes" {
     run nuv sub simple
-    assert_line "task: [simple] echo simple"
+    assert_line "ops: [simple] echo simple"
     assert_line "simple"
 
     run nuv s simple
-    assert_line "task: [simple] echo simple"
+    assert_line "ops: [simple] echo simple"
     assert_line "simple"
 
     run nuv s s
-    assert_line "task: [simple] echo simple"
+    assert_line "ops: [simple] echo simple"
     assert_line "simple"
 }
