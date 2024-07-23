@@ -19,7 +19,7 @@ version: "3"
 
 vars:
   BRANCH: main
-  BASEVER: "0.1-snapshot"
+  BASEVER: "v1.3-snapshot"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
   DEBUG: ""

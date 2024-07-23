@@ -2,6 +2,8 @@ module github.com/apache/openserverless-cli
 
 go 1.22.5
 
+retract v1.2.0-openserverless
+
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/apache/openwhisk-client-go v0.0.0-20210311185314-87edc2364717
