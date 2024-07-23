@@ -4,8 +4,9 @@ cd "$(dirname $0)"
 HERE=$PWD
 SHVER=$(git ls-remote https://github.com/sciabarracom/sh | awk '/refs\/heads\/openserverless/{print $1}')
 STAG="v3.38.0"
-DTAG="v3.38.2"
+DTAG="v3.38.4"
 cd taskfile
+go clean -cache -modcache
 git checkout "$STAG" -B openserverless
 mkdir -p cmd/taskmain
 cat cmd/task/task.go \
@@ -13,16 +14,17 @@ cat cmd/task/task.go \
 | sed -e 's/func main()/func _main()/' \
 | tee cmd/taskmain/task.go
 cat   <<EOF >>cmd/taskmain/task.go
+
 func Task(_args []string) (int, error) {
 	os.Args = _args
 	if err := run(); err != nil {
 		l := &logger.Logger{
 			Stdout:  os.Stdout,
 			Stderr:  os.Stderr,
-			Verbose: flags.verbose,
-			Color:   flags.color,
+			Verbose: flags.Verbose,
+			Color:   flags.Color,
 		}
-		if err, ok := err.(*errors.TaskRunError); ok && flags.exitCode {
+		if err, ok := err.(*errors.TaskRunError); ok && flags.ExitCode {
 			l.Errf(logger.Red, "%v\n", err)
 			return err.TaskExitCode(), err
 		}

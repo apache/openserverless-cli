@@ -20,7 +20,7 @@ require (
 	github.com/nuvolaris/jj v0.0.0-20231020143327-10b90948a5d2
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/sciabarracom/openwhisk-cli v1.2.1
-	github.com/sciabarracom/task/v3 v3.38.2
+	github.com/sciabarracom/task/v3 v3.38.4
 	github.com/stretchr/testify v1.9.0
 	github.com/zalando/go-keyring v0.2.5
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
@@ -81,7 +81,6 @@ require (
 	github.com/radovskyb/watcher v1.0.7 // indirect
 	github.com/remeh/sizedwaitgroup v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/sajari/fuzzy v1.0.0 // indirect
 	github.com/sciabarracom/openwhisk-wskdeploy v1.2.1 // indirect
 	github.com/sciabarracom/sh/v3 v3.8.1 // indirect
