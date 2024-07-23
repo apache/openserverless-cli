@@ -14,7 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-package main
+package openserverless
 
 import (
 	"errors"
@@ -27,9 +27,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/apache/openserverless-cli/tools"
 	"github.com/apache/openserverless-cli/auth"
 	"github.com/apache/openserverless-cli/config"
+	"github.com/apache/openserverless-cli/tools"
 
 	"github.com/mitchellh/go-homedir"
 
@@ -100,7 +100,7 @@ func info() {
 //go:embed runtimes.json
 var WSK_RUNTIMES_JSON string
 
-func main() {
+func Main() {
 	// set runtime version as environment variable
 	if os.Getenv("WSK_RUNTIMES_JSON") == "" {
 		os.Setenv("WSK_RUNTIMES_JSON", WSK_RUNTIMES_JSON)

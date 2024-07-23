@@ -31,10 +31,7 @@ tasks:
 
   cli-tag:
     desc: tag the cli to generate the build
-    - >
-      curl -sL https://raw.githubusercontent.com/apache/openserverless-task/{{.BRANCH}}/runtimes.json 
-      | jq '{"runtimes": .runtimes}' >runtimes.json
-    - git add runtimes.json
+    cmds:
     - git tag -d $(git tag)
     - git tag -f {{.BASEVER}}.$(date +%y%m%d%H%M){{.S}}
     - git tag
@@ -86,12 +83,8 @@ tasks:
       - bats/bin/bats .
 
   clean:
-    - rm -f bin/nuv runtimes.json
-    - go clean -cache -modcache
+    - go clean -cache -modcache -testcache -fuzzcache
 
-  rebuild:
-    - rm -f bin/nuv
-    - task: build
 
   utestdiff:
     cmds:
@@ -100,5 +93,5 @@ tasks:
         then  go test -v | tee _difftest
               python3 difftest.py
         else  python3 difftest.py {{.N}}
-x        fi
+        fi
 
