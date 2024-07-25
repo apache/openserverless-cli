@@ -3,14 +3,6 @@
     {
       "name": "ops",
       "path": "."
-    },
-    {
-      "name": "task",
-      "path": "tools/task"
-    },
-    {
-      "name": "sh",
-      "path": "tools/sh"
     }
   ],
   "settings": {

@@ -54,12 +54,13 @@ func nhpath(dir string) string {
 }
 
 func TestMain(m *testing.M) {
+	//debugging = true
+	//tracing = true
 	wd, _ := os.Getwd()
 	workDir, _ = filepath.Abs(wd)
 	homeDir, _ = homedir.Dir()
 	taskDryRun = true
-	//debugging = true
-	//tracing = true
+	ensurePrereq()
 	os.Exit(m.Run())
 }
 

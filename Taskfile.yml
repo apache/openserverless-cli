@@ -94,12 +94,16 @@ tasks:
     - test -d bats
 
   itest:
-    desc: integration tests nuv
+    desc: integration tests for nuv (T=<test-name> without .bats, empty all)
     dir: tests
     cmds:
       - task: bats
       - rm -Rf ~/.nuv/olaris
-      - bats/bin/bats .
+      - |
+        if test -z "{{.T}}"
+        then bats/bin/bats .
+        else bats/bin/bats {{.T}}.bats
+        fi
 
   clean:
     - rm ops || true

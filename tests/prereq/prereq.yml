@@ -1,0 +1,27 @@
+version: 3
+
+tasks:
+
+  _coreutils: 
+    cmds:
+    - touch coreutils
+
+  _bun:
+   cmds:
+   - touch bun
+
+  bun:
+    description: bun
+    vars:
+      VERSION: "v1.11.20"
+    cmds:
+    - task: _bun
+
+
+  coreutils:
+    description: coreutils
+    vars:
+       VERSION: "0.0.27"
+    cmds:
+    - task: _coreutils
+

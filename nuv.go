@@ -173,6 +173,8 @@ func Nuv(base string, args []string) error {
 	rest := args
 
 	isSubCmd := false
+
+	ensurePrereq()
 	for _, task := range args {
 		trace("task name", task)
 
@@ -192,6 +194,7 @@ func Nuv(base string, args []string) error {
 			if err := os.Chdir(taskName); err != nil {
 				return err
 			}
+			ensurePrereq()
 			//remove it from the args
 			rest = rest[1:]
 			isSubCmd = true

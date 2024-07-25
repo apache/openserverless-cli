@@ -4,7 +4,7 @@ cd "$(dirname $0)"
 HERE=$PWD
 SHVER=$(git ls-remote https://github.com/sciabarracom/sh | awk '/refs\/heads\/openserverless/{print $1}')
 STAG="v3.38.0"
-DTAG="v3.38.6"
+DTAG="v3.38.7"
 cd taskfile
 go clean -cache -modcache
 git checkout "$STAG" -B openserverless
@@ -16,9 +16,14 @@ cat cmd/task/task.go \
 sed -i -e 's/func init/func FlagInit/' internal/flags/flags.go
 cat   <<EOF >>cmd/taskmain/task.go
 
+var todoFlagInit = true
+
 func Task(_args []string) (int, error) {
-   os.Args = _args
-   flags.FlagInit()
+	os.Args = _args
+	if todoFlagInit {
+		flags.FlagInit()
+		todoFlagInit = false
+	}
 	if err := run(); err != nil {
 		l := &logger.Logger{
 			Stdout:  os.Stdout,
@@ -54,8 +59,8 @@ sed -i -e '/mvdan.cc/g' go.mod
 go get github.com/sciabarracom/sh/v3@$SHVER
 go mod tidy
 git commit -m "patching sh for ops" -a
-git tag $DTAG
 go build
+git tag $DTAG
 git push origin-auth openserverless -f --tags
 VER=$(git rev-parse HEAD)
 GOBIN=$HERE go install github.com/sciabarracom/task/v3/cmd/task@$VER

@@ -31,6 +31,7 @@ const NUVFILE = "nuvfile.yml"
 const NUVROOT = "nuvroot.json"
 const NUVOPTS = "nuvopts.txt"
 const CONFIGFILE = "config.json"
+const PREREQ = "prereq.yml"
 
 // repo where download tasks
 const NUVREPO = "http://github.com/apache/openserverless-task"
