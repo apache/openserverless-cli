@@ -10,7 +10,7 @@ import (
 func Example_execPrereqTask() {
 	fmt.Println(execPrereqTask("bin", "bun"))
 	// Output:
-	// executing: ops [-task -d bin -t prereq.yml bun]
+	// invoking prereq for bun
 	// <nil>
 }
 
@@ -67,7 +67,7 @@ func Example_downloadPrereq() {
 	fmt.Println("1", downloadPrereq("bun", prq.Tasks["bun"]))
 	fmt.Println("2", downloadPrereq("bun", prq.Tasks["bun"]))
 
-	os.Chdir("other")
+	os.Chdir("sub")
 	prq, _ = loadPrereq()
 	//fmt.Println(prq)
 	//fmt.Println(PrereqSeenMap)
@@ -92,7 +92,6 @@ func Example_ensurePrereq() {
 	// Output:
 	// downloading bun v1.11.20
 	// downloading coreutils 0.0.27
-	// <nil>
 	// <nil>
 	// error in prereq bun: WARNING: bun prerequisite found twice with different versions!
 	// Previous version: v1.11.20, ignoring v1.11.21

@@ -6,10 +6,6 @@
 	path = _patches/sh
 	url = https://github.com/sciabarracom/sh
 	branch = openserverless
-[submodule "openserverless-task"]
-	path = olaris
-	url = https://github.com/apache/openserverless-task
-	branch = main
 [submodule "tools/goawk"]
 	path = _patches/goawk
 	url = https://github.com/nuvolaris/goawk
