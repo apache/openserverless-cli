@@ -97,9 +97,6 @@ func info() {
 	fmt.Println("NUV_OLARIS:", os.Getenv("NUV_OLARIS"))
 }
 
-//go:embed runtimes.json
-var WSK_RUNTIMES_JSON string
-
 func Main() {
 	// set runtime version as environment variable
 	if os.Getenv("WSK_RUNTIMES_JSON") == "" {
@@ -110,6 +107,8 @@ func Main() {
 	// set version
 	if os.Getenv("NUV_VERSION") != "" {
 		NuvVersion = os.Getenv("NUV_VERSION")
+	} else {
+		NuvVersion = strings.TrimSpace(NuvVersion)
 	}
 
 	// disable log prefix

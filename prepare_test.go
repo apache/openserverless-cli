@@ -40,7 +40,7 @@ func Example_locate() {
 
 func Example_locate_git() {
 	_ = os.Chdir(workDir)
-	NuvBranch = "3.0.0-testing"
+	NuvBranch = "0.1.0-testing"
 	nuvdir, _ := homedir.Expand("~/.nuv")
 	_ = os.RemoveAll(nuvdir)
 	_ = os.Setenv("NUV_BIN", "")
@@ -61,15 +61,15 @@ func Example_locate_git() {
 	// 2 <nil> /work/tests/olaris
 	// Cloning tasks...
 	// Nuvfiles downloaded successfully
-	// 3 <nil> /home/.nuv/3.0.0-testing/olaris
+	// 3 <nil> /home/.nuv/0.1.0-testing/olaris
 	// Updating tasks...
 	// Tasks are already up to date!
-	// 4 <nil> /home/.nuv/3.0.0-testing/olaris
+	// 4 <nil> /home/.nuv/0.1.0-testing/olaris
 }
 
 func Test_setNuvOlarisHash(t *testing.T) {
 	_ = os.Chdir(workDir)
-	NuvBranch = "3.0.0-testing"
+	NuvBranch = "0.1.0-testing"
 	nuvdir, _ := homedir.Expand("~/.nuv")
 	_ = os.RemoveAll(nuvdir)
 	_ = os.Setenv("NUV_BIN", workDir)

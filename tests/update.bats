@@ -29,7 +29,7 @@ setup() {
 }
 
 @test "nuv -update with old version warns" {
-    NUV_VERSION=0.2.0 run nuv -update
+    NUV_VERSION=0.0.0 run nuv -update
     assert_line --partial "Your nuv version (0.2.0) is older than the required version in nuvroot.json"
     assert_line "Attempting to update nuv..."
     assert_success
@@ -49,7 +49,7 @@ setup() {
 
 @test "nuv -update on branch" {
     run rm -rf ~/.nuv
-    export NUV_BRANCH=3.0.0-testing
+    export NUV_BRANCH=0.1.0-testing
     run nuv -update
     assert_line "Nuvfiles downloaded successfully"
     assert_success

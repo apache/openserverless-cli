@@ -18,8 +18,8 @@
 version: "3"
 
 vars:
-  BRANCH: main
-  BASEVER: "v1.3.0-snapshot"
+  BRANCH: "0.1.0-testing"
+  BASEVER: "0.1.0-testing"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
   DEBUG: ""
@@ -33,7 +33,10 @@ tasks:
     desc: tag the cli to generate the build
     cmds:
     - git tag -d $(git tag)
-    - git tag -f {{.BASEVER}}.$(date +%y%m%d%H%M)
+    - echo "{{.BASEVER}}.$(date +%y%m%d%H%M)" >version.txt
+    - git tag -f "v$(cat version.txt)"
+    - echo "{{.BRANCH}}" >branch.txt
+    - git add version.txt branch.txt
     - git tag
 
 
@@ -45,10 +48,12 @@ tasks:
     desc: build ops locally
     cmds:
       - echo building {{.VERSION}}
-      - go build  {{.DEBUG}} -ldflags "-X main.NuvVersion={{.VERSION}} -X main.NuvBranch={{.BASEVER}}" cmd/ops/ops.go
+      - go build  {{.DEBUG}} cmd/ops/ops.go
     sources:
       - "*.go"
-      - "tools/*.go"
+      - "*/*.go"
+      - version.txt
+      - branch.txt
     generates:
       - ops
 

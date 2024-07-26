@@ -41,11 +41,11 @@ setup() {
 
 @test "correct branch setups" {
     run rm -rf ~/.nuv
-    export NUV_BRANCH=3.0.0-testing
+    export NUV_BRANCH=0.1.0-testing
     run nuv
     assert_success
     assert_output --partial "Welcome to nuv! Setting up..."
     run ls ~/.nuv
     assert_success
-    assert_output --partial "3.0.0-testing"
+    assert_output --partial "0.1.0-testing"
 }

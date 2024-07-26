@@ -24,6 +24,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	_ "embed"
 )
 
 // default files
@@ -38,8 +40,15 @@ const NUVREPO = "http://github.com/apache/openserverless-task"
 
 // branch where download tasks
 // defaults to test - will be changed in compilation
-var NuvVersion = "main"
-var NuvBranch = "main"
+
+//go:embed version.txt
+var NuvVersion string
+
+//go:embed branch.txt
+var NuvBranch string
+
+//go:embed runtimes.json
+var WSK_RUNTIMES_JSON string
 
 // Represents nuvroot.json. It is used to parse the file.
 type NuvRootJSON struct {
@@ -90,7 +99,7 @@ func getNuvRepo() string {
 func getNuvBranch() string {
 	branch := os.Getenv("NUV_BRANCH")
 	if branch == "" {
-		branch = NuvBranch
+		branch = strings.TrimSpace(NuvBranch)
 	}
 	//nolint:errcheck
 	os.Setenv("NUV_BRANCH", branch)

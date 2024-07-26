@@ -24,13 +24,6 @@ in
 pkgs.mkShellNoCC {
   packages = with pkgs; [
     go
-    gotools
-    gopls
-    go-outline
-    gopkgs
-    gocode-gomod
-    godef
-    golint
     delve
     silver-searcher
     jq

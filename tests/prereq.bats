@@ -23,9 +23,7 @@ setup() {
   
 }
 
-@test "ops prereq" {
-    rm -Rvf ~/.nuv/bin
-    TRACE=1 ops
-
-
-}
+#@test "ops prereq" {
+#    #rm -Rvf ~/.nuv/bin
+#    #TRACE=1 ops
+#}

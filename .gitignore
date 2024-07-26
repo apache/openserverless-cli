@@ -31,7 +31,6 @@ bin/*/arm64/*
 *.rpm
 *.msi
 *.pkg
-version.txt
 .latestcheck
 bin/unzip.exe
 bin/*/LICENSE
