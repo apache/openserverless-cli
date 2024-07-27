@@ -132,15 +132,13 @@ func Main() {
 	// Check if olaris exists. If not, run `-update` to auto setup
 	olarisDir := joinpath(joinpath(nuvHome, getNuvBranch()), "olaris")
 	if !isDir(olarisDir) {
-		if !(len(os.Args) == 2 && os.Args[1] == "-update") {
-			log.Println("Welcome to nuv! Setting up...")
-			dir, err := pullTasks(true, true)
-			if err != nil {
-				log.Fatalf("error: %v", err)
-			}
-			if err := setNuvOlarisHash(dir); err != nil {
-				warn("unable to set NUV_OLARIS...", err.Error())
-			}
+		log.Println("Welcome to nuv! Setting up...")
+		dir, err := pullTasks(true, true)
+		if err != nil {
+			log.Fatalf("error: %v", err)
+		}
+		if err := setNuvOlarisHash(dir); err != nil {
+			warn("unable to set NUV_OLARIS...", err.Error())
 		}
 	}
 

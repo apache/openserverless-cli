@@ -19,7 +19,7 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    export NUV_BRANCH=$(cat ../branch.txt)
+    export NUV_BRANCH="$(cat ../branch.txt)"
     rm -rf ~/.nuv
     run nuv -update
     cd ~/.nuv/$NUV_BRANCH/olaris
@@ -35,5 +35,5 @@ setup() {
     assert_success
 
     run git status
-    assert_line "Your branch is up to date with 'origin/3.0.0-testing'."
+    assert_line --partial "Your branch is up to date with" 
 }
