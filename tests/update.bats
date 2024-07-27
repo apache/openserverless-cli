@@ -30,7 +30,7 @@ setup() {
 
 @test "nuv -update with old version warns" {
     NUV_VERSION=0.0.0 run nuv -update
-    assert_line --partial "Your nuv version (0.2.0) is older than the required version in nuvroot.json"
+    assert_line --partial "Your nuv version (0.0.0) is older than the required version in nuvroot.json"
     assert_line "Attempting to update nuv..."
     assert_success
 }

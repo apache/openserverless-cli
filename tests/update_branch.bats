@@ -19,16 +19,16 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    export NUV_BRANCH=3.0.0-testing
+    export NUV_BRANCH=$(cat ../branch.txt)
     rm -rf ~/.nuv
     run nuv -update
-    cd ~/.nuv/3.0.0-testing/olaris
+    cd ~/.nuv/$NUV_BRANCH/olaris
 }
 
 @test "nuv -update on olaris with old commit updates correctly" {
     run git reset --hard HEAD~1
     run git status
-    assert_line --partial "Your branch is behind 'origin/3.0.0-testing'"
+    assert_line --partial "Your branch is behind"
 
     run nuv -update
     assert_line "Nuvfiles updated successfully"

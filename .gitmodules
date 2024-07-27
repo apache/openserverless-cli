@@ -21,9 +21,15 @@
 [submodule "tools/wsk"]
 	path = _patches/wsk
 	url = https://github.com/sciabarracom/openwhisk-cli
+	branch = openserverless
 [submodule "tools/wskdeploy"]
 	path = _patches/wskdeploy
 	url = https://github.com/sciabarracom/openwhisk-wskdeploy
+	branch = openserverless
 [submodule "_patches/sh"]
 	path = _patches/sh
 	url = https://github.com/sciabarracom/sh
+	branch = openserverless
+[submodule "tasktests/olaris"]
+	path = tasktests/olaris
+	url = https://github.com/apache/openserverless-task
