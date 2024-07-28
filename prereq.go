@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
@@ -75,8 +76,16 @@ func loadPrereq() (Prereq, error) {
 }
 
 // ensure there is a bindir for downloading prerequisites
-func ensureBindir() (string, error) {
-	bindir, err := homedir.Expand("~/.nuv/bin")
+// read it from OPS_BIN and create it
+// otherwise setup one in ~/nuv/<os>-<arch>/bin
+// and sets OPS_BIN
+func EnsureBindir() (string, error) {
+	var err error = nil
+	bindir := os.Getenv("OPS_BIN")
+	if bindir == "" {
+		bindir, err = homedir.Expand(fmt.Sprintf("~/.nuv/%s-%s/bin", runtime.GOOS, runtime.GOARCH))
+		os.Setenv("OP_BIN", bindir)
+	}
 	if err != nil {
 		return "", err
 	}
@@ -86,17 +95,6 @@ func ensureBindir() (string, error) {
 	}
 	trace("bindir", bindir)
 	return bindir, nil
-}
-
-func touch(dir string, name string) error {
-	tgt := filepath.Join(dir, name)
-	trace("touch", tgt)
-	f, err := os.Create(tgt)
-	if err != nil {
-		return err
-	}
-	f.Close()
-	return nil
 }
 
 // create a mark of current version touching <name>-<version> and remove all the other files starting with <name>-
@@ -137,7 +135,7 @@ func downloadPrereq(name string, task PrereqTask) error {
 		return nil
 	}
 
-	bindir, err := ensureBindir()
+	bindir, err := EnsureBindir()
 	if err != nil {
 		return err
 	}
@@ -179,6 +177,10 @@ func downloadPrereq(name string, task PrereqTask) error {
 
 // ensure prereq are satified looking at the prereq.yml
 func ensurePrereq() error {
+	// skip prereq - useful for tests
+	if os.Getenv("OPS_NO_PREREQ") != "" {
+		return nil
+	}
 	trace("ensurePrereq")
 	prereq, err := loadPrereq()
 	for task := range prereq.Tasks {

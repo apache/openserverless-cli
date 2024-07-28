@@ -83,9 +83,9 @@ tasks:
     desc: unit test nuv
     cmds:
       - rm -Rf ~/.nuv/olaris
-      - go test github.com/apache/openserverless-cli
-      - go test github.com/apache/openserverless-cli/config
-      - go test github.com/apache/openserverless-cli/tools  
+      - go test -v github.com/apache/openserverless-cli
+      - go test -v github.com/apache/openserverless-cli/config
+      - go test -v github.com/apache/openserverless-cli/tools  
       - echo TODO go test github.com/apache/openserverless-cli/auth
       
 

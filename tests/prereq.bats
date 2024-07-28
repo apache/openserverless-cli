@@ -19,8 +19,8 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    export NUV_BRANCH="0.3.0"
-  
+    export NUV_BRANCH="0.1.0-testing"
+    rm -Rvf ~/.nuv
 }
 
 #@test "ops prereq" {

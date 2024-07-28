@@ -18,21 +18,17 @@
   ~
 -->
 
-![example workflow](https://github.com/nuvolaris/nuv/actions/workflows/check.yml/badge.svg) ![Nuv Latest Release](https://badgen.net/github/release/nuvolaris/nuv/stable) ![License](https://badgen.net/github/license/nuvolaris/nuv) 
 
 **WARNING: this is still work in progress**
 
-The code may not build, there can be errors that will destroy your hard disk and so on.
+The code may not build, there can be errors, and it can even destroy your hard disk or send you in another dimension.
 
-Also documentation and code may not be aligned, as we first write documentation and then write code, so you may read documentation of code that does not yet exist!
+Documentation is also work in progress....
 
-You have been warned!
+# `ops`, the next generation
 
-# `nuv`, the next generation
+`ops` is the OpenServerless all-mighty CLI tool.
 
-Nuv is the nuvolaris all-mighty build tool.
-
-This is a rewrite of the current build tools to make it super powerful.
 
 It is basically the [task](https://taskfile.dev) tool enhanced to support:
 
@@ -42,7 +38,7 @@ It is basically the [task](https://taskfile.dev) tool enhanced to support:
 - a way to create a hierarchy of taskfiles 
 - documentation for tasks powered by [docopt](http://docopt.org/)
 
-Note that to avoid an egg and chicken problem, `nuv` itself is built with his ancestor, `task`.
+Note that to avoid an egg and chicken problem, `ops` itself is built with his ancestor, `task`.
 
 - Build it with just `task build`.
 - Run tests with `task test`.
@@ -55,13 +51,11 @@ The following environment variables allows to ovverride certain defaults.
 
 - `DEBUG` and `TRACE` when set gives debugging and tracing informations, `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a nuvopts active.
 - `NUV_ROOT` is the folder where `nuv` looks for its tasks. If not defined, it follows the algorithm below to find it.
-- `NUV_BIN` is the folder where `nuv` looks for binaries (external command line tools). If not defined, it defaults to the same directory where  `nuv` is located.
+- `OPS_BIN` is the folder where `nuv` looks for binaries (external command line tools). If not defined, it defaults to `~/.nuv/bin`
+- `OPS_CMD` is the actual command executed - defaults to the absolute path of the target of the symbolic link but it can be overriden.
 - `NUV_REPO` is the github repo where `nuv` downloads its tasks. If not defined, it defaults to `https://github.com/nuvolaris/olaris`.
 - `NUV_BRANCH` is the branch where `nuv` looks for its tasks. The branch to use is defined at build time and it is the base version (without the patch level). For example, if `nuv` is `0.3.0-morpheus` the branch to use will be `0.3-morpheus`.
-- `NUV_CMD` is the actual command executed - defaults to the absolute path of the target of the symbolic link but it can be overriden.
 - `NUV_VERSION` can be defined to set nuv's version value. It is useful to override version validations when updating tasks (and you know what you are doing). 
-- `NUV_NO_NUVOPTS` can be defined to disable nuvopts parsing. Useful to test hidden tasks. When this is enabled it also shows all the tasks instead of just those with a description.
-- `NUV_PORT` is the port where `nuv` will run the web server. If not defined, it defaults to `9678`.
 - `NUV_TMP` is a temporary folder where you can store temp files - defaults to `~/.nuv/tmp`
 - `NUV_APIHOST` is the host for `nuv -login`. It is used in place of the first argument of `nuv -login`. If empty, the command will expect the first argument to be the apihost.
 - `NUV_USER`: set the username for `nuv -login`. The default is `nuvolaris`. It can be overriden by passing the username as an argument to `nuv -login` or by setting the environment variable.
@@ -69,6 +63,10 @@ The following environment variables allows to ovverride certain defaults.
 - `NUV_PWD` is the folder where `nuv` is executed (the current working directory). It is used to preserve the original working directory when `nuv` is used again in tasks (e.g. nuv -realpath to retrieve the correct path). Change it only if you know what you are doing!
 - `NUV_ROOT_PLUGIN` is the folder where `nuv` looks for plugins. If not defined, it defaults to the same directory where  `nuv` is located.
 - `NUV_OLARIS` holds the head commit hash of the used olaris repo. You can see the hash with `nuv -info`.
+- `NUV_PORT` is the port where `nuv` will run embedde web server for the configurator. If not defined, it defaults to `9678`.
+- `NUV_NO_NUVOPTS` can be defined to disable nuvopts parsing. Useful to test hidden tasks. When this is enabled it also shows all the tasks instead of just those with a description.
+- `OPS_NO_PREREQ` disable downloading of prerequisites - you have to ensure at least coreutils is in the path...
+
 
 ## Where `nuv` looks for binaries 
 - `NUV_USE_COREUTILS` enables the use of [coreutils](https://github.com/uutils/coreutils) instead of the current unix tools implementation. They will eventually replace the current tools.

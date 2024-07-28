@@ -101,25 +101,18 @@ func parseArgs(usage string, args []string) []string {
 	return res
 }
 
-// setupTmp sets up a tmp folder
-func setupTmp() {
-	// setup NUV_TMP
+// sets up a tmp folder and NUV_TMP envvar
+func setupTmp() error {
 	var err error
 	tmp := os.Getenv("NUV_TMP")
 	if tmp == "" {
 		tmp, err = homedir.Expand("~/.nuv/tmp")
-		if err == nil {
-			//nolint:errcheck
-			os.Setenv("NUV_TMP", tmp)
+		if err != nil {
+			return err
 		}
+		os.Setenv("NUV_TMP", tmp)
 	}
-	if err == nil {
-		err = os.MkdirAll(tmp, 0755)
-	}
-	if err != nil {
-		warn("cannot create tmp dir", err)
-		os.Exit(1)
-	}
+	return os.MkdirAll(tmp, 0755)
 }
 
 // load saved args in files names _*_ in current directory
@@ -174,7 +167,11 @@ func Nuv(base string, args []string) error {
 
 	isSubCmd := false
 
-	ensurePrereq()
+	err = ensurePrereq()
+	if err != nil {
+		fmt.Println("ERROR: cannot ensure prerequisites: " + err.Error())
+		os.Exit(1)
+	}
 	for _, task := range args {
 		trace("task name", task)
 
@@ -194,7 +191,11 @@ func Nuv(base string, args []string) error {
 			if err := os.Chdir(taskName); err != nil {
 				return err
 			}
-			ensurePrereq()
+			err = ensurePrereq()
+			if err != nil {
+				fmt.Println("ERROR: cannot ensure prerequisites" + err.Error())
+				os.Exit(1)
+			}
 			//remove it from the args
 			rest = rest[1:]
 			isSubCmd = true

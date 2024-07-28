@@ -34,6 +34,19 @@ func pr(args ...any) {
 	fmt.Println(args...)
 }
 
+func after(where, all string) string {
+	// Find the index of the first occurrence of `where` in `all`
+	index := strings.Index(all, where)
+
+	// If `where` is not found, return an empty string
+	if index == -1 {
+		return all
+	}
+
+	// Return the substring after `where`
+	return all[index+len(where):]
+}
+
 // as creates a string array
 // func as(s ...string) []string {
 // 	return s

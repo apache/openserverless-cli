@@ -184,3 +184,14 @@ func debugf(format string, args ...any) {
 		log.Printf("DEBUG: "+format+"\n", args...)
 	}
 }
+
+func touch(dir string, name string) error {
+	tgt := filepath.Join(dir, name)
+	trace("touch", tgt)
+	f, err := os.Create(tgt)
+	if err != nil {
+		return err
+	}
+	f.Close()
+	return nil
+}

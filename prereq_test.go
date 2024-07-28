@@ -30,22 +30,22 @@ func Example_loadPrereq() {
 }
 
 func Example_ensureBindir() {
-	bindir, _ := homedir.Expand("~/.nuv/bin")
+	bindir, _ := EnsureBindir()
 	os.RemoveAll(bindir)
 	_, err1 := os.Stat(bindir)
-	bindir1, _ := ensureBindir()
+	bindir1, _ := EnsureBindir()
 	_, err2 := os.Stat(bindir)
-	fmt.Printf("no dir: %s\ncreated: %t\nyes dir: %v\n", nhpath(err1.Error()), bindir1 == bindir, err2)
+	fmt.Printf("no dir:%s\ncreated: %t\nyes dir: %v\n", after(":", err1.Error()), bindir1 == bindir, err2)
 	// Output:
-	// no dir: stat /home/.nuv/bin: no such file or directory
+	// no dir: no such file or directory
 	// created: true
 	// yes dir: <nil>
 }
 
 func Example_touchAndClean() {
-	bindir, _ := ensureBindir()
+	bindir, _ := EnsureBindir()
 	os.RemoveAll(bindir)
-	bindir, _ = ensureBindir()
+	bindir, _ = EnsureBindir()
 	touch(bindir, "hello")
 	err := touchAndClean(bindir, "hello", "1.2.3")
 	fmt.Println(err, exists(bindir, "hello"), exists(bindir, "hello-1.2.3"), exists(bindir, "hello-1.2.4"))
@@ -81,7 +81,7 @@ func Example_downloadPrereq() {
 }
 
 func Example_ensurePrereq() {
-	bindir, _ := homedir.Expand("~/.nuv/bin")
+	bindir, _ := EnsureBindir()
 	os.RemoveAll(bindir)
 	os.Chdir(workDir)
 	os.Chdir("tests")
