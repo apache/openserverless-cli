@@ -73,7 +73,6 @@ func TestMain(m *testing.M) {
 	workDir, _ = filepath.Abs(wd)
 	homeDir, _ = homedir.Dir()
 	taskDryRun = true
-	ensurePrereq()
 	os.Exit(m.Run())
 }
 

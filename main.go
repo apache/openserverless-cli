@@ -74,9 +74,8 @@ func setupCmd(me string) (string, error) {
 
 func setupBinPath() error {
 	// initialize tools (used by the shell to find myself)
-
 	bindir, err := EnsureBindir()
-	if err != nil {
+	if err == nil {
 		os.Setenv("PATH", fmt.Sprintf("%s%c%s", bindir, os.PathListSeparator, os.Getenv("PATH")))
 		debugf("PATH=%s", os.Getenv("PATH"))
 	}
@@ -150,6 +149,10 @@ func executeEmbeddedToolsAndExit(cmd string, args []string, nuvHome string) int 
 		}
 		if err := setNuvOlarisHash(dir); err != nil {
 			log.Fatal("unable to set NUV_OLARIS...", err.Error())
+		}
+		err = ensurePrereq(dir)
+		if err != nil {
+			log.Fatalf("cannot download prerequisites: %v", err)
 		}
 
 	case "retry":
@@ -301,6 +304,11 @@ func Main() {
 		log.Fatalf("cannot apply env vars from configs: %s", err.Error())
 	}
 
+	// preflight checks - we need at least ssh curl to proceed
+	if err := preflightChecks(); err != nil {
+		log.Fatalf("failed preflight check: %s", err.Error())
+	}
+
 	// in case args[1] is a wsk wrapper command invoke it and exit
 	if len(args) > 1 {
 		if cmd, ok := IsWskWrapperCommand(args[1]); ok {
@@ -333,9 +341,10 @@ func Main() {
 
 	// *************** executing tasks
 
-	// preflight checks - we need at least ssh and curl to proceed
-	if err := preflightChecks(); err != nil {
-		log.Fatalf("failed preflight check: %s", err.Error())
+	// ensure prerequisites
+	err = ensurePrereq(nuvRootDir)
+	if err != nil {
+		log.Fatalf("cannot ensure prerequisites: %s", err.Error())
 	}
 
 	if err := runNuv(nuvRootDir, args); err != nil {

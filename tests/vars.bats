@@ -21,7 +21,6 @@ setup() {
     export NO_COLOR=1
 }
 
-
 @test "simple" {
     run nuv sub vars simple
     # use top level

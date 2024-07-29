@@ -167,7 +167,7 @@ func Nuv(base string, args []string) error {
 
 	isSubCmd := false
 
-	err = ensurePrereq()
+	err = ensurePrereq(base)
 	if err != nil {
 		fmt.Println("ERROR: cannot ensure prerequisites: " + err.Error())
 		os.Exit(1)
@@ -191,7 +191,7 @@ func Nuv(base string, args []string) error {
 			if err := os.Chdir(taskName); err != nil {
 				return err
 			}
-			err = ensurePrereq()
+			err = ensurePrereq(pwd)
 			if err != nil {
 				fmt.Println("ERROR: cannot ensure prerequisites" + err.Error())
 				os.Exit(1)

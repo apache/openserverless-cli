@@ -14,33 +14,13 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+#
 
-setup() {
-    load 'test_helper/bats-support/load'
-    load 'test_helper/bats-assert/load'
-    export NO_COLOR=1
-    export NUV_BRANCH="0.1.0-testing"
-    cd prereq
-}
+version: "3"
+tasks:
 
-@test "download others" {
-    rm -Rvf ~/.nuv/
-    for o in linux darwin
-    do for a in arm64 amd64
-       do  
-          run env OS=$o ARCH=$a ops
-          assert_line "ensuring prerequisite 7zz" --partial
-          assert test -e ~/.nuv/$o-$a/bin/7zz
-       done
-    done 
-    run env OS=windows ops
-    assert test -e ~/.nuv/windows-*/bin/7zz.exe
-}
+  info:
+    desc: info
+    cmds:
+    - 7zz | grep 7-Zip
 
-@test "ops prereq" {
-    rm -Rvf ~/.nuv/
-    run ops
-    assert_line "ensuring prerequisite 7zz" --partial
-    run ops info
-    assert_line "7-˜Zip" --partial
-}

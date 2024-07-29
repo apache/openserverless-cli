@@ -3,8 +3,6 @@ package openserverless
 import (
 	"fmt"
 	"os"
-
-	"github.com/mitchellh/go-homedir"
 )
 
 func Example_execPrereqTask() {
@@ -16,12 +14,10 @@ func Example_execPrereqTask() {
 
 func Example_loadPrereq() {
 	//downloadPrereq("")
-	os.Chdir(workDir)
-	os.Chdir("tests")
-	_, err := loadPrereq()
+	dir := joinpath(workDir, "tests")
+	_, err := loadPrereq(dir)
 	fmt.Println(npath(err.Error()))
-	os.Chdir("prereq")
-	prq, err := loadPrereq()
+	prq, err := loadPrereq(joinpath(dir, "prereq"))
 	//fmt.Println(prq)
 	fmt.Println(err, *prq.Tasks["bun"].Description, prq.Tasks["bun"].Vars["VERSION"])
 	// Output:
@@ -57,18 +53,15 @@ func Example_touchAndClean() {
 }
 
 func Example_downloadPrereq() {
-	bindir, _ := homedir.Expand("~/.nuv/bin")
+	bindir, _ := EnsureBindir()
 	os.RemoveAll(bindir)
-	os.Chdir(workDir)
-	os.Chdir("tests")
-	os.Chdir("prereq")
 
-	prq, _ := loadPrereq()
+	prqdir := joinpath(joinpath(workDir, "tests"), "prereq")
+	prq, _ := loadPrereq(prqdir)
 	fmt.Println("1", downloadPrereq("bun", prq.Tasks["bun"]))
 	fmt.Println("2", downloadPrereq("bun", prq.Tasks["bun"]))
 
-	os.Chdir("sub")
-	prq, _ = loadPrereq()
+	prq, _ = loadPrereq(joinpath(prqdir, "sub"))
 	//fmt.Println(prq)
 	//fmt.Println(PrereqSeenMap)
 	fmt.Println("3", downloadPrereq("bun", prq.Tasks["bun"]))
@@ -83,12 +76,9 @@ func Example_downloadPrereq() {
 func Example_ensurePrereq() {
 	bindir, _ := EnsureBindir()
 	os.RemoveAll(bindir)
-	os.Chdir(workDir)
-	os.Chdir("tests")
-	os.Chdir("prereq")
-	fmt.Println(ensurePrereq())
-	os.Chdir("sub")
-	fmt.Println(ensurePrereq())
+	dir := joinpath(joinpath(workDir, "tests"), "prereq")
+	fmt.Println(ensurePrereq(dir))
+	fmt.Println(ensurePrereq(joinpath(dir, "sub")))
 	// Output:
 	// downloading bun v1.11.20
 	// downloading coreutils 0.0.27

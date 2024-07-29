@@ -50,12 +50,8 @@ func execPrereqTask(bindir string, name string) error {
 }
 
 // load prerequisites in current dir
-func loadPrereq() (Prereq, error) {
+func loadPrereq(dir string) (Prereq, error) {
 	var prereq Prereq = Prereq{}
-	dir, err := os.Getwd()
-	if err != nil {
-		return prereq, err
-	}
 
 	if !exists(dir, PREREQ) {
 		return prereq, fmt.Errorf("not found %s", dir)
@@ -80,10 +76,18 @@ func loadPrereq() (Prereq, error) {
 // otherwise setup one in ~/nuv/<os>-<arch>/bin
 // and sets OPS_BIN
 func EnsureBindir() (string, error) {
+	os_ := os.Getenv("OS")
+	if os_ == "" {
+		os_ = runtime.GOOS
+	}
+	arch := os.Getenv("ARCH")
+	if arch == "" {
+		arch = runtime.GOARCH
+	}
 	var err error = nil
 	bindir := os.Getenv("OPS_BIN")
 	if bindir == "" {
-		bindir, err = homedir.Expand(fmt.Sprintf("~/.nuv/%s-%s/bin", runtime.GOOS, runtime.GOARCH))
+		bindir, err = homedir.Expand(fmt.Sprintf("~/.nuv/%s-%s/bin", os_, arch))
 		os.Setenv("OPS_BIN", bindir)
 	}
 	if err != nil {
@@ -164,8 +168,19 @@ func downloadPrereq(name string, task PrereqTask) error {
 		touch(bindir, name)
 		touchAndClean(bindir, name, version)
 	} else {
+		fmt.Printf("ensuring prerequisite %s %s\n", name, version)
 		execPrereqTask(bindir, name)
 		// check if file and version exists
+
+		// fixing the name for windows adding .exe
+		os_ := os.Getenv("OS")
+		if os_ == "" {
+			os_ = runtime.GOOS
+		}
+		if os_ == "windows" {
+			name = name + ".exe"
+		}
+
 		if !exists(bindir, name) {
 			return fmt.Errorf("failed to download %s %s", name, version)
 		}
@@ -176,13 +191,17 @@ func downloadPrereq(name string, task PrereqTask) error {
 }
 
 // ensure prereq are satified looking at the prereq.yml
-func ensurePrereq() error {
+func ensurePrereq(root string) error {
 	// skip prereq - useful for tests
 	if os.Getenv("OPS_NO_PREREQ") != "" {
 		return nil
 	}
-	trace("ensurePrereq")
-	prereq, err := loadPrereq()
+	err := os.Chdir(root)
+	if err != nil {
+		return err
+	}
+	trace("ensurePrereq in", root)
+	prereq, err := loadPrereq(root)
 	for task := range prereq.Tasks {
 		err = downloadPrereq(task, prereq.Tasks[task])
 		if err != nil {

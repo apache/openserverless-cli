@@ -1,0 +1,61 @@
+version: 3
+
+vars:
+  OS: "{{or .OS OS}}"
+  ARCH: "{{or .ARCH ARCH}}"
+
+tasks:
+
+  7zz:
+    desc: 7zr
+    vars:
+      VERSION: "2407"
+      SUFFIX:
+         sh: |
+             case "{{.OS}}-{{.ARCH}}" in
+              linux-amd64) echo "7z{{.VERSION}}-linux-x64.tar.xz" ;;
+              linux-arm64) echo "7z{{.VERSION}}-linux-arm64.tar.xz" ;;
+              darwin-*) echo "7z{{.VERSION}}-mac.tar.xz" ;;
+              windows-*) echo "7zr.exe" ;;
+              *) echo "unknown" ;;
+             esac
+      URL: "https://7-zip.org/a/{{.SUFFIX}}"
+      FILE: "{{base .URL}}"
+    cmds:
+    - curl -sL "{{.URL}}"  -o "{{.FILE}}"
+    - |
+      if test "{{.OS}}" == "windows" 
+      then mv 7zr.exe 7zz.exe
+      else tar xJvf "{{.FILE}}" 7zz
+           rm "{{.FILE}}"
+      fi
+ 
+
+  bun:
+    description: bun
+    vars:
+      XVERSION: "v1.11.20"
+    cmds:
+    - task: _bun
+
+
+  coreutils:
+    desc: coreutils
+    vars:
+       XVERSION: "0.0.27"
+       SUFFIX:
+         sh: |
+             case "{{ARCH}}-{{OS}}" in
+              amd64-linux) echo "i686-unknown-linux-gnu.tar.gz" ;;
+              arm64-linux) echo "aarch64-unknown-linux-gnu.tar.gz" ;;
+              amd64-darwin) echo "x86_64-apple-darwin.tar.gz" ;;
+              arm64-darwin) echo "aarch64-apple-darwin.tar.gz" ;; 
+              amd64-windows) echo "x86_64-pc-windows-gnu.zip" ;;
+              *) echo "unknown" ;;
+             esac
+       URL: "https://github.com/uutils/coreutils/releases/download/{{.VERSION}}/coreutils-{{.VERSION}}-{{.SUFFIX}}" 
+    cmds:
+     - echo "{{.URL}}"
+     #- curl -sL "{{.URL}}" -o coreutils.tar.gz
+
+

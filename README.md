@@ -52,6 +52,8 @@ The following environment variables allows to ovverride certain defaults.
 - `DEBUG` if set enable debugging messages
 - `TRACE` when set gives mode detailes tracing informations, also enable DEBUG=1
 - `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a nuvopts active.
+- `OS` overrides the value of the detected operating system - useful to test prereq scripts
+-  `ARCH` overrides the value of the detected architecture - useful to test prereq scripts
 - `OPS_HOME` is the home dir, defaults to `~/.nuv` if not defined
 - `NUV_ROOT` is the folder where `ops` looks for its tasks. If not defined, if will first look in current directory for an `olaris` folder otherwise download it from githut fron the `NUV_REPO` with a git clone
 - `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults to `~/.nuv/<os>-<arch>/bin`. All the prerequisites are downloaded in this directory
