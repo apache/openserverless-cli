@@ -55,6 +55,6 @@ setup() {
 
 @test "sub command not found" {
     run nuv sub notfound
-    assert_line "error: no command named notfound found"
+    assert_line "task execution error: no command named notfound found"
     assert_failure
 }

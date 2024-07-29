@@ -84,7 +84,7 @@ func EnsureBindir() (string, error) {
 	bindir := os.Getenv("OPS_BIN")
 	if bindir == "" {
 		bindir, err = homedir.Expand(fmt.Sprintf("~/.nuv/%s-%s/bin", runtime.GOOS, runtime.GOARCH))
-		os.Setenv("OP_BIN", bindir)
+		os.Setenv("OPS_BIN", bindir)
 	}
 	if err != nil {
 		return "", err

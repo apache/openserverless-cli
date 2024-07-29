@@ -49,23 +49,26 @@ Note that to avoid an egg and chicken problem, `ops` itself is built with his an
 
 The following environment variables allows to ovverride certain defaults.
 
-- `DEBUG` and `TRACE` when set gives debugging and tracing informations, `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a nuvopts active.
-- `NUV_ROOT` is the folder where `nuv` looks for its tasks. If not defined, it follows the algorithm below to find it.
-- `OPS_BIN` is the folder where `nuv` looks for binaries (external command line tools). If not defined, it defaults to `~/.nuv/bin`
+- `DEBUG` if set enable debugging messages
+- `TRACE` when set gives mode detailes tracing informations, also enable DEBUG=1
+- `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a nuvopts active.
+- `OPS_HOME` is the home dir, defaults to `~/.nuv` if not defined
+- `NUV_ROOT` is the folder where `ops` looks for its tasks. If not defined, if will first look in current directory for an `olaris` folder otherwise download it from githut fron the `NUV_REPO` with a git clone
+- `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults to `~/.nuv/<os>-<arch>/bin`. All the prerequisites are downloaded in this directory
 - `OPS_CMD` is the actual command executed - defaults to the absolute path of the target of the symbolic link but it can be overriden.
-- `NUV_REPO` is the github repo where `nuv` downloads its tasks. If not defined, it defaults to `https://github.com/nuvolaris/olaris`.
-- `NUV_BRANCH` is the branch where `nuv` looks for its tasks. The branch to use is defined at build time and it is the base version (without the patch level). For example, if `nuv` is `0.3.0-morpheus` the branch to use will be `0.3-morpheus`.
-- `NUV_VERSION` can be defined to set nuv's version value. It is useful to override version validations when updating tasks (and you know what you are doing). 
-- `NUV_TMP` is a temporary folder where you can store temp files - defaults to `~/.nuv/tmp`
+- `NUV_REPO` is the github repo where `ops` downloads its tasks. If not defined, it defaults to `https://github.com/apache/openserverless-task`.
+- `NUV_BRANCH` is the branch where `nuv` looks for its tasks. The branch to use is defined at build time and it is the base version (without the patch level). Chech branch.txt for the current value
+- `NUV_VERSION` can be defined to set nuv's version value. It is useful to override version validations when updating tasks (and you know what you are doing).  Current value is in version.txt
+- `NUV_TMP` is a temporary folder where you can store temp files - defaults to `~/.nuv/tmp` 
 - `NUV_APIHOST` is the host for `nuv -login`. It is used in place of the first argument of `nuv -login`. If empty, the command will expect the first argument to be the apihost.
 - `NUV_USER`: set the username for `nuv -login`. The default is `nuvolaris`. It can be overriden by passing the username as an argument to `nuv -login` or by setting the environment variable.
 - `NUV_PASSWORD`: set the password for `nuv -login`. If not set, `nuv -login` will prompt for the password. It is useful for tests and non-interactive environments.
-- `NUV_PWD` is the folder where `nuv` is executed (the current working directory). It is used to preserve the original working directory when `nuv` is used again in tasks (e.g. nuv -realpath to retrieve the correct path). Change it only if you know what you are doing!
-- `NUV_ROOT_PLUGIN` is the folder where `nuv` looks for plugins. If not defined, it defaults to the same directory where  `nuv` is located.
+- `NUV_PWD` is the folder where `ops` is executed (the current working directory). It is used to preserve the original working directory when `ops` is used again in tasks (e.g. nuv -realpath to retrieve the correct path). Change it only if you know what you are doing!
+- `NUV_ROOT_PLUGIN` is the folder where `nuv` looks for plugins. If not defined, it defaults to the same directory where  `ops` is located.
 - `NUV_OLARIS` holds the head commit hash of the used olaris repo. You can see the hash with `nuv -info`.
-- `NUV_PORT` is the port where `nuv` will run embedde web server for the configurator. If not defined, it defaults to `9678`.
+- `NUV_PORT` is the port where `ops` will run embedde web server for the configurator. If not defined, it defaults to `9678`.
 - `NUV_NO_NUVOPTS` can be defined to disable nuvopts parsing. Useful to test hidden tasks. When this is enabled it also shows all the tasks instead of just those with a description.
-- `OPS_NO_PREREQ` disable downloading of prerequisites - you have to ensure at least coreutils is in the path...
+- `OPS_NO_PREREQ` disable downloading of prerequisites - you have to ensure at least coreutils is in the path to make things work
 
 
 ## Where `nuv` looks for binaries 

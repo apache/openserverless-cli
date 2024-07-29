@@ -83,17 +83,26 @@ func setupBinPath() error {
 	return err
 }
 
+func setNuvRootPluginEnv() {
+	if os.Getenv("NUV_ROOT_PLUGIN") == "" {
+		//nolint:errcheck
+		os.Setenv("NUV_ROOT_PLUGIN", os.Getenv("NUV_PWD"))
+	}
+	trace("set NUV_ROOT_PLUGIN", os.Getenv("NUV_ROOT_PLUGIN"))
+}
+
 func info() {
-	fmt.Println("NUV_VERSION:", NuvVersion)
-	fmt.Println("NUV_BRANCH:", getNuvBranch())
-	fmt.Println("OPS_CMD:", tools.GetNuvCmd())
+	fmt.Println("NUV_VERSION:", os.Getenv("NUV_VERSION"))
+	fmt.Println("NUV_BRANCH:", os.Getenv("NUV_BRANCH"))
+	fmt.Println("OPS_CMD:", os.Getenv("OPS_CMD"))
 	fmt.Println("OPS_BIN:", os.Getenv("OPS_BIN"))
-	fmt.Println("NUV_REPO:", getNuvRepo())
 	fmt.Println("NUV_TMP:", os.Getenv("NUV_TMP"))
-	root, _ := getNuvRoot()
-	fmt.Println("NUV_ROOT:", root)
+	fmt.Println("OPS_HOME:", os.Getenv("OPS_HOME"))
+	fmt.Println("NUV_ROOT:", os.Getenv("NUV_ROOT"))
+	fmt.Println("NUV_REPO:", os.Getenv("NUV_REPO"))
 	fmt.Println("NUV_PWD:", os.Getenv("NUV_PWD"))
 	fmt.Println("NUV_OLARIS:", os.Getenv("NUV_OLARIS"))
+	fmt.Println("NUV_ROOT_PLUGIN:", os.Getenv("NUV_ROOT_PLUGIN"))
 }
 
 // execute the embedded tools
@@ -201,6 +210,7 @@ func executeEmbeddedToolsAndExit(cmd string, args []string, nuvHome string) int 
 
 func Main() {
 	var err error
+	args := os.Args
 
 	// disable log prefix
 	log.SetFlags(0)
@@ -216,10 +226,11 @@ func Main() {
 		NuvVersion = os.Getenv("NUV_VERSION")
 	} else {
 		NuvVersion = strings.TrimSpace(NuvVersion)
+		os.Setenv("NUV_VERSION", NuvVersion)
 	}
 
-	// setup NUV_CMD
-	me := os.Args[0]
+	// setup OPS_CMD
+	me := args[0]
 	if strings.Contains("ops ops.exe nuv nuv.exe", filepath.Base(me)) {
 		tools.NuvCmd, err = setupCmd(me)
 		if err != nil {
@@ -228,12 +239,16 @@ func Main() {
 	}
 
 	// setup home
-	nuvHome, err := homedir.Expand("~/.nuv")
+	nuvHome := os.Getenv("OPS_HOME")
+	if nuvHome == "" {
+		nuvHome, err = homedir.Expand("~/.nuv")
+	}
 	if err != nil {
 		log.Fatalf("cannot setup home: %s", err.Error())
 	}
+	os.Setenv("OPS_HOME", nuvHome)
 
-	// add ~/.nuv/bin to the path at the beginng
+	// add ~/.nuv/<os>-<arch>/bin to the path at the beginning
 	err = setupBinPath()
 	if err != nil {
 		log.Fatalf("cannot setup PATH: %s", err.Error())
@@ -251,10 +266,34 @@ func Main() {
 		log.Fatalf("cannot setup NUV_PWD: %s", err.Error())
 	}
 
-	// set the rootdir for plugins
+	// NUV_REPO && NUV_ROOT_PLUGIN
+	getNuvRepo()
 	setNuvRootPluginEnv()
 
-	// set the environemnt variables from the config
+	// Check if olaris exists. If not, download tasks
+	olarisDir, err := getNuvRoot()
+	if err != nil {
+		olarisDir := joinpath(joinpath(nuvHome, getNuvBranch()), "olaris")
+		if !isDir(olarisDir) {
+			log.Println("Welcome to nuv! Setting up...")
+			olarisDir, err = pullTasks(true, true)
+			if err != nil {
+				log.Fatalf("cannot locate or download NUV_ROOT: %s", err.Error())
+			}
+			// just updated, do not repeat
+			if len(args) == 2 && args[1] == "-update" {
+				os.Exit(0)
+			}
+		} else {
+			// check if olaris was recently updated
+			checkUpdated(nuvHome, 24*time.Hour)
+		}
+	}
+	if err = setNuvOlarisHash(olarisDir); err != nil {
+		os.Setenv("NUV_OLARIS", "<local>")
+	}
+
+	// set the enviroment variables from the config
 	nuvRootDir := getRootDirOrExit()
 	debug("nuvRootDir", nuvRootDir)
 	err = setAllConfigEnvVars(nuvRootDir, nuvHome)
@@ -262,19 +301,7 @@ func Main() {
 		log.Fatalf("cannot apply env vars from configs: %s", err.Error())
 	}
 
-	// first argument with prefix "-" is considered an embedded tool
-	// using "-" or "--" or "-task" invokes the embedded task
-	args := os.Args
-	if len(args) > 1 && len(args[1]) > 0 && args[1][0] == '-' {
-		cmd := args[1][1:]
-		trace("executing embedded tool", cmd, args)
-		// execute the embeded tool and exit
-		exitCode := executeEmbeddedToolsAndExit(cmd, args, nuvHome)
-		os.Exit(exitCode)
-	}
-
-	// in case args[1] is a wsk wrapper command
-	// invoke it and exit
+	// in case args[1] is a wsk wrapper command invoke it and exit
 	if len(args) > 1 {
 		if cmd, ok := IsWskWrapperCommand(args[1]); ok {
 			trace("wsk wrapper command")
@@ -290,35 +317,29 @@ func Main() {
 			if err := tools.Wsk(cmd, rest...); err != nil {
 				log.Fatalf("error: %s", err.Error())
 			}
-			return //(skip runNuv)
+			os.Exit(0)
 		}
 	}
 
-	// preflight checks
+	// first argument with prefix "-" is considered an embedded tool
+	// using "-" or "--" or "-task" invokes the embedded task
+	if len(args) > 1 && len(args[1]) > 0 && args[1][0] == '-' {
+		cmd := args[1][1:]
+		trace("executing embedded tool", cmd, args)
+		// execute the embeded tool and exit
+		exitCode := executeEmbeddedToolsAndExit(cmd, args, nuvHome)
+		os.Exit(exitCode)
+	}
+
+	// *************** executing tasks
+
+	// preflight checks - we need at least ssh and curl to proceed
 	if err := preflightChecks(); err != nil {
-		log.Fatalf("[PREFLIGHT CHECK] error: %s", err.Error())
+		log.Fatalf("failed preflight check: %s", err.Error())
 	}
-
-	// ***************
-
-	// Check if olaris exists. If not,  pull tasks to auto setup
-	olarisDir := joinpath(joinpath(nuvHome, getNuvBranch()), "olaris")
-	if !isDir(olarisDir) {
-		log.Println("Welcome to nuv! Setting up...")
-		_, err = pullTasks(true, true)
-		if err != nil {
-			log.Fatalf("error: %v", err)
-		}
-		if err := setNuvOlarisHash(olarisDir); err != nil {
-			warn("unable to set NUV_OLARIS...", err.Error())
-		}
-	}
-
-	// check if olaris was recently updated
-	checkUpdated(nuvHome, 24*time.Hour)
 
 	if err := runNuv(nuvRootDir, args); err != nil {
-		log.Fatalf("error: %s", err.Error())
+		log.Fatalf("task execution error: %s", err.Error())
 	}
 }
 
@@ -402,14 +423,6 @@ func runNuv(baseDir string, args []string) error {
 	}
 
 	return err
-}
-
-func setNuvRootPluginEnv() {
-	if os.Getenv("NUV_ROOT_PLUGIN") == "" {
-		//nolint:errcheck
-		os.Setenv("NUV_ROOT_PLUGIN", os.Getenv("NUV_PWD"))
-	}
-	trace("set NUV_ROOT_PLUGIN", os.Getenv("NUV_ROOT_PLUGIN"))
 }
 
 func setNuvPwdEnv() error {

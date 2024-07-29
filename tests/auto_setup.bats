@@ -19,6 +19,7 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
+    cd testdata
 }
 
 @test "first run auto setups" {

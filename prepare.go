@@ -186,16 +186,6 @@ func locateNuvRoot(cur string) (string, error) {
 		return olaris, nil
 	}
 
-	// is there an olaris folder in NUV_BIN?
-	nuvBin := os.Getenv("NUV_BIN")
-	if nuvBin != "" {
-		olaris = joinpath(nuvBin, "olaris")
-		if exists(olaris, NUVFILE) && exists(olaris, NUVROOT) {
-			trace("found sub NUV_BIN olaris:", olaris)
-			return olaris, nil
-		}
-	}
-
 	return "", fmt.Errorf("we cannot find nuvfiles, download them with nuv -update")
 }
 

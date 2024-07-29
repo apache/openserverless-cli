@@ -80,12 +80,13 @@ tasks:
       - task: itest
 
   utest:
-    desc: unit test nuv
+    desc: unit test (use F=-v to verbose)
     cmds:
-      - rm -Rf ~/.nuv/olaris
-      - go test -v github.com/apache/openserverless-cli
-      - go test -v github.com/apache/openserverless-cli/config
-      - go test -v github.com/apache/openserverless-cli/tools  
+      - rm -Rf ~/.nuv
+      - go clean -testcache
+      - go test {{.F}} github.com/apache/openserverless-cli
+      - go test {{.F}} github.com/apache/openserverless-cli/config
+      - go test {{.F}} github.com/apache/openserverless-cli/tools  
       - echo TODO go test github.com/apache/openserverless-cli/auth
       
 
