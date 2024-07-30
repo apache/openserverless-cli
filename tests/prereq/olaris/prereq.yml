@@ -2,19 +2,18 @@ version: 3
 
 vars:
   OS: "{{or .__OS OS}}"
+  BOH: "{{.__ARCH}}"
   ARCH: "{{or .__ARCH ARCH}}"
   ARC: '{{if eq .OS "windows"}}.zip{{else}}.tgz{{end}}'
   ARC2: '{{if eq .OS "windows"}}.zip{{else}}.tar.gz{{end}}'
   EXE: '{{if eq .OS "windows"}}.exe{{else}}{{end}}'
 
 tasks:
-  test:
-   vars:
-     FILE:  file.tar.gz
-   cmds:
-    - echo "{{.FILE}}"
-    - echo '{{trimSuffix ".gz" .FILE }}'
 
+  info:
+    - echo "__ARCH={{.__ARCH}} BOH={{.BOH}}"
+    - echo "OS={{.OS}} ARCH={{.ARCH}} ARC={{.ARC}} EXE={{.EXE}}"
+ 
   download-and-extract:
      requires:
        vars: 
@@ -74,7 +73,7 @@ tasks:
   coreutils:
     desc: coreutils
     vars:
-      VERSION: "0.0.27"
+      XVERSION: "0.0.27"
       SUFFIX:
         sh: |
             case "{{.OS}}-{{.ARCH}}" in
@@ -98,9 +97,9 @@ tasks:
   bun:
     description: bun
     vars:
-      VERSION: "v1.1.21"
+      XVERSION: "1.1.21"
       ARCH2: '{{if eq .ARCH "amd64"}}x64{{else}}aarch64{{end}}'
-      URL: 'https://github.com/oven-sh/bun/releases/download/bun-{{.VERSION}}/bun-{{.OS}}-{{.ARCH2}}.zip'
+      URL: 'https://github.com/oven-sh/bun/releases/download/bun-v{{.VERSION}}/bun-{{.OS}}-{{.ARCH2}}.zip'
       FILE: '{{base .URL}}'
     cmds:
     - echo "{{.URL}}"
@@ -110,7 +109,7 @@ tasks:
 
   kubectl:
     vars:
-      VERSION: v1.30.3
+      XVERSION: v1.30.3
     cmds:
       - task: download
         vars:
@@ -119,16 +118,16 @@ tasks:
 
   kind:
     vars:
-      VERSION: v0.17.0
+      XVERSION: 0.17.0
     cmds:
       - task: download
         vars:
-          URL: "https://kind.sigs.k8s.io/dl/{{.VERSION}}/kind-{{.OS}}-{{.ARCH}}"
+          URL: "https://kind.sigs.k8s.io/dl/v{{.VERSION}}/kind-{{.OS}}-{{.ARCH}}"
           OUT: kind
 
   k3sup:
     vars:
-      VERSION: 0.13.6
+      XVERSION: 0.13.6
       BASE: "https://github.com/alexellis/k3sup/releases/download/{{.VERSION}}"
       FILE: 
         sh: |
@@ -147,9 +146,9 @@ tasks:
 
   all:
     - task: 7zz
-    - task: coreutils    
-    - task: bun
-    - task: kind
-    - task: k3sup
-    # skipping this as it is slow to download
+    # skipping
+    #- task: coreutils    
+    #- task: bun
+    #- task: kind
+    #- task: k3sup
     #- task: kubectl

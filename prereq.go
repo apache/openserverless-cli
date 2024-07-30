@@ -71,25 +71,49 @@ func loadPrereq(dir string) (Prereq, error) {
 	return prereq, err
 }
 
+func getOS() string {
+	res := os.Getenv("__OS")
+	if res == "" {
+		res = runtime.GOOS
+	}
+	return res
+}
+
+func getARCH() string {
+	res := os.Getenv("__ARCH")
+	if res == "" {
+		res = runtime.GOARCH
+	}
+	return res
+}
+
+func binDir() (string, error) {
+	var err error
+	bindir := os.Getenv("OPS_BIN")
+	if bindir == "" {
+		bindir, err = homedir.Expand(fmt.Sprintf("~/.nuv/%s-%s/bin", getOS(), getARCH()))
+		if err != nil {
+			return "", err
+		}
+	}
+	os.Setenv("OPS_BIN", bindir)
+	return bindir, nil
+}
+
+func addExeExt(name string) string {
+	if getOS() == "windows" {
+		return name + ".exe"
+	}
+	return name
+}
+
 // ensure there is a bindir for downloading prerequisites
 // read it from OPS_BIN and create it
 // otherwise setup one in ~/nuv/<os>-<arch>/bin
 // and sets OPS_BIN
 func EnsureBindir() (string, error) {
-	os_ := os.Getenv("__OS")
-	if os_ == "" {
-		os_ = runtime.GOOS
-	}
-	arch := os.Getenv("__ARCH")
-	if arch == "" {
-		arch = runtime.GOARCH
-	}
 	var err error = nil
-	bindir := os.Getenv("OPS_BIN")
-	if bindir == "" {
-		bindir, err = homedir.Expand(fmt.Sprintf("~/.nuv/%s-%s/bin", os_, arch))
-		os.Setenv("OPS_BIN", bindir)
-	}
+	bindir, err := binDir()
 	if err != nil {
 		return "", err
 	}
@@ -173,14 +197,7 @@ func downloadPrereq(name string, task PrereqTask) error {
 		// check if file and version exists
 
 		// fixing the name for windows adding .exe
-		os_ := os.Getenv("OS")
-		if os_ == "" {
-			os_ = runtime.GOOS
-		}
-		if os_ == "windows" {
-			name = name + ".exe"
-		}
-
+		name = addExeExt(name)
 		if !exists(bindir, name) {
 			return fmt.Errorf("failed to download %s %s", name, version)
 		}

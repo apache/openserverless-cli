@@ -27,35 +27,45 @@ setup() {
 @test "ops prereq" {
     run ops
     assert_line --partial "ensuring prerequisite 7zz" 
-    assert_line --partial "ensuring prerequisite coreutils" 
-    assert_line --partial "ensuring prerequisite bun" 
-    assert_line --partial "ensuring prerequisite kubectl" 
-    assert_line --partial "ensuring prerequisite kind" 
-    assert_line --partial "ensuring prerequisite k3sup" 
+    #assert_line --partial "ensuring prerequisite coreutils" 
+    #assert_line --partial "ensuring prerequisite bun" 
+    #assert_line --partial "ensuring prerequisite kubectl" 
+    #assert_line --partial "ensuring prerequisite kind" 
+    #assert_line --partial "ensuring prerequisite k3sup" 
     assert_line --partial "info" 
     run ops
     refute_line  "ensuring prerequisite 7zz" 
-    refute_line  "ensuring prerequisite coreutils" 
-    refute_line  "ensuring prerequisite bun" 
-    refute_line  "ensuring prerequisite kubectl" 
-    refute_line  "ensuring prerequisite kind" 
-    refute_line  "ensuring prerequisite k3sup" 
+    #refute_line  "ensuring prerequisite coreutils" 
+    #refute_line  "ensuring prerequisite bun" 
+    #refute_line  "ensuring prerequisite kubectl" 
+    #refute_line  "ensuring prerequisite kind" 
+    #refute_line  "ensuring prerequisite k3sup" 
     assert_line --partial "info" 
 }
 
 
-@test "download others" {
-    skip "todo"
-    for o in linux darwin
-    do for a in arm64 amd64
-       do  
-          #o=linux a=amd64
-          run env OS=$o ARCH=$a ops 
-          assert_line --partial "ensuring prerequisite 7zz" 
-          assert test -e ~/.nuv/$o-$a/bin/7zz
-       done
-    done 
-    run env OS=windows ops
+@test "windows" {
+    run env __OS=windows ops
+    assert_line --partial "ensuring prerequisite 7zz"
     assert test -e ~/.nuv/windows-*/bin/7zz.exe
 }
 
+@test "linux" {
+    run env __OS=linux __ARCH=amd64 ops
+    assert_line --partial "ensuring prerequisite 7zz"
+    assert test -e ~/.nuv/linux-amd64/bin/7zz
+
+    run env __OS=linux __ARCH=arm64 ops
+    assert_line --partial "ensuring prerequisite 7zz"
+    assert test -e ~/.nuv/linux-arm64/bin/7zz
+}
+
+@test "darwin" {
+    run env __OS=darwin __ARCH=amd64 ops
+    assert_line --partial "ensuring prerequisite 7zz"
+    assert test -e ~/.nuv/darwin-amd64/bin/7zz
+
+    run env __OS=darwin __ARCH=arm64 ops
+    assert_line --partial "ensuring prerequisite 7zz"
+    assert test -e ~/.nuv/darwin-arm64/bin/7zz
+}

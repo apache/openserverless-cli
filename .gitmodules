@@ -30,6 +30,3 @@
 	path = _patches/sh
 	url = https://github.com/sciabarracom/sh
 	branch = openserverless
-[submodule "tasktests/olaris"]
-	path = tasktests/olaris
-	url = https://github.com/apache/openserverless-task
