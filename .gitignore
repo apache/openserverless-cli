@@ -50,3 +50,5 @@ _patch/wsk
 _patch/openwhisk-wskdeploy
 _patch/openwhisk-cli
 tests/prereq/olaris/bin
+
+dist/
