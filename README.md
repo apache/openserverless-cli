@@ -18,7 +18,6 @@
   ~
 -->
 
-
 **WARNING: this is still work in progress**
 
 The code may not build, there can be errors, and it can even destroy your hard disk or send you in another dimension.
@@ -28,7 +27,6 @@ Documentation is also work in progress....
 # `ops`, the next generation
 
 `ops` is the OpenServerless all-mighty CLI tool.
-
 
 It is basically the [task](https://taskfile.dev) tool enhanced to support:
 
@@ -49,11 +47,6 @@ Note that to avoid an egg and chicken problem, `ops` itself is built with his an
 
 The following environment variables allows to ovverride certain defaults.
 
-- `DEBUG` if set enable debugging messages
-- `TRACE` when set gives mode detailes tracing informations, also enable DEBUG=1
-- `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a nuvopts active.
-- `OS` overrides the value of the detected operating system - useful to test prereq scripts
--  `ARCH` overrides the value of the detected architecture - useful to test prereq scripts
 - `OPS_HOME` is the home dir, defaults to `~/.nuv` if not defined
 - `NUV_ROOT` is the folder where `ops` looks for its tasks. If not defined, if will first look in current directory for an `olaris` folder otherwise download it from githut fron the `NUV_REPO` with a git clone
 - `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults to `~/.nuv/<os>-<arch>/bin`. All the prerequisites are downloaded in this directory
@@ -72,38 +65,21 @@ The following environment variables allows to ovverride certain defaults.
 - `NUV_NO_NUVOPTS` can be defined to disable nuvopts parsing. Useful to test hidden tasks. When this is enabled it also shows all the tasks instead of just those with a description.
 - `OPS_NO_PREREQ` disable downloading of prerequisites - you have to ensure at least coreutils is in the path to make things work
 
+## Special variables used for tests and debugging
 
 ## Where `nuv` looks for binaries 
-- `NUV_USE_COREUTILS` enables the use of [coreutils](https://github.com/uutils/coreutils) instead of the current unix tools implementation. They will eventually replace the current tools.
 
-Nuv requires some binary command line tools to work with ("bins").
-
-They are expected to be in the folder pointed by the environment variable `NUV_BIN`. 
-
-If this environment variable is not defined, it defaults to the same folder where `nuv` itself is located. The `NUV_BIN` folder is then added to the beginning of the `PATH` before executing anything else.
-
-Nuv is normally distributed with an installer that includes all the tools for the various operating systems (linux, windows, osx).
-
-**NOTE**: You can download the relevant tools when you run from source code executing `task install`. This task will download the command line tools and setup a link in `/usr/local/bin` to invoke `nuv`.
-
-## Internal environment variables
-
-`OPS_RUNTIMES_JSON` is used for the values of the runtimes json if the system is unable to read in other ways the current runtimes json. It is normally compiled in when you buid from the current version of the runtimes.json. It can be overriden
-
-`OPS_COREUTILS` is a string, a space separated list, which lists all the commands the coreutils binary provided. It should be kept updated with the values of the current version used. It can be overriden
-
-`OPS_TOOLS` is a string, a space separated list, which lists all the commands provided as internal tool by the ops binary. It shold be kept updated with the current list of tools provided. It can be overriden defining externally
-
+Nuv requires some binary command line tools to work with. Those binaries are automatically downloaded for the supported platforms.
 
 ## Where `nuv` looks for tasks
 
-Nuv is an enhanced task runner. Tasks are described by [task](https://taskfile.dev) taskfiles.
+Ops is an enhanced task runner that execute **taskfiles**.  How tasks are written is  described in [task](https://taskfile.dev) documentation.
 
 Nuv is able either to run existing tasks or download them from github.
 
-When you run `nuv [<args>...]` it will first look for its `nuv` root.
+When you run `ops [<args>...]` it will first look for its `ops` root. 
 
-The `nuv` root is a folder with two files in it: `nuvfile.yml` (a yaml taskfile) and `nuvroot.json` (a json file with release information).
+The `ops` root is a folder with two files in it: `nuvfile.yml` (a yaml taskfile) and `nuvroot.json` (a json file with release information).
 
 The first step is to locate the root folder. The algorithm to find the tools is the following.
 
@@ -115,27 +91,25 @@ If there is not a `nuvfile.yml` it will look for a folder called `olaris` with b
 
 Then it will look in `~/.nuv` if there is an `olaris` folder with `nuvfile.yml` and `nuvroot.json`.
 
-Finally it will look in the `NUV_BIN` folder if there is an `olaris` folder with  `nuvfile.yml` and `nuvroot.json`
-
 If everything fails, it will ask you to download some tasks with the command `nuv -update`. In this case it will download the latest version.
 
-## Where `nuv` download tasks from GitHub
+## Where `ops` download tasks from GitHub
 
-Download tasks from GitHub is triggered by the `nuv -update` command.
+Download tasks from GitHub is triggered by the `ops -update` command.
 
-The repo to use is defined by the environment variable `NUV_REPO`, and defaults if it is missing to `https://github.com/nuvolaris/olaris`
+The repo to use is defined by the environment variable `NUV_REPO`, and defaults if it is missing to `https://github.com/apache/openserverless-task`
 
 The branch to use is defined at build time. It can be overriden with the enviroment variable `NUV_BRANCH`.
 
-When you run `nuv -update`, if there is not a `~/.nuv/olaris` it will clone the current branch, otherwise it will update it.
+When you run `ops -update`, if there is not a `~/.nuv/<branch>/olaris` it will clone the current branch, otherwise it will update it.
 
-## How `nuv` execute tasks
+## How `ops` execute tasks
 
-It will then look to the command line parameters `nuv <arg1> <arg2> <arg3>` and will consider them directory names. The list can be empty. 
+It will then look to the command line parameters `ops <arg1> <arg2> <arg3>` and will consider them directory names. The list can be empty. 
 
 If there is a directory name  `<arg1>` it will change to that directory. If there is then a subdirectory `<arg2>` it will change to that and so on until it finds a argument that is not a directory name. 
 
-If the last argument is a directory name, will look for a `nuvopts.txt`. If it is there, it will show this. If it's not there, it will execute a `task -t nuvfile.yml -l` showing tasks with description. 
+If the last argument is a directory name, will look for a `nuvopts.txt`. If it is there, it will show this. If it's not there, it will execute a `ops -t nuvfile.yml -l` showing tasks with description. 
 
 If it finds an argument not corresponding to a directory, it will consider it a task to execute, 
 
@@ -145,11 +119,11 @@ If there is a `nuvopts.txt`, it will interpret it as a  [`docopt`](http://docopt
 
 ### Example
 
-A command like `nuv setup kubernetes install --context=k3s` will look in the folder `setup/kubernetes` in the `nuv root` if it is there, select `install` as task to execute and parse the `--context=k3s`. It is equivalent to invoke `cd setup/kubernetes ; task install -- context=k3s`.
+A command like `ops setup kubernetes install --context=k3s` will look in the folder `setup/kubernetes` in the ops root, if it is there, then select `install` as task to execute and parse the `--context=k3s`. It is equivalent to invoke `cd setup/kubernetes ; task install -- context=k3s`.
 
 If there is a `nuvopts.txt` with a `command <name> --flag --fl=<val>` the passed parameters will be: `_name_=<name> __flag=true __fl=true _val_=<val>`.
 
-Note that also this will also use the downloaded tools and the embedded commands of `nuv`.
+Note that also this will also use the downloaded tools and the embedded commands of `ops`.
 
 ## Saving state
 
@@ -170,7 +144,7 @@ at the end of `task` invocation there will be `_SERVER=myserver` `_USER=myuser`
 
 ## Embedded tools
 
-Currently task embeds the following tools, and you can invoke them directly prefixing them with `-`: (`nuv -task`, `nuv -basename` etc). Use `nuv -help` to list them.
+Currently task embeds the following tools, and you can invoke them directly prefixing them with `-`: (`ops -task`, `nuv -basename` etc). Use `nuv -help` to list them.
 
 - [task](https://taskfile.dev) the Task build tool
 - [wsk](https://github.com/apache/openwhisk-cli) the OpenWhisk cli 
@@ -200,8 +174,18 @@ Basic unix like tools (`nuv -<tool> -help for details`):
 - which
 - zip
 
+## Internal environment variables
 
+Those variables are special purpose and used for test and debug
 
+- `DEBUG` if set enable debugging messages
+- `TRACE` when set gives mode detailes tracing informations, also enable DEBUG=1
+- `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a nuvopts active.
+- `__OS` overrides the value of the detected operating system - useful to test prereq scripts
+-  `__ARCH` overrides the value of the detected architecture - useful to test prereq scripts
+- `OPS_RUNTIMES_JSON` is used for the values of the runtimes json if the system is unable to read in other ways the current runtimes json. It is normally compiled in when you buid from the current version of the runtimes.json. It can be overriden
 
+- `OPS_COREUTILS` is a string, a space separated list, which lists all the commands the coreutils binary provided. It should be kept updated with the values of the current version used. It can be overriden
 
+- `OPS_TOOLS` is a string, a space separated list, which lists all the commands provided as internal tool by the ops binary. It shold be kept updated with the current list of tools provided. It can be overriden defining externally
 

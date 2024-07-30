@@ -76,11 +76,11 @@ func loadPrereq(dir string) (Prereq, error) {
 // otherwise setup one in ~/nuv/<os>-<arch>/bin
 // and sets OPS_BIN
 func EnsureBindir() (string, error) {
-	os_ := os.Getenv("OS")
+	os_ := os.Getenv("__OS")
 	if os_ == "" {
 		os_ = runtime.GOOS
 	}
-	arch := os.Getenv("ARCH")
+	arch := os.Getenv("__ARCH")
 	if arch == "" {
 		arch = runtime.GOARCH
 	}

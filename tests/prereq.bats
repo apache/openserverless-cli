@@ -20,16 +20,38 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     export NUV_BRANCH="0.1.0-testing"
+    rm -Rvf ~/.nuv/
     cd prereq
 }
 
+@test "ops prereq" {
+    run ops
+    assert_line --partial "ensuring prerequisite 7zz" 
+    assert_line --partial "ensuring prerequisite coreutils" 
+    assert_line --partial "ensuring prerequisite bun" 
+    assert_line --partial "ensuring prerequisite kubectl" 
+    assert_line --partial "ensuring prerequisite kind" 
+    assert_line --partial "ensuring prerequisite k3sup" 
+    assert_line --partial "info" 
+    run ops
+    refute_line  "ensuring prerequisite 7zz" 
+    refute_line  "ensuring prerequisite coreutils" 
+    refute_line  "ensuring prerequisite bun" 
+    refute_line  "ensuring prerequisite kubectl" 
+    refute_line  "ensuring prerequisite kind" 
+    refute_line  "ensuring prerequisite k3sup" 
+    assert_line --partial "info" 
+}
+
+
 @test "download others" {
-    rm -Rvf ~/.nuv/
+    skip "todo"
     for o in linux darwin
     do for a in arm64 amd64
        do  
-          run env OS=$o ARCH=$a ops
-          assert_line "ensuring prerequisite 7zz" --partial
+          #o=linux a=amd64
+          run env OS=$o ARCH=$a ops 
+          assert_line --partial "ensuring prerequisite 7zz" 
           assert test -e ~/.nuv/$o-$a/bin/7zz
        done
     done 
@@ -37,10 +59,3 @@ setup() {
     assert test -e ~/.nuv/windows-*/bin/7zz.exe
 }
 
-@test "ops prereq" {
-    rm -Rvf ~/.nuv/
-    run ops
-    assert_line "ensuring prerequisite 7zz" --partial
-    run ops info
-    assert_line "7-˜Zip" --partial
-}

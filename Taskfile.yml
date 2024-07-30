@@ -100,15 +100,15 @@ tasks:
     - test -d bats
 
   itest:
-    desc: integration tests for nuv (T=<test-name> without .bats, empty all)
+    desc: integration tests for nuv (T=<test-name> without .bats, empty run all, pass flags with F=)
     dir: tests
     cmds:
       - task: bats
       - rm -Rf ~/.nuv/olaris
       - |
         if test -z "{{.T}}"
-        then bats/bin/bats .
-        else bats/bin/bats {{.T}}.bats
+        then bats/bin/bats {{.F}} .
+        else bats/bin/bats {{.F}} {{.T}}.bats
         fi
 
   clean:

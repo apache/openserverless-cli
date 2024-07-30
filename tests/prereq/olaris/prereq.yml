@@ -1,10 +1,51 @@
 version: 3
 
 vars:
-  OS: "{{or .OS OS}}"
-  ARCH: "{{or .ARCH ARCH}}"
+  OS: "{{or .__OS OS}}"
+  ARCH: "{{or .__ARCH ARCH}}"
+  ARC: '{{if eq .OS "windows"}}.zip{{else}}.tgz{{end}}'
+  ARC2: '{{if eq .OS "windows"}}.zip{{else}}.tar.gz{{end}}'
+  EXE: '{{if eq .OS "windows"}}.exe{{else}}{{end}}'
 
 tasks:
+  test:
+   vars:
+     FILE:  file.tar.gz
+   cmds:
+    - echo "{{.FILE}}"
+    - echo '{{trimSuffix ".gz" .FILE }}'
+
+  download-and-extract:
+     requires:
+       vars: 
+       - FILE
+       - URL
+       - OUT
+     vars:
+       FILETAR: '{{trimSuffix ".gz" .FILE}}'
+     cmds:
+     - echo "{{.OUT}} {{.FILE}} {{.URL}} {{.FILETAR}}" 
+     - curl -sL "{{.URL}}" -o {{.FILE}}
+     - |
+       {{if eq .OS "windows"}}
+       7zz e -r -aoa -o. "{{.FILE}}" "{{.OUT}}.exe"
+       rm "{{.FILE}}"
+       {{else}}
+       7zz e "{{.FILE}}" -o.
+       rm "{{.FILE}}"
+       7zz e -r -aoa -o. "{{.FILETAR}}" "{{.OUT}}"
+       rm "{{.FILETAR}}"
+       {{end}}
+
+  download:
+    requires:
+      vars:
+        - URL
+        - OUT
+    cmds:
+      - curl -sL -ccookie.txt -o"{{.OUT}}" "{{.URL}}"
+      - '{{if eq .OS "windows"}}mv {{.OUT}} {{.OUT}}.exe{{else}}chmod +x {{.OUT}}{{end}}'
+      - rm cookie.txt
 
   7zz:
     desc: 7zr
@@ -30,32 +71,85 @@ tasks:
            rm "{{.FILE}}"
       fi
  
+  coreutils:
+    desc: coreutils
+    vars:
+      VERSION: "0.0.27"
+      SUFFIX:
+        sh: |
+            case "{{.OS}}-{{.ARCH}}" in
+            linux-amd64) echo "x86_64-unknown-linux-gnu" ;;
+            linux-arm64) echo "aarch64-unknown-linux-gnu" ;;
+            darwin-amd64) echo "x86_64-apple-darwin" ;;
+            darwin-arm64) echo "aarch64-apple-darwin" ;; 
+            windows-*) echo "x86_64-pc-windows-gnu" ;;
+            *) echo "unknown" ;;
+            esac
+      URL: "https://github.com/uutils/coreutils/releases/download/{{.VERSION}}/coreutils-{{.VERSION}}-{{.SUFFIX}}{{.ARC2}}" 
+      FILE: "{{base .URL}}"
+      OUT: coreutils
+    cmds:
+    - task: download-and-extract
+      vars:
+        URL: "{{.URL}}"
+        FILE: "{{.FILE}}"
+        OUT: coreutils
 
   bun:
     description: bun
     vars:
-      XVERSION: "v1.11.20"
+      VERSION: "v1.1.21"
+      ARCH2: '{{if eq .ARCH "amd64"}}x64{{else}}aarch64{{end}}'
+      URL: 'https://github.com/oven-sh/bun/releases/download/bun-{{.VERSION}}/bun-{{.OS}}-{{.ARCH2}}.zip'
+      FILE: '{{base .URL}}'
     cmds:
-    - task: _bun
+    - echo "{{.URL}}"
+    - curl -sL "{{.URL}}" -o "{{.FILE}}"
+    - 7zz e -r -aoa -o. {{.FILE}} bun{{.EXE}}
+    - rm "{{.FILE}}"
 
-
-  coreutils:
-    desc: coreutils
+  kubectl:
     vars:
-       XVERSION: "0.0.27"
-       SUFFIX:
-         sh: |
-             case "{{ARCH}}-{{OS}}" in
-              amd64-linux) echo "i686-unknown-linux-gnu.tar.gz" ;;
-              arm64-linux) echo "aarch64-unknown-linux-gnu.tar.gz" ;;
-              amd64-darwin) echo "x86_64-apple-darwin.tar.gz" ;;
-              arm64-darwin) echo "aarch64-apple-darwin.tar.gz" ;; 
-              amd64-windows) echo "x86_64-pc-windows-gnu.zip" ;;
-              *) echo "unknown" ;;
-             esac
-       URL: "https://github.com/uutils/coreutils/releases/download/{{.VERSION}}/coreutils-{{.VERSION}}-{{.SUFFIX}}" 
+      VERSION: v1.30.3
     cmds:
-     - echo "{{.URL}}"
-     #- curl -sL "{{.URL}}" -o coreutils.tar.gz
+      - task: download
+        vars:
+          URL: "https://dl.k8s.io/release/{{.VERSION}}/bin/{{.OS}}/{{.ARCH}}/kubectl{{.EXE}}"
+          OUT: kubectl
 
+  kind:
+    vars:
+      VERSION: v0.17.0
+    cmds:
+      - task: download
+        vars:
+          URL: "https://kind.sigs.k8s.io/dl/{{.VERSION}}/kind-{{.OS}}-{{.ARCH}}"
+          OUT: kind
 
+  k3sup:
+    vars:
+      VERSION: 0.13.6
+      BASE: "https://github.com/alexellis/k3sup/releases/download/{{.VERSION}}"
+      FILE: 
+        sh: |
+            case {{.OS}}-{{.ARCH}} in
+            (linux-amd64)   echo k3sup ;;
+            (linux-arm64)   echo k3sup-arm64 ;;
+            (darwin-amd64)  echo k3sup-darwin ;;
+            (darwin-arm64)  echo k3sup-darwin-arm64 ;;
+            (windows-amd64) echo k3sup.exe ;;
+            esac
+    cmds:
+      - task: download
+        vars:
+          URL: "{{.BASE}}/{{.FILE}}"
+          OUT: k3sup
+
+  all:
+    - task: 7zz
+    - task: coreutils    
+    - task: bun
+    - task: kind
+    - task: k3sup
+    # skipping this as it is slow to download
+    #- task: kubectl
