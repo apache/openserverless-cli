@@ -31,19 +31,19 @@ This is the procedure we followed to build the patched versions of:
    then add remote upstream to the original repos to fetch tags
    then git fetch --all
 
-3. execute the patch scripts in order
+3. execute the patch scripts in order (if you change them remember to increase version numbers)
 
    bash patch-sh.sh
    bash patch-task.sh
    bash patch-wskdeploy.sh
    bash patch-wsk.sh
 
-4. regenerate the go.mod/go.sum in top level
+4. regenerate the go.mod/go.sum in top level (using the latest versions  if you changed them!)
 cd ..
 rm go.mod go.sum
 go mod init github.com/apache/openserverless-cli
 go get github.com/sciabarracom/openwhisk-cli@v1.2.1
-go get github.com/sciabarracom/task/v3/cmd/taskmain@v3.38.4
+go get github.com/sciabarracom/task/v3/cmd/taskmain@v3.38.9
 go mod tidy
-bo build
+go build
 

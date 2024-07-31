@@ -21,19 +21,7 @@
 .task/
 attic/
 _*
-bin/nuv
-bin/nuv.exe
-bin/windows/wix
-bin/*/amd64/*
-bin/*/arm64/*
-*-build-*
-*.deb
-*.rpm
-*.msi
-*.pkg
 .latestcheck
-bin/unzip.exe
-bin/*/LICENSE
 .test_fail_then_succeed
 cookie.txt
 actions.zip
@@ -50,5 +38,4 @@ _patch/wsk
 _patch/openwhisk-wskdeploy
 _patch/openwhisk-cli
 tests/prereq/olaris/bin
-
 dist/

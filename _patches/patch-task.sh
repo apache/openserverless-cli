@@ -4,7 +4,7 @@ cd "$(dirname $0)"
 HERE=$PWD
 SHVER=$(git ls-remote https://github.com/sciabarracom/sh | awk '/refs\/heads\/openserverless/{print $1}')
 STAG="v3.38.0"
-DTAG="v3.38.7"
+DTAG="v3.38.9"
 cd taskfile
 go clean -cache -modcache
 git checkout "$STAG" -B openserverless

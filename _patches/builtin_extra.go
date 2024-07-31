@@ -55,7 +55,7 @@ func (r *Runner) builtinCode(ctx context.Context, pos syntax.Pos, name string, a
 	}
 
 	if isTools(name) {
-		args = append([]string{"ops", "-" + name}, args...)
+		args = append([]string{os.Getenv("OPS_CMD"), "-" + name}, args...)
 		fmt.Printf("%v\n", args)
 		r.exitShell(ctx, 1)
 		r.exec(ctx, args)

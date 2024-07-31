@@ -2,8 +2,6 @@ module github.com/apache/openserverless-cli
 
 go 1.22.5
 
-retract v1.2.0-openserverless
-
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/apache/openwhisk-client-go v0.0.0-20210311185314-87edc2364717
@@ -22,7 +20,7 @@ require (
 	github.com/nuvolaris/jj v0.0.0-20231020143327-10b90948a5d2
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/sciabarracom/openwhisk-cli v1.2.1
-	github.com/sciabarracom/task/v3 v3.38.7
+	github.com/sciabarracom/task/v3 v3.38.9
 	github.com/stretchr/testify v1.9.0
 	github.com/zalando/go-keyring v0.2.5
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
@@ -85,7 +83,7 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sajari/fuzzy v1.0.0 // indirect
 	github.com/sciabarracom/openwhisk-wskdeploy v1.2.1 // indirect
-	github.com/sciabarracom/sh/v3 v3.8.1 // indirect
+	github.com/sciabarracom/sh/v3 v3.8.2 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.2.2 // indirect
 	github.com/spf13/cobra v1.1.3 // indirect

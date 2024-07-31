@@ -102,6 +102,8 @@ func info() {
 	fmt.Println("NUV_PWD:", os.Getenv("NUV_PWD"))
 	fmt.Println("NUV_OLARIS:", os.Getenv("NUV_OLARIS"))
 	fmt.Println("NUV_ROOT_PLUGIN:", os.Getenv("NUV_ROOT_PLUGIN"))
+	//fmt.Println("OPS_TOOLS:", os.Getenv("OPS_TOOLS"))
+	//fmt.Println("OPS_COREUTILS:", os.Getenv("OPS_COREUTILS"))
 }
 
 // not available in taskfiles

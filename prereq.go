@@ -199,7 +199,7 @@ func downloadPrereq(name string, task PrereqTask) error {
 		// fixing the name for windows adding .exe
 		name = addExeExt(name)
 		if !exists(bindir, name) {
-			return fmt.Errorf("failed to download %s %s", name, version)
+			return fmt.Errorf("failed to download %s version %s", name, version)
 		}
 	}
 
