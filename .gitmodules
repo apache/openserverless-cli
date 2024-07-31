@@ -2,18 +2,6 @@
 	path = _patches/taskfile
 	url = https://github.com/sciabarracom/task
 	branch = openserverless
-[submodule "_patches/sh"]
-	path = _patches/sh
-	url = https://github.com/sciabarracom/sh
-	branch = openserverless
-[submodule "_patches/wsk"]
-	path = _patches/wsk
-	url = https://github.com/sciabarracom/openwhisk-cli
-	branch = openserverless
-[submodule "_patches/wskdeploy"]
-	path = _patches/wskdeploy
-	url = https://github.com/sciabarracom/openwhisk-wskdeploy
-	branch = openserverless
 [submodule "tools/goawk"]
 	path = tools/goawk
 	url = https://github.com/nuvolaris/goawk
