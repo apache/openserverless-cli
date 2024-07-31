@@ -39,6 +39,13 @@ tasks:
     - git add version.txt branch.txt
     - git tag
 
+  tag-and-push:
+    desc: tag commit and push triggering a build
+    prompt: are you sure you want to tag the work and push it triggering a build
+    cmds:
+    - task: cli-tag
+    - git commit -m "$(cat version.txt)"
+    - git push --tags
 
   rebuild:
     - rm -f ops
