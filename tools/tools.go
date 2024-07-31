@@ -32,41 +32,21 @@ import (
 
 // available in taskfiles
 // note some of them are implemented in main.go (config, retry)
-var tools = []string{
-	"awk", "die", "jq",
-	"envsubst", "wsk",
-	"filetype", "random", "datefmt",
-	"config", "retry", "urlenc",
-	"replace", "base64", "validate",
+var ToolList = []string{
+	"wsk", "awk", "jq",
+	"envsubst", "filetype", "random", "datefmt",
+	"die", "urlenc", "replace", "base64", "validate",
 	"echoif", "echoifempty", "echoifexists",
-	"needupdate", "gron", "jj", "deploy",
-}
-
-// not available in taskfiles
-var extraTools = []string{
-	"update", "login", "help", "info", "version", "task", "plugin", "serve",
+	"needupdate", "gron", "jj", "rename", "remove",
 }
 
 func IsTool(name string) bool {
-	for _, s := range tools {
+	for _, s := range ToolList {
 		if s == name {
 			return true
 		}
 	}
 	return false
-}
-
-var NuvCmd = ""
-
-func GetNuvCmd() string {
-	if NuvCmd != "" {
-		return NuvCmd
-	}
-	nuv := os.Getenv("NUV_CMD")
-	if nuv != "" {
-		return nuv
-	}
-	return ""
 }
 
 func RunTool(name string, args []string) (int, error) {
@@ -156,14 +136,24 @@ func RunTool(name string, args []string) (int, error) {
 	case "jj":
 		os.Args = append([]string{"jj"}, args...)
 		return jj.JJMain()
+
+	case "rename":
+		os.Args = append([]string{"rename"}, args...)
+		return Rename()
+
+	case "remove":
+		os.Args = append([]string{"rename"}, args...)
+		return Remove()
+
 	default:
+		return 1, fmt.Errorf("unknown tool")
 	}
 	return 0, nil
 }
 
-func Help() {
+func Help(mainTools []string) {
 	fmt.Println("Available tools:")
-	availableTools := append(tools, extraTools...)
+	availableTools := append(mainTools, ToolList...)
 	slices.Sort(availableTools)
 	for _, x := range availableTools {
 		fmt.Printf("-%s\n", x)

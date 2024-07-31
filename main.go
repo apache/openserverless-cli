@@ -104,17 +104,12 @@ func info() {
 	fmt.Println("NUV_ROOT_PLUGIN:", os.Getenv("NUV_ROOT_PLUGIN"))
 }
 
-// execute the embedded tools
-// version
-// info
-// help
-// serve
-// update
-// retry
-// login
-// config
-// plugin
-func executeEmbeddedToolsAndExit(cmd string, args []string, nuvHome string) int {
+// not available in taskfiles
+var mainTools = []string{
+	"task", "version", "info", "help", "serve", "update", "retry", "login", "config", "plugin",
+}
+
+func executeMainToolsAndExit(cmd string, args []string, nuvHome string) int {
 	if cmd == "" || cmd == "-" || cmd == "task" {
 		exitCode, err := Task(args[2:]...)
 		if err != nil {
@@ -133,7 +128,7 @@ func executeEmbeddedToolsAndExit(cmd string, args []string, nuvHome string) int 
 		info()
 
 	case "help":
-		tools.Help()
+		tools.Help(mainTools)
 
 	case "serve":
 		nuvRootDir := getRootDirOrExit()
@@ -149,10 +144,6 @@ func executeEmbeddedToolsAndExit(cmd string, args []string, nuvHome string) int 
 		}
 		if err := setNuvOlarisHash(dir); err != nil {
 			log.Fatal("unable to set NUV_OLARIS...", err.Error())
-		}
-		err = ensurePrereq(dir)
-		if err != nil {
-			log.Fatalf("cannot download prerequisites: %v", err)
 		}
 
 	case "retry":
@@ -175,7 +166,7 @@ func executeEmbeddedToolsAndExit(cmd string, args []string, nuvHome string) int 
 		if err := wskPropertySet(loginResult.ApiHost, loginResult.Auth); err != nil {
 			log.Fatalf("error: %s", err.Error())
 		}
-		fmt.Println("Nuvolaris host and auth set successfully. You are now ready to use nuv -wsk!")
+		fmt.Println("OpenServerless host and auth set successfully. You are now ready to use ops!")
 
 	case "config":
 		os.Args = args[1:]
@@ -235,7 +226,7 @@ func Main() {
 	// setup OPS_CMD
 	me := args[0]
 	if strings.Contains("ops ops.exe nuv nuv.exe", filepath.Base(me)) {
-		tools.NuvCmd, err = setupCmd(me)
+		_, err = setupCmd(me)
 		if err != nil {
 			log.Fatalf("cannot setup cmd: %s", err.Error())
 		}
@@ -269,6 +260,9 @@ func Main() {
 		log.Fatalf("cannot setup NUV_PWD: %s", err.Error())
 	}
 
+	// setup the envvar for the embedded tools
+	os.Setenv("OPS_TOOLS", strings.Join(append(mainTools, tools.ToolList...), " "))
+
 	// NUV_REPO && NUV_ROOT_PLUGIN
 	getNuvRepo()
 	setNuvRootPluginEnv()
@@ -278,7 +272,7 @@ func Main() {
 	if err != nil {
 		olarisDir := joinpath(joinpath(nuvHome, getNuvBranch()), "olaris")
 		if !isDir(olarisDir) {
-			log.Println("Welcome to nuv! Setting up...")
+			log.Println("Welcome to ops! Setting up...")
 			olarisDir, err = pullTasks(true, true)
 			if err != nil {
 				log.Fatalf("cannot locate or download NUV_ROOT: %s", err.Error())
@@ -335,16 +329,8 @@ func Main() {
 		cmd := args[1][1:]
 		trace("executing embedded tool", cmd, args)
 		// execute the embeded tool and exit
-		exitCode := executeEmbeddedToolsAndExit(cmd, args, nuvHome)
+		exitCode := executeMainToolsAndExit(cmd, args, nuvHome)
 		os.Exit(exitCode)
-	}
-
-	// *************** executing tasks
-
-	// ensure prerequisites
-	err = ensurePrereq(nuvRootDir)
-	if err != nil {
-		log.Fatalf("cannot ensure prerequisites: %s", err.Error())
 	}
 
 	if err := runNuv(nuvRootDir, args); err != nil {

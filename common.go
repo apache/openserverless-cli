@@ -172,7 +172,7 @@ func trace(args ...any) {
 	}
 }
 
-var debugging = os.Getenv("DEBUG") != ""
+var debugging = os.Getenv("DEBUG") != "" || os.Getenv("TRACE") != ""
 
 func debug(args ...any) {
 	if debugging {

@@ -29,4 +29,4 @@ tasks:
   command:
     desc: run nuv setup status
     cmds:
-      - nuv setup status
+      - nuv version

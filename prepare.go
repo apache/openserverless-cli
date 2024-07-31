@@ -18,6 +18,7 @@ package openserverless
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -99,7 +100,7 @@ func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 		return "", err
 	}
 
-	fmt.Println("Nuvfiles downloaded successfully")
+	fmt.Println("Tasks downloaded successfully")
 
 	createLatestCheckFile(nuvBranchDir)
 
@@ -113,6 +114,11 @@ func pullTasks(force, silent bool) (string, error) {
 	debug("localDir", localDir)
 	if err != nil {
 		return "", err
+	}
+
+	err = ensurePrereq(localDir)
+	if err != nil {
+		log.Fatalf("cannot download prerequisites: %v", err)
 	}
 
 	// validate NuvVersion semver against nuvroot.json
@@ -138,8 +144,7 @@ func pullTasks(force, silent bool) (string, error) {
 	// check if the version is up to date, if not warn the user
 	if nuvVersion.LessThan(nuvRootVersion) {
 		fmt.Println()
-		fmt.Printf("Your nuv version (%v) is older than the required version in nuvroot.json (%v).\n", nuvVersion, nuvRootVersion)
-		fmt.Println("Attempting to update nuv...")
+		fmt.Printf("Your ops version (%v) is older than the required version (%v).\n", nuvVersion, nuvRootVersion)
 		if err := autoCLIUpdate(); err != nil {
 			return "", err
 		}
@@ -208,8 +213,9 @@ func locateNuvRootSearch(cur string) string {
 }
 
 func autoCLIUpdate() error {
-	trace("autoCLIUpdate")
-	cmd := exec.Command("nuv", "update", "cli")
+	cli := os.Getenv("OPS_CMD")
+	trace("autoCLIUpdate", cli)
+	cmd := exec.Command(cli, "util", "update-cli")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
@@ -221,7 +227,7 @@ func checkOperatorVersion(nuvRootConfig map[string]interface{}) error {
 	operator := images["operator"].(string)
 	opVer := strings.Split(operator, ":")[1]
 
-	cmd := exec.Command("nuv", "util", "check-operator-version", opVer)
+	cmd := exec.Command(os.Getenv("OPS_CMD"), "util", "check-operator-version", opVer)
 	return cmd.Run()
 }
 
