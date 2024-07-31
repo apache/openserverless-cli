@@ -20,12 +20,11 @@ jobs:
           fetch-depth: 0
       - name: Set up Go
         uses: actions/setup-go@v5
-      - name: Install Task
-        uses: arduino/setup-task@v2          
       - name: Run Tests
         run: |
-             task install
-             task tests
+             sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+             ./bin/task install
+             ./bin/task tests
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
