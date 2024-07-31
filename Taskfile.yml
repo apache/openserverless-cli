@@ -79,8 +79,8 @@ tasks:
       - sudo cp ops /usr/local/bin
       - sudo ln -sf /usr/local/bin/ops /usr/local/bin/nuv
 
-  test:
-    desc: tests all
+  tests:
+    desc: all tests
     cmds:
       - task: install
       - task: utest
