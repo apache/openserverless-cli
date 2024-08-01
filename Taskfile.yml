@@ -43,7 +43,7 @@ tasks:
     desc: tag commit and push triggering a build
     prompt: are you sure you want to tag the work and push it triggering a build
     cmds:
-    - task: cli-tag
+    - task: tag
     - git commit -m "$(cat version.txt)"
     - git push --tags
 
