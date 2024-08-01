@@ -20,6 +20,7 @@ require (
 	github.com/nuvolaris/jj v0.0.0-20231020143327-10b90948a5d2
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/sciabarracom/openwhisk-cli v1.2.1
+	github.com/sciabarracom/sh/v3 v3.8.2
 	github.com/sciabarracom/task/v3 v3.38.9
 	github.com/stretchr/testify v1.9.0
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
@@ -84,7 +85,6 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sajari/fuzzy v1.0.0 // indirect
 	github.com/sciabarracom/openwhisk-wskdeploy v1.2.1 // indirect
-	github.com/sciabarracom/sh/v3 v3.8.2 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.2.2 // indirect
 	github.com/spf13/cobra v1.1.3 // indirect

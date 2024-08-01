@@ -26,7 +26,7 @@ setup() {
     run rm -rf ~/.nuv
     run nuv
     assert_success
-    assert_output --partial "Welcome to nuv! Setting up..."
+    assert_output --partial "Welcome to ops! Setting up..."
     run ls ~/.nuv
     assert_success
 }
@@ -36,17 +36,17 @@ setup() {
     export NUV_BRANCH=wrong
     run nuv
     assert_failure
-    assert_output --partial "Welcome to nuv! Setting up..."
+    assert_output --partial "Welcome to ops! Setting up..."
     assert_output --partial "failed to clone olaris on branch 'wrong'"
 }
 
 @test "correct branch setups" {
     run rm -rf ~/.nuv
-    export NUV_BRANCH=0.1.0-testing
+    export NUV_BRANCH=0.1.0
     run nuv
     assert_success
-    assert_output --partial "Welcome to nuv! Setting up..."
+    assert_output --partial "Welcome to ops! Setting up..."
     run ls ~/.nuv
     assert_success
-    assert_output --partial "0.1.0-testing"
+    assert_output --partial "0.1.0"
 }

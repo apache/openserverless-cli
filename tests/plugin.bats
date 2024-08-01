@@ -20,6 +20,7 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     export NUV_BRANCH="$(cat ../branch.txt)"
+    run rm -rf ~/.nuv
 }
 
 @test "nuv prints 'Plugins:'" {
@@ -63,7 +64,6 @@ setup() {
     run nuv
     assert_line 'Plugins:'
     assert_line "  other (local)"
-    run rm -rf ~/.nuv/olaris
 }
 
 @test "other sub simple prints simple" {
@@ -71,7 +71,6 @@ setup() {
     run nuv -update
     run nuv other sub simple
     assert_line 'simple'
-    run rm -rf ~/.nuv/olaris
 }
 
 @test "other tool runs nuv tool" {
@@ -79,7 +78,7 @@ setup() {
     run nuv -update
     run nuv other tool
     assert_line 'hello'
-    run rm -rf ~/.nuv/olaris
+    run rm -rf ~/.nuv
 }
 
 @test "other command runs nuv command" {
@@ -87,7 +86,6 @@ setup() {
     run nuv -update
     run nuv other command
     assert_line --partial 'nothing installed yet'
-    run rm -rf ~/.nuv/olaris
 }
 
 # Plugin Tool Tests

@@ -42,7 +42,7 @@ func trace(args ...any) {
 // available in taskfiles
 // note some of them are implemented in main.go (config, retry)
 var ToolList = []string{
-	"wsk", "awk", "jq",
+	"wsk", "awk", "jq", "sh",
 	"envsubst", "filetype", "random", "datefmt",
 	"die", "urlenc", "replace", "base64", "validate",
 	"echoif", "echoifempty", "echoifexists",
@@ -67,67 +67,85 @@ func RunTool(name string, args []string) (int, error) {
 		if err := Wsk(cmd); err != nil {
 			return 1, err
 		}
+
 	case "awk":
 		// fmt.Println("=== awk ===")
 		os.Args = append([]string{"goawk"}, args...)
 		if err := goawk.AwkMain(); err != nil {
 			return 1, err
 		}
+
 	case "jq":
 		os.Args = append([]string{"gojq"}, args...)
 		return gojq.Run(), nil
+
+	case "sh":
+		os.Args = append([]string{"sh"}, args...)
+		return Sh()
+
 	case "envsubst":
 		os.Args = append([]string{"envsubst"}, args...)
 		if err := envsubst.EnvsubstMain(); err != nil {
 			return 1, err
 		}
+
 	case "filetype":
 		os.Args = append([]string{"mkdir"}, args...)
 		if err := Filetype(); err != nil {
 			return 1, err
 		}
+
 	case "random":
 		if err := RandTool(args...); err != nil {
 			return 1, err
 		}
+
 	case "datefmt":
 		os.Args = append([]string{"datefmt"}, args...)
 		if err := DateFmtTool(); err != nil {
 			return 1, err
 		}
+
 	case "die":
 		if len(args) > 0 {
 			fmt.Println(strings.Join(args, " "))
 		}
 		return 1, nil
+
 	case "urlenc":
 		os.Args = append([]string{"urlenc"}, args...)
 		if err := URLEncTool(); err != nil {
 			return 1, err
 		}
+
 	case "replace":
 		os.Args = append([]string{"replace"}, args...)
 		return replace.ReplaceMain()
+
 	case "base64":
 		os.Args = append([]string{"base64"}, args...)
 		if err := base64Tool(); err != nil {
 			return 1, err
 		}
+
 	case "validate":
 		os.Args = append([]string{"validate"}, args...)
 		if err := validateTool(); err != nil {
 			return 1, err
 		}
+
 	case "echoif":
 		os.Args = append([]string{"echoif"}, args...)
 		if err := echoIfTool(); err != nil {
 			return 1, err
 		}
+
 	case "echoifempty":
 		os.Args = append([]string{"echoifempty"}, args...)
 		if err := echoIfEmptyTool(); err != nil {
 			return 1, err
 		}
+
 	case "echoifexists":
 		os.Args = append([]string{"echoifexists"}, args...)
 		if err := echoIfExistsTool(); err != nil {

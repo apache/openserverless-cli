@@ -49,7 +49,7 @@ setup() {
 
 @test "nuv -update on branch" {
     run rm -rf ~/.nuv
-    export NUV_BRANCH=0.1.0-testing
+    export NUV_BRANCH=0.1.0
     run nuv -update
     assert_line "Nuvfiles downloaded successfully"
     assert_success
