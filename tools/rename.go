@@ -7,7 +7,7 @@ import (
 
 func Rename() (int, error) {
 	if len(os.Args) != 3 {
-		fmt.Println("Usage: rename <source> <destination>")
+		fmt.Println("Rename a file\nUsage: rename <source> <destination>")
 		return 0, nil
 	}
 

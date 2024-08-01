@@ -7,7 +7,7 @@ import (
 
 func Remove() (int, error) {
 	if len(os.Args) != 2 {
-		fmt.Println("Usage: remove <filename>")
+		fmt.Println("Remove a file\nUsage: remove <filename>")
 		return 0, nil
 	}
 

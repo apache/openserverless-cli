@@ -19,6 +19,7 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
+    rm -f empty_file
 }
 
 @test "-rename -remove" {
@@ -53,3 +54,15 @@ setup() {
     assert_line "removed somethingelse"
 }    
 
+@test "-empty" {
+    run ops -empty
+    assert_line "Usage: filename"
+    run ops -empty empty_file
+    assert test -f empty_file
+    assert_success
+    run ops -empty empty_file
+    assert_failure
+    assert_line "file already exists"
+    rm empty_file
+
+}

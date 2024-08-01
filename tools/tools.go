@@ -18,6 +18,7 @@ package tools
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -30,6 +31,14 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+var tracing = os.Getenv("TRACE") != ""
+
+func trace(args ...any) {
+	if tracing {
+		log.Println(append([]any{"TRACE: "}, args...))
+	}
+}
+
 // available in taskfiles
 // note some of them are implemented in main.go (config, retry)
 var ToolList = []string{
@@ -37,7 +46,8 @@ var ToolList = []string{
 	"envsubst", "filetype", "random", "datefmt",
 	"die", "urlenc", "replace", "base64", "validate",
 	"echoif", "echoifempty", "echoifexists",
-	"needupdate", "gron", "jj", "rename", "remove",
+	"needupdate", "gron", "jj",
+	"rename", "remove", "empty", "extract",
 }
 
 func IsTool(name string) bool {
@@ -144,6 +154,14 @@ func RunTool(name string, args []string) (int, error) {
 	case "remove":
 		os.Args = append([]string{"rename"}, args...)
 		return Remove()
+
+	case "extract":
+		os.Args = append([]string{"untar"}, args...)
+		return Extract()
+
+	case "empty":
+		os.Args = append([]string{"empty"}, args...)
+		return Empty()
 
 	default:
 		return 1, fmt.Errorf("unknown tool")

@@ -39,3 +39,5 @@ _patch/openwhisk-wskdeploy
 _patch/openwhisk-cli
 tests/prereq/olaris/bin
 dist/
+tests/coreutils*
+tests/7z*
