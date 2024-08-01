@@ -24,7 +24,7 @@ setup() {
 
 @test "extract" {
     run ops -extract
-    assert_line("Usage: file.(zip|tgz|tar[.gz|.bz2|.xz]) target")
+    assert_line "Usage: file.(zip|tgz|tar[.gz|.bz2|.xz]) target"
     curl -sL -o7zip.tar.xz https://www.7-zip.org/a/7z2407-linux-x64.tar.xz 
 
     run ops -extract 7zip.tar.xz missing
