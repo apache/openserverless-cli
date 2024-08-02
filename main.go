@@ -111,7 +111,7 @@ var mainTools = []string{
 	"task", "version", "info", "help", "serve", "update", "retry", "login", "config", "plugin",
 }
 
-func executeMainToolsAndExit(cmd string, args []string, nuvHome string) int {
+func executeMainToolsAndExit(cmd string, args []string, opsHome string) int {
 	if cmd == "" || cmd == "-" || cmd == "task" {
 		exitCode, err := Task(args[2:]...)
 		if err != nil {
@@ -133,8 +133,8 @@ func executeMainToolsAndExit(cmd string, args []string, nuvHome string) int {
 		tools.Help(mainTools)
 
 	case "serve":
-		nuvRootDir := getRootDirOrExit()
-		if err := Serve(nuvRootDir, args[1:]); err != nil {
+		opsRootDir := getRootDirOrExit()
+		if err := Serve(opsRootDir, args[1:]); err != nil {
 			log.Fatalf("error: %v", err)
 		}
 
@@ -172,9 +172,9 @@ func executeMainToolsAndExit(cmd string, args []string, nuvHome string) int {
 
 	case "config":
 		os.Args = args[1:]
-		nuvRootPath := joinpath(getRootDirOrExit(), NUVROOT)
-		configPath := joinpath(nuvHome, CONFIGFILE)
-		configMap, err := buildConfigMap(nuvRootPath, configPath)
+		opsRootPath := joinpath(getRootDirOrExit(), OPSROOT)
+		configPath := joinpath(opsHome, CONFIGFILE)
+		configMap, err := buildConfigMap(opsRootPath, configPath)
 		if err != nil {
 			log.Fatalf("error: %s", err.Error())
 		}
@@ -227,7 +227,7 @@ func Main() {
 
 	// setup OPS_CMD
 	me := args[0]
-	if strings.Contains("ops ops.exe nuv nuv.exe", filepath.Base(me)) {
+	if strings.Contains("ops ops.exe ops ops.exe", filepath.Base(me)) {
 		_, err = setupCmd(me)
 		if err != nil {
 			log.Fatalf("cannot setup cmd: %s", err.Error())
@@ -235,14 +235,14 @@ func Main() {
 	}
 
 	// setup home
-	nuvHome := os.Getenv("OPS_HOME")
-	if nuvHome == "" {
-		nuvHome, err = homedir.Expand("~/.ops")
+	opsHome := os.Getenv("OPS_HOME")
+	if opsHome == "" {
+		opsHome, err = homedir.Expand("~/.ops")
 	}
 	if err != nil {
 		log.Fatalf("cannot setup home: %s", err.Error())
 	}
-	os.Setenv("OPS_HOME", nuvHome)
+	os.Setenv("OPS_HOME", opsHome)
 
 	// add ~/.ops/<os>-<arch>/bin to the path at the beginning
 	err = setupBinPath()
@@ -272,7 +272,7 @@ func Main() {
 	// Check if olaris exists. If not, download tasks
 	olarisDir, err := getOpsRoot()
 	if err != nil {
-		olarisDir := joinpath(joinpath(nuvHome, getOpsBranch()), "olaris")
+		olarisDir := joinpath(joinpath(opsHome, getOpsBranch()), "olaris")
 		if !isDir(olarisDir) {
 			log.Println("Welcome to ops! Setting up...")
 			olarisDir, err = pullTasks(true, true)
@@ -285,7 +285,7 @@ func Main() {
 			}
 		} else {
 			// check if olaris was recently updated
-			checkUpdated(nuvHome, 24*time.Hour)
+			checkUpdated(opsHome, 24*time.Hour)
 		}
 	}
 	if err = setOpsOlarisHash(olarisDir); err != nil {
@@ -293,9 +293,9 @@ func Main() {
 	}
 
 	// set the enviroment variables from the config
-	nuvRootDir := getRootDirOrExit()
-	debug("nuvRootDir", nuvRootDir)
-	err = setAllConfigEnvVars(nuvRootDir, nuvHome)
+	opsRootDir := getRootDirOrExit()
+	debug("opsRootDir", opsRootDir)
+	err = setAllConfigEnvVars(opsRootDir, opsHome)
 	if err != nil {
 		log.Fatalf("cannot apply env vars from configs: %s", err.Error())
 	}
@@ -331,11 +331,11 @@ func Main() {
 		cmd := args[1][1:]
 		trace("executing embedded tool", cmd, args)
 		// execute the embeded tool and exit
-		exitCode := executeMainToolsAndExit(cmd, args, nuvHome)
+		exitCode := executeMainToolsAndExit(cmd, args, opsHome)
 		os.Exit(exitCode)
 	}
 
-	if err := runOps(nuvRootDir, args); err != nil {
+	if err := runOps(opsRootDir, args); err != nil {
 		log.Fatalf("task execution error: %s", err.Error())
 	}
 }
@@ -368,10 +368,10 @@ func getRootDirOrExit() string {
 	return dir
 }
 
-func setAllConfigEnvVars(nuvRootDir string, configDir string) error {
+func setAllConfigEnvVars(opsRootDir string, configDir string) error {
 	trace("setting all config env vars")
 
-	configMap, err := buildConfigMap(joinpath(nuvRootDir, NUVROOT), joinpath(configDir, CONFIGFILE))
+	configMap, err := buildConfigMap(joinpath(opsRootDir, OPSROOT), joinpath(configDir, CONFIGFILE))
 	if err != nil {
 		return err
 	}
@@ -435,14 +435,14 @@ func setOpsPwdEnv() error {
 	return nil
 }
 
-func buildConfigMap(nuvRootPath string, configPath string) (*config.ConfigMap, error) {
+func buildConfigMap(opsRootPath string, configPath string) (*config.ConfigMap, error) {
 	plgOpsRootMap, err := GetOpsRootPlugins()
 	if err != nil {
 		return nil, err
 	}
 
 	configMap, err := config.NewConfigMapBuilder().
-		WithOpsRoot(nuvRootPath).
+		WithOpsRoot(opsRootPath).
 		WithConfigJson(configPath).
 		WithPluginOpsRoots(plgOpsRootMap).
 		Build()

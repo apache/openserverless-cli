@@ -21,22 +21,22 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "nuv -replace help message" {
-    run nuv -replace -h
+@test "ops -replace help message" {
+    run ops -replace -h
     assert_success
     assert_line "Usage:"
 
 }
 
-@test "nuv -replace" {
-    run nuv -replace testdata/testfiletype.txt -s "foo" -r "bar" --dry-run
+@test "ops -replace" {
+    run ops -replace testdata/testfiletype.txt -s "foo" -r "bar" --dry-run
     assert_success
 
-    run nuv -replace testdata/testfiletype.txt -s "text" -r "replaced"
+    run ops -replace testdata/testfiletype.txt -s "text" -r "replaced"
     run cat testdata/testfiletype.txt
     assert_line "a sample replaced"
 
-    run nuv -replace testdata/testfiletype.txt -s "replaced" -r "text" 
+    run ops -replace testdata/testfiletype.txt -s "replaced" -r "text" 
     run cat testdata/testfiletype.txt
     assert_line "a sample text"
 } 

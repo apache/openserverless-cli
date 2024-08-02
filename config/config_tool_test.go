@@ -27,12 +27,12 @@ import (
 )
 
 func ExampleConfigTool_readValue() {
-	tmpDir, _ := os.MkdirTemp("", "nuv")
+	tmpDir, _ := os.MkdirTemp("", "ops")
 	defer os.RemoveAll(tmpDir)
 
-	nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+	opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 	configPath := filepath.Join(tmpDir, "config.json")
-	cm, _ := NewConfigMapBuilder().WithOpsRoot(nuvRootPath).WithConfigJson(configPath).Build()
+	cm, _ := NewConfigMapBuilder().WithOpsRoot(opsRootPath).WithConfigJson(configPath).Build()
 
 	os.Args = []string{"config", "FOO=bar"}
 	err := ConfigTool(cm)
@@ -75,9 +75,9 @@ func TestConfigTool(t *testing.T) {
 	t.Run("new config.json", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+		opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 		configPath := filepath.Join(tmpDir, "config.json")
-		cm := buildCM(nuvRootPath, configPath)
+		cm := buildCM(opsRootPath, configPath)
 
 		os.Args = []string{"config", "FOO=bar"}
 		err := ConfigTool(cm)
@@ -95,9 +95,9 @@ func TestConfigTool(t *testing.T) {
 
 	t.Run("write values on existing config.json", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+		opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 		configPath := filepath.Join(tmpDir, "config.json")
-		cm := buildCM(nuvRootPath, configPath)
+		cm := buildCM(opsRootPath, configPath)
 
 		os.Args = []string{"config", "FOO=bar"}
 		err := ConfigTool(cm)
@@ -120,9 +120,9 @@ func TestConfigTool(t *testing.T) {
 
 	t.Run("write existing value is overridden", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+		opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 		configPath := filepath.Join(tmpDir, "config.json")
-		cm := buildCM(nuvRootPath, configPath)
+		cm := buildCM(opsRootPath, configPath)
 
 		os.Args = []string{"config", "FOO=bar"}
 		err := ConfigTool(cm)
@@ -144,9 +144,9 @@ func TestConfigTool(t *testing.T) {
 
 	t.Run("write existing key object is merged", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+		opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 		configPath := filepath.Join(tmpDir, "config.json")
-		cm := buildCM(nuvRootPath, configPath)
+		cm := buildCM(opsRootPath, configPath)
 
 		os.Args = []string{"config", "FOO_BAR=bar"}
 		err := ConfigTool(cm)
@@ -171,9 +171,9 @@ func TestConfigTool(t *testing.T) {
 
 	t.Run("write empty string to disable key", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+		opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 		configPath := filepath.Join(tmpDir, "config.json")
-		cm := buildCM(nuvRootPath, configPath)
+		cm := buildCM(opsRootPath, configPath)
 
 		os.Args = []string{"config", "FOO_BAR=bar"}
 		err := ConfigTool(cm)
@@ -197,9 +197,9 @@ func TestConfigTool(t *testing.T) {
 
 	t.Run("remove existing key", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+		opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 		configPath := filepath.Join(tmpDir, "config.json")
-		cm := buildCM(nuvRootPath, configPath)
+		cm := buildCM(opsRootPath, configPath)
 
 		os.Args = []string{"config", "FOO=bar"}
 		err := ConfigTool(cm)
@@ -219,9 +219,9 @@ func TestConfigTool(t *testing.T) {
 
 	t.Run("remove nested key object", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+		opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 		configPath := filepath.Join(tmpDir, "config.json")
-		cm := buildCM(nuvRootPath, configPath)
+		cm := buildCM(opsRootPath, configPath)
 
 		os.Args = []string{"config", "FOO_BAR=bar", "FOO_BAZ=baz"}
 		err := ConfigTool(cm)
@@ -255,9 +255,9 @@ func TestConfigTool(t *testing.T) {
 
 	t.Run("remove non-existing key", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
+		opsRootPath := filepath.Join(tmpDir, "opsroot.json")
 		configPath := filepath.Join(tmpDir, "config.json")
-		cm := buildCM(nuvRootPath, configPath)
+		cm := buildCM(opsRootPath, configPath)
 
 		os.Args = []string{"config", "-r", "FOO"}
 		err := ConfigTool(cm)

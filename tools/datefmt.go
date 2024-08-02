@@ -29,7 +29,7 @@ func printDateFmtUsage() {
 	fmts := maps.Keys(dateFormats)
 
 	fmt.Printf(`Usage:
-nuv -datefmt [options] [arguments]
+ops -datefmt [options] [arguments]
 
 Print date with different formats. If no time stamp or date strings are given, uses current time.
 

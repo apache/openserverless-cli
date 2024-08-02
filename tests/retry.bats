@@ -21,39 +21,39 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "nuv -retry help" {
-    run nuv -retry
+@test "ops -retry help" {
+    run ops -retry
     assert_success
     assert_line "Usage:"
 
-    run nuv -retry -h
+    run ops -retry -h
     assert_success
     assert_line "Usage:"
 
-    run nuv -retry --help
+    run ops -retry --help
     assert_success
     assert_line "Usage:"
 }
 
-@test "nuv -retry fail" {
-    run nuv -retry -t 0 nuv failing
+@test "ops -retry fail" {
+    run ops -retry -t 0 ops failing
     assert_line "error: failure after 0 retries or 60 seconds."
     assert_failure
 
-    run nuv -retry -t 0 -v nuv failing
+    run ops -retry -t 0 -v ops failing
     assert_line "Retry Parameters: max time=60 seconds, retries=0 times"
     assert_line "error: failure after 0 retries or 60 seconds."
     assert_failure
 
-    run nuv -retry -t 5 -m 2 nuv failing
+    run ops -retry -t 5 -m 2 ops failing
     assert_line "error: failure after 5 retries or 2 seconds."
     assert_failure
 }
 
-@test "nuv -retry succeed" {
-    run nuv -retry -t 1 -m 5 nuv fail_then_succeed
+@test "ops -retry succeed" {
+    run ops -retry -t 1 -m 5 ops fail_then_succeed
     assert_success
 
-    run nuv -retry -t 1 -m 5 -v nuv fail_then_succeed
+    run ops -retry -t 1 -m 5 -v ops fail_then_succeed
     assert_success
 }

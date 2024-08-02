@@ -26,13 +26,13 @@ import (
 
 func printConfigToolUsage() {
 	fmt.Print(`Usage:
-nuv -config [options] [KEY | KEY=VALUE [KEY=VALUE ...]]
+ops -config [options] [KEY | KEY=VALUE [KEY=VALUE ...]]
 
 Set config values passed as key-value pairs. 
 If the keys are passed (without '='), their values are printed, if they exists.
 
-If you want to override a value, pass KEY="". This can be used to disable values in nuvroot.json.
-Removing values from nuvroot.json is not supported, disable them instead.
+If you want to override a value, pass KEY="". This can be used to disable values in opsroot.json.
+Removing values from opsroot.json is not supported, disable them instead.
 
 -h, --help    	show this help
 -r, --remove    remove config values by passing keys

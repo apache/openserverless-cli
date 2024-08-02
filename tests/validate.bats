@@ -21,85 +21,85 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "nuv validate help" {
-    run nuv -validate
+@test "ops validate help" {
+    run ops -validate
     assert_line "Usage:"
 
-    run nuv -validate -h
+    run ops -validate -h
     assert_line "Usage:"
-    assert_line "nuv -validate [-e] [-m | -n | -r <regex>] <value> [<message>]"
+    assert_line "ops -validate [-e] [-m | -n | -r <regex>] <value> [<message>]"
 }
 
-@test "nuv validate email" {
-    run nuv -validate -m example@email.com
+@test "ops validate email" {
+    run ops -validate -m example@email.com
     assert_success
 
-    run nuv -validate -m example
+    run ops -validate -m example
     assert_line "validation failed"
     assert_failure
 }
 
-@test "nuv validate number" {
-    run nuv -validate -n 123
+@test "ops validate number" {
+    run ops -validate -n 123
     assert_success
 
-    run nuv -validate -n 123.456
+    run ops -validate -n 123.456
     assert_success
 
-    run nuv -validate -n abc
+    run ops -validate -n abc
     assert_line "validation failed"
     assert_failure
 }
 
-@test "nuv validate with custom regex" {
-    run nuv -validate -r '^[a-z]+$' abc
+@test "ops validate with custom regex" {
+    run ops -validate -r '^[a-z]+$' abc
     assert_success
 
-    run nuv -validate -r '^[a-z]+$' 123
+    run ops -validate -r '^[a-z]+$' 123
     assert_line "validation failed"
     assert_failure
 }
 
-@test "nuv validate on env vars" {
-    run nuv -validate -e -n TEST_ENV_VAR
+@test "ops validate on env vars" {
+    run ops -validate -e -n TEST_ENV_VAR
     assert_line "variable 'TEST_ENV_VAR' not set"
     assert_failure
 
     export TEST_ENV_VAR=123
-    run nuv -validate -e -n TEST_ENV_VAR
+    run ops -validate -e -n TEST_ENV_VAR
     assert_success
 
-    run nuv -validate -e -m TEST_ENV_VAR
+    run ops -validate -e -m TEST_ENV_VAR
     assert_line "validation failed"
     assert_failure
 
     export TEST_ENV_VAR=example@gmail.com
-    run nuv -validate -e -m TEST_ENV_VAR
+    run ops -validate -e -m TEST_ENV_VAR
     assert_success
 
     export TEST_ENV_VAR=abc
-    run nuv -validate -e -r '^[a-z]+$' TEST_ENV_VAR
+    run ops -validate -e -r '^[a-z]+$' TEST_ENV_VAR
     assert_success
 
     export TEST_ENV_VAR=123
-    run nuv -validate -e -r '^[a-z]+$' TEST_ENV_VAR
+    run ops -validate -e -r '^[a-z]+$' TEST_ENV_VAR
     assert_line "validation failed"
     assert_failure
 }
 
-@test "nuv validate with custom error message" {
-    run nuv -validate -m example@email.com "custom error message"
+@test "ops validate with custom error message" {
+    run ops -validate -m example@email.com "custom error message"
     assert_success
 
-    run nuv -validate -m abc "custom error message"
+    run ops -validate -m abc "custom error message"
     assert_line "custom error message"
     assert_failure
 
-    run nuv -validate -n abc "custom error message"
+    run ops -validate -n abc "custom error message"
     assert_line "custom error message"
     assert_failure
 
-    run nuv -validate -r '^[a-z]+$' 123 "custom error message"
+    run ops -validate -r '^[a-z]+$' 123 "custom error message"
     assert_line "custom error message"
     assert_failure
 }

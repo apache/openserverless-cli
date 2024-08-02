@@ -36,11 +36,11 @@ func TestConfigMapBuilder(t *testing.T) {
 			"key": 123
 		}
 	}`)
-		nuvRootPath := createFakeConfigFile(t, "nuvroot.json", tmpDir, `
+		opsRootPath := createFakeConfigFile(t, "opsroot.json", tmpDir, `
 	{
 		"version": "0.3.0",
 		"config": {
-			"nuvroot": "value",
+			"opsroot": "value",
 			"another": {
 				"key": 123
 			}
@@ -50,17 +50,17 @@ func TestConfigMapBuilder(t *testing.T) {
 		testCases := []struct {
 			name       string
 			configJson string
-			nuvRoot    string
+			opsRoot    string
 			want       ConfigMap
 			err        error
 		}{
 			{
 				name:       "should return empty configmap when no files are added",
 				configJson: "",
-				nuvRoot:    "",
+				opsRoot:    "",
 				want: ConfigMap{
 					config:               map[string]interface{}{},
-					nuvRootConfig:        map[string]interface{}{},
+					opsRootConfig:        map[string]interface{}{},
 					pluginOpsRootConfigs: map[string]map[string]interface{}{},
 				},
 				err: nil,
@@ -68,9 +68,9 @@ func TestConfigMapBuilder(t *testing.T) {
 			{
 				name:       "should return with config when a valid config.json is added",
 				configJson: configJsonPath,
-				nuvRoot:    "",
+				opsRoot:    "",
 				want: ConfigMap{
-					nuvRootConfig: map[string]interface{}{},
+					opsRootConfig: map[string]interface{}{},
 					config: map[string]interface{}{
 						"key": "value",
 						"nested": map[string]interface{}{
@@ -82,12 +82,12 @@ func TestConfigMapBuilder(t *testing.T) {
 				},
 			},
 			{
-				name:       "should return with nuvroot when a valid nuvroot.json is added",
+				name:       "should return with opsroot when a valid opsroot.json is added",
 				configJson: "",
-				nuvRoot:    nuvRootPath,
+				opsRoot:    opsRootPath,
 				want: ConfigMap{
-					nuvRootConfig: map[string]interface{}{
-						"nuvroot": "value",
+					opsRootConfig: map[string]interface{}{
+						"opsroot": "value",
 						"another": map[string]interface{}{
 							"key": 123.0,
 						},
@@ -97,9 +97,9 @@ func TestConfigMapBuilder(t *testing.T) {
 				},
 			},
 			{
-				name:       "should return with both when both config.json and nuvroot.json are added",
+				name:       "should return with both when both config.json and opsroot.json are added",
 				configJson: configJsonPath,
-				nuvRoot:    nuvRootPath,
+				opsRoot:    opsRootPath,
 				want: ConfigMap{
 					config: map[string]interface{}{
 						"key": "value",
@@ -107,8 +107,8 @@ func TestConfigMapBuilder(t *testing.T) {
 							"key": 123.0,
 						},
 					},
-					nuvRootConfig: map[string]interface{}{
-						"nuvroot": "value",
+					opsRootConfig: map[string]interface{}{
+						"opsroot": "value",
 						"another": map[string]interface{}{
 							"key": 123.0,
 						},
@@ -124,7 +124,7 @@ func TestConfigMapBuilder(t *testing.T) {
 
 				got, err := NewConfigMapBuilder().
 					WithConfigJson(tc.configJson).
-					WithOpsRoot(tc.nuvRoot).
+					WithOpsRoot(tc.opsRoot).
 					Build()
 
 				// if we expect an error but got none
@@ -152,22 +152,22 @@ func TestConfigMapBuilder(t *testing.T) {
 			"key": 123
 		}
 	}`)
-		nuvRootPath := createFakeConfigFile(t, "nuvroot.json", tmpDir, `
+		opsRootPath := createFakeConfigFile(t, "opsroot.json", tmpDir, `
 	{
 		"version": "0.3.0",
 		"config": {
-			"nuvroot": "value",
+			"opsroot": "value",
 			"another": {
 				"key": 123
 			}
 		}
 	}`)
 
-		pluginOpsRoot := createFakeConfigFile(t, "nuvroot.json", tmpDir, `
+		pluginOpsRoot := createFakeConfigFile(t, "opsroot.json", tmpDir, `
 	{
 		"version": "0.3.0",
 		"config": {
-			"nuvroot": "value",
+			"opsroot": "value",
 			"another": {
 				"key": 123
 			}
@@ -177,15 +177,15 @@ func TestConfigMapBuilder(t *testing.T) {
 		testCases := []struct {
 			name           string
 			configJson     string
-			nuvRoot        string
+			opsRoot        string
 			pluginOpsRoots map[string]string
 			want           ConfigMap
 			err            error
 		}{
 			{
-				name:       "should return configmap containing plugin nuvroot",
+				name:       "should return configmap containing plugin opsroot",
 				configJson: configJsonPath,
-				nuvRoot:    nuvRootPath,
+				opsRoot:    opsRootPath,
 				pluginOpsRoots: map[string]string{
 					"plugin": pluginOpsRoot,
 				},
@@ -197,8 +197,8 @@ func TestConfigMapBuilder(t *testing.T) {
 							"key": 123.0,
 						},
 					},
-					nuvRootConfig: map[string]interface{}{
-						"nuvroot": "value",
+					opsRootConfig: map[string]interface{}{
+						"opsroot": "value",
 						"another": map[string]interface{}{
 							"key": 123.0,
 						},
@@ -206,7 +206,7 @@ func TestConfigMapBuilder(t *testing.T) {
 					configPath: configJsonPath,
 					pluginOpsRootConfigs: map[string]map[string]interface{}{
 						"plugin": {
-							"nuvroot": "value",
+							"opsroot": "value",
 							"another": map[string]interface{}{
 								"key": 123.0,
 							},
@@ -223,7 +223,7 @@ func TestConfigMapBuilder(t *testing.T) {
 
 				got, err := NewConfigMapBuilder().
 					WithConfigJson(tc.configJson).
-					WithOpsRoot(tc.nuvRoot).
+					WithOpsRoot(tc.opsRoot).
 					WithPluginOpsRoots(tc.pluginOpsRoots).
 					Build()
 

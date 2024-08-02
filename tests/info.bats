@@ -23,20 +23,20 @@ setup() {
 }
 
 @test "version" {
-    run nuv -version
+    run ops -version
     assert_line 'test'
 
-    run nuv -v
+    run ops -v
     assert_line "test"
 }
 
 @test "-info" {
-    run nuv -info
+    run ops -info
     WD=$(pwd)
     assert_line "OPS_VERSION: test"
     assert_line "OPS_PWD: $WD"
     assert_line "OPS_ROOT: $WD/olaris"
-    assert_line "OPS_TMP: $HOME/.nuv/tmp"
+    assert_line "OPS_TMP: $HOME/.ops/tmp"
     assert_line --partial "OPS_OLARIS: "
     assert_success
 }

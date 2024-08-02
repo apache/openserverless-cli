@@ -57,7 +57,7 @@ func checkUpdated(base string, timeInterval time.Duration) {
 
 		// check if remote olaris is newer
 		if checkRemoteOlarisNewer(olaris_path) {
-			fmt.Print("New tasks available! Use 'nuv -update' to update.\n\n")
+			fmt.Print("New tasks available! Use 'ops -update' to update.\n\n")
 		} else {
 			fmt.Print("Tasks up to date!\n\n")
 		}

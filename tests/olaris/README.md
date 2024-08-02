@@ -19,8 +19,8 @@
 -->
 # Welcome to olaris
 
-What is this? Is nuv's olaris, aka tasks for nuv.
+What is this? Is ops's olaris, aka tasks for ops.
 
-In other words, the scripts executed by `nuv`.
+In other words, the scripts executed by `ops`.
 
 

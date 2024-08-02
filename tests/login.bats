@@ -21,57 +21,57 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "nuv -login help" {
-    run nuv -login
+@test "ops -login help" {
+    run ops -login
     assert_line "Usage:"
-	assert_line "nuv login <apihost> [<user>]"
+	assert_line "ops login <apihost> [<user>]"
     assert_line "error: missing apihost"
 	
-    run nuv -login -h
+    run ops -login -h
     assert_line "Usage:"
-    assert_line "nuv login <apihost> [<user>]"
+    assert_line "ops login <apihost> [<user>]"
 }
 
-@test "nuv -login with OPS_PASSWORD env does not prompt for password" {
+@test "ops -login with OPS_PASSWORD env does not prompt for password" {
     export OPS_PASSWORD=1234
-    run nuv -login localhost
+    run ops -login localhost
     refute_line "Enter Password:"
 }
 
-@test "nuv -login with OPS_USER env defines username" {
+@test "ops -login with OPS_USER env defines username" {
     export OPS_PASSWORD=1234
     export OPS_USER=foo
-    run nuv -login localhost
+    run ops -login localhost
     assert_line "Logging in as foo to localhost"
 }
 
-@test "nuv -login with OPS_USER and OPS_PASSWORD env" {
+@test "ops -login with OPS_USER and OPS_PASSWORD env" {
     export OPS_PASSWORD=1234
     export OPS_USER=foo
-    run nuv -login localhost
+    run ops -login localhost
     assert_line "Logging in as foo to localhost"
     refute_line "Enter Password:"
 }
 
-@test "nuv -login with OPS_APIHOST env" {
+@test "ops -login with OPS_APIHOST env" {
     export OPS_APIHOST=localhost
     export OPS_PASSWORD=1234
-    run nuv -login
-    assert_line "Logging in as nuvolaris to localhost"
+    run ops -login
+    assert_line "Logging in as opsolaris to localhost"
 }
 
-@test "nuv -login with OPS_APIHOST and OPS_USER env" {
+@test "ops -login with OPS_APIHOST and OPS_USER env" {
     export OPS_APIHOST=localhost
     export OPS_USER=foo
     export OPS_PASSWORD=1234
-    run nuv -login
+    run ops -login
     assert_line "Logging in as foo to localhost"
 }
 
-@test "nuv -login with OPS_APIHOST, user is now first argument" {
+@test "ops -login with OPS_APIHOST, user is now first argument" {
     export OPS_APIHOST=localhost
     export OPS_PASSWORD=1234
-    run nuv -login hello
+    run ops -login hello
     assert_line "Logging in as hello to localhost"
     refute_line "Enter Password:"
 }

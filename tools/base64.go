@@ -32,7 +32,7 @@ func base64Tool() error {
 	)
 
 	flag.Usage = func() {
-		fmt.Println(`Usage: nuv -base64 [options] <string>
+		fmt.Println(`Usage: ops -base64 [options] <string>
 
 Options:
 	-h, --help             Display this help message

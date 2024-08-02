@@ -36,7 +36,7 @@ func Serve(olarisDir string, args []string) error {
 		fmt.Println(`Serve a local directory on http://localhost:9768. You can change port with the OPS_PORT environment variable.
 
 Usage:
-  nuv -serve [options] <dir>
+  ops -serve [options] <dir>
 
 Options:
   -h, --help Print help message
@@ -70,7 +70,7 @@ Options:
 
 	webDir := flag.Arg(0)
 
-	// run nuv server and open browser
+	// run ops server and open browser
 	port := getOpsPort()
 	webDirPath := joinpath(os.Getenv("OPS_PWD"), webDir)
 	log.Println("Serving directory: " + webDirPath)
@@ -114,11 +114,11 @@ Options:
 	handler := http.HandlerFunc(customHandler)
 
 	if checkPortAvailable(port) {
-		log.Println("Opsolaris server started at http://localhost:" + port)
+		log.Println("OpenServerless config server started at http://localhost:" + port)
 		addr := fmt.Sprintf(":%s", port)
 		return http.ListenAndServe(addr, handler)
 	} else {
-		log.Println("Opsolaris server failed to start. Port already in use?")
+		log.Println("OpenServerless config server failed to start. Port already in use?")
 		return nil
 	}
 }

@@ -157,7 +157,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "empty maps",
 			startingMap: ConfigMap{
-				nuvRootConfig: map[string]interface{}{},
+				opsRootConfig: map[string]interface{}{},
 				config:        map[string]interface{}{},
 			},
 			key:      "KEY",
@@ -167,7 +167,7 @@ func TestGet(t *testing.T) {
 		{
 			name: "config map with key",
 			startingMap: ConfigMap{
-				nuvRootConfig: map[string]interface{}{},
+				opsRootConfig: map[string]interface{}{},
 				config: map[string]interface{}{
 					"key": "value",
 				},
@@ -177,9 +177,9 @@ func TestGet(t *testing.T) {
 			err:      nil,
 		},
 		{
-			name: "nuv root config with key",
+			name: "ops root config with key",
 			startingMap: ConfigMap{
-				nuvRootConfig: map[string]interface{}{
+				opsRootConfig: map[string]interface{}{
 					"key": "value",
 				},
 				config: map[string]interface{}{},
@@ -202,9 +202,9 @@ func TestGet(t *testing.T) {
 			err:      nil,
 		},
 		{
-			name: "map with both nuv root and config keys",
+			name: "map with both ops root and config keys",
 			startingMap: ConfigMap{
-				nuvRootConfig: map[string]interface{}{
+				opsRootConfig: map[string]interface{}{
 					"key":  "value",
 					"key2": "value2",
 				},
@@ -242,14 +242,14 @@ func TestFlatten(t *testing.T) {
 			name: "empty map",
 			input: ConfigMap{
 				config:        map[string]interface{}{},
-				nuvRootConfig: map[string]interface{}{},
+				opsRootConfig: map[string]interface{}{},
 			},
 			expected: map[string]string{},
 		},
 		{
 			name: "one key map",
 			input: ConfigMap{
-				nuvRootConfig: map[string]interface{}{},
+				opsRootConfig: map[string]interface{}{},
 				config: map[string]interface{}{
 					"key": "value",
 				},
@@ -274,7 +274,7 @@ func TestFlatten(t *testing.T) {
 		{
 			name: "nested map with multiple keys",
 			input: ConfigMap{
-				nuvRootConfig: map[string]interface{}{
+				opsRootConfig: map[string]interface{}{
 					"different": "value",
 					"key":       "value0",
 				},
@@ -305,7 +305,7 @@ func TestFlatten(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	emptyMap := ConfigMap{
-		nuvRootConfig: map[string]interface{}{},
+		opsRootConfig: map[string]interface{}{},
 		config:        map[string]interface{}{},
 	}
 	testCases := []struct {
@@ -325,7 +325,7 @@ func TestDelete(t *testing.T) {
 		{
 			name: "map with key",
 			startingMap: ConfigMap{
-				nuvRootConfig: map[string]interface{}{},
+				opsRootConfig: map[string]interface{}{},
 				config:        map[string]interface{}{"key": "value"},
 			},
 			key:      "KEY",
@@ -335,7 +335,7 @@ func TestDelete(t *testing.T) {
 		{
 			name: "map with nested key",
 			startingMap: ConfigMap{
-				nuvRootConfig: map[string]interface{}{},
+				opsRootConfig: map[string]interface{}{},
 				config: map[string]interface{}{
 					"nested": map[string]interface{}{
 						"key": "value",
@@ -344,22 +344,22 @@ func TestDelete(t *testing.T) {
 			},
 			key: "NESTED_KEY",
 			expected: ConfigMap{
-				nuvRootConfig: map[string]interface{}{},
+				opsRootConfig: map[string]interface{}{},
 				config:        map[string]interface{}{},
 			},
 			err: nil,
 		},
 		{
-			name: "nuvroot is ignored",
+			name: "opsroot is ignored",
 			startingMap: ConfigMap{
-				nuvRootConfig: map[string]interface{}{
+				opsRootConfig: map[string]interface{}{
 					"key": "value",
 				},
 				config: map[string]interface{}{},
 			},
 			key: "KEY",
 			expected: ConfigMap{
-				nuvRootConfig: map[string]interface{}{
+				opsRootConfig: map[string]interface{}{
 					"key": "value",
 				},
 				config: map[string]interface{}{},

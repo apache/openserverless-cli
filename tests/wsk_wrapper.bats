@@ -21,64 +21,64 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "nuv -wsk action is wrapped in nuv action" {
-    run nuv action
+@test "ops -wsk action is wrapped in ops action" {
+    run ops action
     assert_line 'work with actions'
     assert_line 'Available Commands:'
 }
 
-@test "nuv -wsk activation is wrapped in nuv activation" {
-    run nuv activation
+@test "ops -wsk activation is wrapped in ops activation" {
+    run ops activation
     assert_line 'work with activations'
     assert_line 'Available Commands:'
 }
 
-@test "nuv -wsk package is wrapped in nuv package" {
-    run nuv package
+@test "ops -wsk package is wrapped in ops package" {
+    run ops package
     assert_line 'work with packages'
     assert_line 'Available Commands:'
 }
 
-@test "nuv -wsk rule is wrapped in nuv rule" {
-    run nuv rule
+@test "ops -wsk rule is wrapped in ops rule" {
+    run ops rule
     assert_line 'work with rules'
     assert_line 'Available Commands:'
 }
 
-@test "nuv -wsk trigger is wrapped in nuv trigger" {
-    run nuv trigger
+@test "ops -wsk trigger is wrapped in ops trigger" {
+    run ops trigger
     assert_line 'work with triggers'
     assert_line 'Available Commands:'
 }
 
-@test "nuv -wsk action -r is wrapped in nuv invoke" {
-    run nuv invoke --apihost http://localhost:3233
+@test "ops -wsk action -r is wrapped in ops invoke" {
+    run ops invoke --apihost http://localhost:3233
     assert_line 'error: Invalid argument(s). An action name is required.'
 
-    run nuv invoke --apihost http://localhost:3233 --help
+    run ops invoke --apihost http://localhost:3233 --help
     assert_line 'invoke action'
 }
 
-@test "nuv -wsk activation result is wrapped in nuv result" {
-    run nuv result --apihost http://localhost:3233
+@test "ops -wsk activation result is wrapped in ops result" {
+    run ops result --apihost http://localhost:3233
     assert_line 'error: Invalid argument(s). An activation ID is required.'
 
-    run nuv result --apihost http://localhost:3233 --help
+    run ops result --apihost http://localhost:3233 --help
     assert_line 'get the result of an activation'
 }
 
-@test "nuv -wsk activation logs is wrapped in nuv logs" {
-    run nuv logs --apihost http://localhost:3233
+@test "ops -wsk activation logs is wrapped in ops logs" {
+    run ops logs --apihost http://localhost:3233
     assert_line 'error: Invalid argument(s). An activation ID is required.'
 
-    run nuv logs --apihost http://localhost:3233 --help
+    run ops logs --apihost http://localhost:3233 --help
     assert_line 'get the logs of an activation'
 }
 
-@test "nuv -wsk action get --url is wrapped in nuv url" {
-    run nuv url --apihost http://localhost:3233
+@test "ops -wsk action get --url is wrapped in ops url" {
+    run ops url --apihost http://localhost:3233
     assert_line 'error: Invalid argument(s). An action name is required.'
 
-    run nuv url --apihost http://localhost:3233 --help
+    run ops url --apihost http://localhost:3233 --help
     assert_line 'get action'
 }

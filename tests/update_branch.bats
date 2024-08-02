@@ -21,16 +21,16 @@ setup() {
     export NO_COLOR=1
     export OPS_BRANCH="$(cat ../branch.txt)"
     rm -rf ~/.ops
-    run nuv -update
+    run ops -update
     cd ~/.ops/$OPS_BRANCH/olaris
 }
 
-@test "nuv -update on olaris with old commit updates correctly" {
+@test "ops -update on olaris with old commit updates correctly" {
     run git reset --hard HEAD~1
     run git status
     assert_line --partial "Your branch is behind"
 
-    run nuv -update
+    run ops -update
     assert_line "Opsfiles updated successfully"
     assert_success
 

@@ -109,7 +109,7 @@ func addExeExt(name string) string {
 
 // ensure there is a bindir for downloading prerequisites
 // read it from OPS_BIN and create it
-// otherwise setup one in ~/nuv/<os>-<arch>/bin
+// otherwise setup one in ~/ops/<os>-<arch>/bin
 // and sets OPS_BIN
 func EnsureBindir() (string, error) {
 	var err error = nil

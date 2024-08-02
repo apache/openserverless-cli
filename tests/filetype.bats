@@ -22,41 +22,41 @@ setup() {
 }
 
 @test "filetype usage print" {
-    run nuv -filetype
+    run ops -filetype
     assert_line "Usage: filetype [-h] [-e] [-m] FILE"
 
-    run nuv -filetype -h
+    run ops -filetype -h
     assert_line "Usage: filetype [-h] [-e] [-m] FILE"
 }
 
 @test "filetype -e" {
-    run nuv -filetype -e testdata/sample.png
+    run ops -filetype -e testdata/sample.png
     assert_line "png"
 
-    run nuv -filetype -e testdata/testfiletype.txt
+    run ops -filetype -e testdata/testfiletype.txt
     assert_line "bin"
 }
 
 @test "filetype -m" {
-    run nuv -filetype -m testdata/sample.png
+    run ops -filetype -m testdata/sample.png
     assert_line "image/png"
 
-    run nuv -filetype -m testdata/testfiletype.txt
+    run ops -filetype -m testdata/testfiletype.txt
     assert_line "applications/octet-stream"
 }
 
 @test "filetype -e -m" {
-    run nuv -filetype -e -m testdata/sample.png
+    run ops -filetype -e -m testdata/sample.png
     assert_line "png image/png"
 
-    run nuv -filetype -e -m testdata/testfiletype.txt
+    run ops -filetype -e -m testdata/testfiletype.txt
     assert_line "bin applications/octet-stream"
 }
 
 @test "filetype without flags" {
-    run nuv -filetype testdata/sample.png
+    run ops -filetype testdata/sample.png
     assert_line "png image/png"
 
-    run nuv -filetype testdata/testfiletype.txt
+    run ops -filetype testdata/testfiletype.txt
     assert_line "bin applications/octet-stream"
 }

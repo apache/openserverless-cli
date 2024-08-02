@@ -25,7 +25,7 @@ import (
 
 type configMapBuilder struct {
 	configJsonPath string
-	nuvRootPath    string
+	opsRootPath    string
 	pluginOpsRoots map[string]string
 }
 
@@ -36,7 +36,7 @@ func NewConfigMapBuilder() *configMapBuilder {
 }
 
 // WithConfigJson adds a config.json file that will be read and used
-// to build a ConfigMap. If there both a config.json and a nuvroot.json are
+// to build a ConfigMap. If there both a config.json and a opsroot.json are
 // added, the 2 configs will be merged. It assumes the input file
 // is valid.
 func (b *configMapBuilder) WithConfigJson(file string) *configMapBuilder {
@@ -48,12 +48,12 @@ func (b *configMapBuilder) WithConfigJson(file string) *configMapBuilder {
 // the OpsRoot is read and only it's inner "config":{} object is parsed
 // ignoring the rest of the content.
 func (b *configMapBuilder) WithOpsRoot(file string) *configMapBuilder {
-	b.nuvRootPath = file
+	b.opsRootPath = file
 	return b
 }
 
 // WithPluginOpsRoots works like WithPluginOpsRoot, but it allows to add multiple
-// plugin nuvroot.json files at once.
+// plugin opsroot.json files at once.
 func (b *configMapBuilder) WithPluginOpsRoots(nrts map[string]string) *configMapBuilder {
 	b.pluginOpsRoots = nrts
 	return b
@@ -65,14 +65,14 @@ func (b *configMapBuilder) Build() (ConfigMap, error) {
 		return ConfigMap{}, err
 	}
 
-	nuvRootMap, err := readConfig(b.nuvRootPath, fromOpsRoot)
+	opsRootMap, err := readConfig(b.opsRootPath, fromOpsRoot)
 	if err != nil {
 		return ConfigMap{}, err
 	}
 
 	pluginOpsRootConfigs := make(map[string]map[string]interface{}, 0)
-	for plgName, nuvRootPath := range b.pluginOpsRoots {
-		pluginOpsRootMap, err := readConfig(nuvRootPath, fromOpsRoot)
+	for plgName, opsRootPath := range b.pluginOpsRoots {
+		pluginOpsRootMap, err := readConfig(opsRootPath, fromOpsRoot)
 		if err != nil {
 			return ConfigMap{}, err
 		}
@@ -81,7 +81,7 @@ func (b *configMapBuilder) Build() (ConfigMap, error) {
 
 	return ConfigMap{
 		pluginOpsRootConfigs: pluginOpsRootConfigs,
-		nuvRootConfig:        nuvRootMap,
+		opsRootConfig:        opsRootMap,
 		config:               configJsonMap,
 		configPath:           b.configJsonPath,
 	}, nil
@@ -124,9 +124,9 @@ func fromConfigJson(configPath string) (map[string]interface{}, error) {
 	return data, nil
 }
 
-func fromOpsRoot(nuvRootPath string) (map[string]interface{}, error) {
+func fromOpsRoot(opsRootPath string) (map[string]interface{}, error) {
 	data := make(map[string]interface{})
-	json_buf, err := os.ReadFile(nuvRootPath)
+	json_buf, err := os.ReadFile(opsRootPath)
 	if err != nil {
 		return data, err
 	}
@@ -134,7 +134,7 @@ func fromOpsRoot(nuvRootPath string) (map[string]interface{}, error) {
 		if data == nil {
 			return data, err
 		}
-		log.Println("nuvroot.json parsed with an error", err)
+		log.Println("opsroot.json parsed with an error", err)
 	}
 
 	cm, ok := data["config"].(map[string]interface{})

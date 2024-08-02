@@ -83,7 +83,7 @@ func RandTool(args ...string) error {
 		fmt.Println(`Generate random numbers, strings and uuids
 		
 Usage:
-	nuv -random [options]
+	ops -random [options]
 
 Options:
 	-h, --help  shows this help

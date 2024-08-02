@@ -77,7 +77,6 @@ tasks:
       - build
     cmds:
       - sudo cp ops /usr/local/bin
-      - sudo ln -sf /usr/local/bin/ops /usr/local/bin/nuv
 
   tests:
     desc: all tests
@@ -107,7 +106,7 @@ tasks:
     - test -d bats
 
   itest:
-    desc: integration tests for nuv (T=<test-name> without .bats, empty run all, pass flags with F=)
+    desc: integration tests for ops (T=<test-name> without .bats, empty run all, pass flags with F=)
     dir: tests
     cmds:
       - task: bats

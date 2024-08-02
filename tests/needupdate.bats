@@ -22,42 +22,42 @@ setup() {
 }
 
 @test "needupdate message" {
-    run nuv -needupdate
+    run ops -needupdate
     assert_line "Usage:"
 
-    run nuv -needupdate -h
+    run ops -needupdate -h
     assert_line "Usage:"
 }
 
 @test "needupdate returns 0 if a > b" {
-    run nuv -needupdate 1.0.0 0.9.0
+    run ops -needupdate 1.0.0 0.9.0
     assert_success
 
-    run nuv -needupdate 1.0.0-dev.202312121700 1.0.0-dev.202312121600
+    run ops -needupdate 1.0.0-dev.202312121700 1.0.0-dev.202312121600
     assert_success
 }
 
 @test "needupdate returns 1 if a < b" {
-    run nuv -needupdate 0.9.0 1.0.0
+    run ops -needupdate 0.9.0 1.0.0
     assert_failure
 
-    run nuv -needupdate 1.0.0-dev.202312121600 1.0.0-dev.202312121700
+    run ops -needupdate 1.0.0-dev.202312121600 1.0.0-dev.202312121700
     assert_failure
 }
 
 @test "needupdate returns 1 if a == b" {
-    run nuv -needupdate 1.0.0 1.0.0
+    run ops -needupdate 1.0.0 1.0.0
     assert_failure
 
-    run nuv -needupdate 1.0.0-dev.202312121700 1.0.0-dev.202312121700
+    run ops -needupdate 1.0.0-dev.202312121700 1.0.0-dev.202312121700
     assert_failure
 }
 
 @test "needupdate prints in stderr if parse fails" {
-    run nuv -needupdate
+    run ops -needupdate
     assert_failure
 
-    run nuv -needupdate 1.0.0 1.0.wrong
+    run ops -needupdate 1.0.0 1.0.wrong
     assert_failure
     assert_line "invalid semantic version: 1.0.wrong"
 }

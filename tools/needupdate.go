@@ -32,7 +32,7 @@ func needUpdateTool(args []string) error {
 Exits with 0 if greater, 1 otherwise.
 
 Usage:
-  nuv -needupdate <versionA> <versionB>
+  ops -needupdate <versionA> <versionB>
   
 Options:`)
 		flag.PrintDefaults()

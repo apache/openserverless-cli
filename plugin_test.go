@@ -53,32 +53,32 @@ func setupPluginTest(dir string, t *testing.T) string {
 	err := os.MkdirAll(olarisTestDir, 0755)
 	require.NoError(t, err)
 
-	// copy the nuvroot.json from tests/olaris into the olaris-test folder
-	nuvRootJSON := filepath.Join("tests", "olaris", "nuvroot.json")
-	err = copyFile(nuvRootJSON, filepath.Join(olarisTestDir, "nuvroot.json"))
+	// copy the opsroot.json from tests/olaris into the olaris-test folder
+	opsRootJSON := filepath.Join("tests", "olaris", "opsroot.json")
+	err = copyFile(opsRootJSON, filepath.Join(olarisTestDir, "opsroot.json"))
 	require.NoError(t, err)
 
-	// copy nuvfile.yml from tests/olaris into the olaris-test folder
-	nuvfileYML := filepath.Join("tests", "olaris", "nuvfile.yml")
-	err = copyFile(nuvfileYML, filepath.Join(olarisTestDir, "nuvfile.yml"))
+	// copy opsfile.yml from tests/olaris into the olaris-test folder
+	opsfileYML := filepath.Join("tests", "olaris", "opsfile.yml")
+	err = copyFile(opsfileYML, filepath.Join(olarisTestDir, "opsfile.yml"))
 	require.NoError(t, err)
 
 	return olarisTestDir
 }
 
 func TestGetAllOpsRootPlugins(t *testing.T) {
-	t.Run("success: get all the nuvroots.json from plugins with 1 plugin", func(t *testing.T) {
+	t.Run("success: get all the opsroots.json from plugins with 1 plugin", func(t *testing.T) {
 		tempDir := t.TempDir()
 		plgFolder := setupPluginTest(tempDir, t)
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
-		nuvRoots, err := GetOpsRootPlugins()
+		opsRoots, err := GetOpsRootPlugins()
 		require.NoError(t, err)
-		require.Len(t, nuvRoots, 1)
-		require.Equal(t, joinpath(plgFolder, NUVROOT), nuvRoots[getPluginName(plgFolder)])
+		require.Len(t, opsRoots, 1)
+		require.Equal(t, joinpath(plgFolder, OPSROOT), opsRoots[getPluginName(plgFolder)])
 	})
 
-	t.Run("success: get all the nuvroots.json from plugins with 2 plugins", func(t *testing.T) {
+	t.Run("success: get all the opsroots.json from plugins with 2 plugins", func(t *testing.T) {
 		tempDir := t.TempDir()
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 		plgFolder := setupPluginTest(tempDir, t)
@@ -88,21 +88,21 @@ func TestGetAllOpsRootPlugins(t *testing.T) {
 		err := os.MkdirAll(olarisTestDir, 0755)
 		require.NoError(t, err)
 
-		// copy the nuvroot.json from tests/olaris into the olaris-test folder
-		nuvRootJSON := filepath.Join("tests", "olaris", "nuvroot.json")
-		err = copyFile(nuvRootJSON, filepath.Join(olarisTestDir, "nuvroot.json"))
+		// copy the opsroot.json from tests/olaris into the olaris-test folder
+		opsRootJSON := filepath.Join("tests", "olaris", "opsroot.json")
+		err = copyFile(opsRootJSON, filepath.Join(olarisTestDir, "opsroot.json"))
 		require.NoError(t, err)
 
-		// copy nuvfile.yml from tests/olaris into the olaris-test folder
-		nuvfileYML := filepath.Join("tests", "olaris", "nuvfile.yml")
-		err = copyFile(nuvfileYML, filepath.Join(olarisTestDir, "nuvfile.yml"))
+		// copy opsfile.yml from tests/olaris into the olaris-test folder
+		opsfileYML := filepath.Join("tests", "olaris", "opsfile.yml")
+		err = copyFile(opsfileYML, filepath.Join(olarisTestDir, "opsfile.yml"))
 		require.NoError(t, err)
 
-		nuvRoots, err := GetOpsRootPlugins()
+		opsRoots, err := GetOpsRootPlugins()
 		require.NoError(t, err)
-		require.Len(t, nuvRoots, 2)
-		require.Equal(t, joinpath(plgFolder, NUVROOT), nuvRoots[getPluginName(plgFolder)])
-		require.Equal(t, joinpath(olarisTestDir, NUVROOT), nuvRoots[getPluginName(olarisTestDir)])
+		require.Len(t, opsRoots, 2)
+		require.Equal(t, joinpath(plgFolder, OPSROOT), opsRoots[getPluginName(plgFolder)])
+		require.Equal(t, joinpath(olarisTestDir, OPSROOT), opsRoots[getPluginName(olarisTestDir)])
 	})
 
 	t.Run("empty: no plugins folder found (olaris-*)", func(t *testing.T) {
@@ -110,9 +110,9 @@ func TestGetAllOpsRootPlugins(t *testing.T) {
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
 		// Test when the folder is not found
-		nuvRoots, err := GetOpsRootPlugins()
+		opsRoots, err := GetOpsRootPlugins()
 		require.NoError(t, err)
-		require.Empty(t, nuvRoots)
+		require.Empty(t, opsRoots)
 	})
 }
 
@@ -165,11 +165,11 @@ func TestNewPlugins(t *testing.T) {
 func Example_pluginsPrint() {
 	p := plugins{
 		local: make([]string, 0),
-		nuv:   make([]string, 0),
+		ops:   make([]string, 0),
 	}
 	p.print()
 	// Output
-	// No plugins installed. Use 'nuv -plugin' to add new ones.
+	// No plugins installed. Use 'ops -plugin' to add new ones.
 }
 
 func TestCheckGitRepo(t *testing.T) {

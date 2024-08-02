@@ -49,7 +49,7 @@ func pluginTool() error {
 }
 
 func printPluginUsage() {
-	fmt.Println(`Usage: nuv -plugin <repo-url>
+	fmt.Println(`Usage: ops -plugin <repo-url>
 
 Install/update plugins from a remote repository.
 The name of the repository must start with 'olaris-'.`)
@@ -139,7 +139,7 @@ func printPluginsHelp() error {
 	return nil
 }
 
-// GetOpsRootPlugins returns the map with all the olaris-*/nuvroot.json files
+// GetOpsRootPlugins returns the map with all the olaris-*/opsroot.json files
 // in the local and ~/.ops folders, pointed by their plugin names.
 // If the same plugin is found in both folders, the one in the local folder
 // is used.
@@ -150,24 +150,24 @@ func GetOpsRootPlugins() (map[string]string, error) {
 		return nil, err
 	}
 
-	nuvRoots := make(map[string]string)
+	opsRoots := make(map[string]string)
 	for _, path := range plgs.local {
 		name := getPluginName(path)
-		nuvRootPath := joinpath(path, NUVROOT)
-		nuvRoots[name] = nuvRootPath
+		opsRootPath := joinpath(path, OPSROOT)
+		opsRoots[name] = opsRootPath
 	}
 
-	for _, path := range plgs.nuv {
+	for _, path := range plgs.ops {
 		name := getPluginName(path)
 		// if the plugin is already in the map, skip it
-		if _, ok := nuvRoots[name]; ok {
+		if _, ok := opsRoots[name]; ok {
 			continue
 		}
-		nuvRootPath := joinpath(path, NUVROOT)
-		nuvRoots[name] = nuvRootPath
+		opsRootPath := joinpath(path, OPSROOT)
+		opsRoots[name] = opsRootPath
 	}
 
-	return nuvRoots, nil
+	return opsRoots, nil
 }
 
 // findTaskInPlugins returns the path to the plugin containing the task
@@ -186,8 +186,8 @@ func findTaskInPlugins(plg string) (string, error) {
 		}
 	}
 
-	// check that plg is the suffix of a folder name in plgs.nuv
-	for _, path := range plgs.nuv {
+	// check that plg is the suffix of a folder name in plgs.ops
+	for _, path := range plgs.ops {
 		folder := filepath.Base(path)
 		if strings.TrimPrefix(folder, "olaris-") == plg {
 			return path, nil
@@ -200,13 +200,13 @@ func findTaskInPlugins(plg string) (string, error) {
 // plugins struct holds the list of local and ~/.ops olaris-* folders
 type plugins struct {
 	local []string
-	nuv   []string
+	ops   []string
 }
 
 func newPlugins() (*plugins, error) {
 	localDir := os.Getenv("OPS_ROOT_PLUGIN")
 	localOlarisFolders := make([]string, 0)
-	nuvOlarisFolders := make([]string, 0)
+	opsOlarisFolders := make([]string, 0)
 
 	// Search in directory (localDir/olaris-*)
 	dir := filepath.Join(localDir, "olaris-*")
@@ -215,41 +215,41 @@ func newPlugins() (*plugins, error) {
 		return nil, err
 	}
 
-	// filter all folders that are do not contain nuvfile.yaml
+	// filter all folders that are do not contain opsfile.yaml
 	for _, folder := range olarisFolders {
-		if !isDir(folder) || !exists(folder, NUVFILE) {
+		if !isDir(folder) || !exists(folder, OPSFILE) {
 			continue
 		}
 		localOlarisFolders = append(localOlarisFolders, folder)
 	}
 
 	// Search in ~/.ops/olaris-*
-	nuvHome, err := homedir.Expand("~/.ops")
+	opsHome, err := homedir.Expand("~/.ops")
 	if err != nil {
 		return nil, err
 	}
 
-	olarisOpsFolders, err := filepath.Glob(filepath.Join(nuvHome, "olaris-*"))
+	olarisOpsFolders, err := filepath.Glob(filepath.Join(opsHome, "olaris-*"))
 	if err != nil {
 		return nil, err
 	}
 	for _, folder := range olarisOpsFolders {
-		if !isDir(folder) || !exists(folder, NUVFILE) {
+		if !isDir(folder) || !exists(folder, OPSFILE) {
 			continue
 		}
-		nuvOlarisFolders = append(nuvOlarisFolders, folder)
+		opsOlarisFolders = append(opsOlarisFolders, folder)
 	}
 
 	return &plugins{
 		local: localOlarisFolders,
-		nuv:   nuvOlarisFolders,
+		ops:   opsOlarisFolders,
 	}, nil
 }
 
 func (p *plugins) print() {
-	if len(p.local) == 0 && len(p.nuv) == 0 {
+	if len(p.local) == 0 && len(p.ops) == 0 {
 		debug("No plugins installed")
-		// fmt.Println("No plugins installed. Use 'nuv -plugin' to add new ones.")
+		// fmt.Println("No plugins installed. Use 'ops -plugin' to add new ones.")
 		return
 	}
 
@@ -261,10 +261,10 @@ func (p *plugins) print() {
 		}
 	}
 
-	if len(p.nuv) > 0 {
-		for _, plg := range p.nuv {
+	if len(p.ops) > 0 {
+		for _, plg := range p.ops {
 			plgName := getPluginName(plg)
-			fmt.Printf("  %s (nuv)\n", plgName)
+			fmt.Printf("  %s (ops)\n", plgName)
 		}
 	}
 }

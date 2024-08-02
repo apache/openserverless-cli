@@ -46,10 +46,9 @@ You can also use for your own purposes, if you want.
 
 Because `ops` is built on `task`, `docopt` and `wsk` you have to consult the following website for: 
 
-- details on `nuvfile.yml`: [taskfiles](https://taskfile.dev)
-- details on `nuvopts.txt`:  [docopts](http://docopt.org/)
-- details on the OpenWhisk cli: [wsk](https://github.com/apache/openwhisk-cli)
-
+- informations on the format of `opsfile.yml`: [taskfiles](https://taskfile.dev)
+- informations on the format of `docopts.txt`: [docopts](http://docopt.org/)
+- informations on the OpenWhisk cli (the underlying engine for OpenServerless): [wsk](https://github.com/apache/openwhisk-cli)
 
 ## Where `ops` looks for tasks
 
@@ -63,17 +62,17 @@ Se below for details
 
 When you run `ops [<args>...]` it will first look for its `ops` root.  
 
-The `olaris` root is a folder with two files in it: `nuvfile.yml` (a yaml taskfile) and `nuvroot.json` (a json file with release information).
+The `olaris` root is a folder with two files in it: `opsfile.yml` (a yaml taskfile) and `opsroot.json` (a json file with release information).
 
 The first step is to locate the root folder. The algorithm to find the tools is the following.
 
 If the environment variable `OPS_ROOT` is defined, it will look there first, and will check if there are the two files.
 
-Then it will look in the current folder if there is a `nuvfile.yml`. If there is, it will also look for `nuvroot.json`. If it is not there, it will go up one level looking for a directory with `nuvfile.yml` and `nuvtools.json`, and selects it as the `nuv` root.
+Then it will look in the current folder if there is a `opsfile.yml`. If there is, it will also look for `opsroot.json`. If it is not there, it will go up one level looking for a directory with `opsfile.yml` and `opstools.json`, and selects it as the `ops` root.
 
-If there is not a `nuvfile.yml` it will look for a folder called `olaris` with both a `nuvfile.yml` and `nuvtools.json` in it and will select it as the `ops` root.
+If there is not a `opsfile.yml` it will look for a folder called `olaris` with both a `opsfile.yml` and `opstools.json` in it and will select it as the `ops` root.
 
-Then it will look in `~/.ops` if there is an `olaris` folder with `nuvfile.yml` and `nuvroot.json`.
+Then it will look in `~/.ops` if there is an `olaris` folder with `opsfile.yml` and `opsroot.json`.
 
 ### Download Tasks
 
@@ -95,25 +94,25 @@ When you run `ops -update`, if there is not a `~/.ops/<branch>/olaris` it will c
 
 If there is a directory name  `<arg1>` it will change to that directory. If there is then a subdirectory `<arg2>` it will change to that and so on until it finds a argument that is not a directory name. 
 
-If the last argument is a directory name, will look for a `nuvopts.txt`. If it is there, it will show this. If it's not there, it will execute a `ops -task -t nuvfile.yml -l` showing tasks with description. 
+If the last argument is a directory name, will look for a `docopts.txt`. If it is there, it will show this. If it's not there, it will execute a `ops -task -t opsfile.yml -l` showing tasks with description. 
 
 If it finds an argument not corresponding to a directory, it will consider it a task to execute, 
 
-If there is not a `nuvopts.txt`, it will execute as a task, passing the other arguments (equivalent to `ops -task -t nuvfile.yml <arg> -- <the-other-args>`).
+If there is not a `docopts.txt`, it will execute as a task, passing the other arguments (equivalent to `ops -task -t opsfile.yml <arg> -- <the-other-args>`).
 
-If there is a `nuvopts.txt`, it will interpret it as a  [`docopt`](http://docopt.org/) to parse the remaining arguments as parameters. The result of parsing is a sequence of `<key>=<value>` that will be fed to `task`. So it is equivalent to invoking `task -t nuvfile.yml <arg> <key>=<value> <key>=<value>...`
+If there is a `docopts.txt`, it will interpret it as a  [`docopt`](http://docopt.org/) to parse the remaining arguments as parameters. The result of parsing is a sequence of `<key>=<value>` that will be fed to `task`. So it is equivalent to invoking `task -t opsfile.yml <arg> <key>=<value> <key>=<value>...`
 
 ### Example
 
 A command like `ops setup kubernetes install --context=k3s` will look in the folder `setup/kubernetes` in the ops root, if it is there, then select `install` as task to execute and parse the `--context=k3s`. It is equivalent to invoke `cd setup/kubernetes ; task install -- context=k3s`.
 
-If there is a `nuvopts.txt` with a `command <name> --flag --fl=<val>` the passed parameters will be: `_name_=<name> __flag=true __fl=true _val_=<val>`.
+If there is a `docopts.txt` with a `command <name> --flag --fl=<val>` the passed parameters will be: `_name_=<name> __flag=true __fl=true _val_=<val>`.
 
 Note that also this will also use the downloaded tools and the embedded commands of `ops`.
 
 ## Embedded tools
 
-Currently task embeds the following tools, and you can invoke them directly prefixing them with `-`: (`ops -task`, `nuv -basename` etc). Use `nuv -help` to list them.
+Currently task embeds the following tools, and you can invoke them directly prefixing them with `-`: (`ops -task`, `ops -basename` etc). Use `ops -help` to list them.
 
 This is the list of the tools (it could be outdated, check with `ops -help`):
 
@@ -163,17 +162,17 @@ The following environment variables allows to ovverride certain defaults.
 - `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults to `~/.ops/<os>-<arch>/bin`. All the prerequisites are downloaded in this directory
 - `OPS_CMD` is the actual command executed - defaults to the absolute path of the target of the symbolic link but it can be overriden.
 - `OPS_REPO` is the github repo where `ops` downloads its tasks. If not defined, it defaults to `https://github.com/apache/openserverless-task`.
-- `OPS_BRANCH` is the branch where `nuv` looks for its tasks. The branch to use is defined at build time and it is the base version (without the patch level). Chech branch.txt for the current value
-- `OPS_VERSION` can be defined to set nuv's version value. It is useful to override version validations when updating tasks (and you know what you are doing).  Current value is in version.txt
+- `OPS_BRANCH` is the branch where `ops` looks for its tasks. The branch to use is defined at build time and it is the base version (without the patch level). Chech branch.txt for the current value
+- `OPS_VERSION` can be defined to set ops's version value. It is useful to override version validations when updating tasks (and you know what you are doing).  Current value is in version.txt
 - `OPS_TMP` is a temporary folder where you can store temp files - defaults to `~/.ops/tmp` 
-- `OPS_APIHOST` is the host for `nuv -login`. It is used in place of the first argument of `nuv -login`. If empty, the command will expect the first argument to be the apihost.
-- `OPS_USER`: set the username for `nuv -login`. The default is `nuvolaris`. It can be overriden by passing the username as an argument to `nuv -login` or by setting the environment variable.
-- `OPS_PASSWORD`: set the password for `nuv -login`. If not set, `nuv -login` will prompt for the password. It is useful for tests and non-interactive environments.
-- `OPS_PWD` is the folder where `ops` is executed (the current working directory). It is used to preserve the original working directory when `ops` is used again in tasks (e.g. nuv -realpath to retrieve the correct path). Change it only if you know what you are doing!
-- `OPS_ROOT_PLUGIN` is the folder where `nuv` looks for plugins. If not defined, it defaults to the same directory where  `ops` is located.
-- `OPS_OLARIS` holds the head commit hash of the used olaris repo. You can see the hash with `nuv -info`.
+- `OPS_APIHOST` is the host for `ops -login`. It is used in place of the first argument of `ops -login`. If empty, the command will expect the first argument to be the apihost.
+- `OPS_USER`: set the username for `ops -login`. The default is `nuvolaris`. It can be overriden by passing the username as an argument to `ops -login` or by setting the environment variable.
+- `OPS_PASSWORD`: set the password for `ops -login`. If not set, `ops -login` will prompt for the password. It is useful for tests and non-interactive environments.
+- `OPS_PWD` is the folder where `ops` is executed (the current working directory). It is used to preserve the original working directory when `ops` is used again in tasks (e.g. ops -realpath to retrieve the correct path). Change it only if you know what you are doing!
+- `OPS_ROOT_PLUGIN` is the folder where `ops` looks for plugins. If not defined, it defaults to the same directory where  `ops` is located.
+- `OPS_OLARIS` holds the head commit hash of the used olaris repo. You can see the hash with `ops -info`.
 - `OPS_PORT` is the port where `ops` will run embedde web server for the configurator. If not defined, it defaults to `9678`.
-- `OPS_NO_NUVOPTS` can be defined to disable nuvopts parsing. Useful to test hidden tasks. When this is enabled it also shows all the tasks instead of just those with a description.
+- `OPS_NO_DOCOPTS` can be defined to disable docopts parsing. Useful to test hidden tasks. When this is enabled it also shows all the tasks instead of just those with a description.
 - `OPS_NO_PREREQ` disable downloading of prerequisites - you have to ensure at least coreutils is in the path to make things work
 
 
@@ -183,7 +182,7 @@ The following variables have a special purpose and used for test and debug
 
 - `DEBUG` if set enable debugging messages
 - `TRACE` when set gives mode detailes tracing informations, also enable DEBUG=1
-- `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a nuvopts active.
+- `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a docopts active.
 - `__OS` overrides the value of the detected operating system - useful to test prereq scripts
 -  `__ARCH` overrides the value of the detected architecture - useful to test prereq scripts
 - `OPS_RUNTIMES_JSON` is used for the values of the runtimes json if the system is unable to read in other ways the current runtimes json. It is normally compiled in when you buid from the current version of the runtimes.json. It can be overriden

@@ -10,7 +10,7 @@ To be able to develop ops you need either to know [posix shell scripting](https:
 
 The shell is modified to be able to test some commands in a special way to simplify writing the scripts in the taskfiles.
 
-In particular, all the commonly used Unix utilites are delegated to an utility that embeds all of then called `coreutils`.  So in a task all the commands listed as `coreutils` like `rm`, `ls` are actually translated in an invocation of `coreutils rm`, `coreutils ls` and so all. All the commands delegated to coreutils can be seen with `nuv -help`. We are using [uutils](https://github.com/uutils/coreutils) a rust portable rewrite of core unix coreutils.
+In particular, all the commonly used Unix utilites are delegated to an utility that embeds all of then called `coreutils`.  So in a task all the commands listed as `coreutils` like `rm`, `ls` are actually translated in an invocation of `coreutils rm`, `coreutils ls` and so all. All the commands delegated to coreutils can be seen with `ops -help`. We are using [uutils](https://github.com/uutils/coreutils) a rust portable rewrite of core unix coreutils.
 
 Furthrmore some commands are implemented in `ops` itself. For example it embeds an `awk` intepreter (actually [gowak](https://github.com/benhoyt/goawk) and a JQ intepreter (actually [gojq](https://github.com/itchyny/gojq)). The shell is modified to be able to use those tooks `awk` and `jq` directly.
 

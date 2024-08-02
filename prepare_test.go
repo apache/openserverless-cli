@@ -44,8 +44,8 @@ func Failing_Example_download() {
 	pr(1)
 	_ = os.Chdir(workDir)
 	OpsBranch = "0.1.0"
-	nuvdir, _ := homedir.Expand("~/.ops")
-	_ = os.RemoveAll(nuvdir)
+	opsdir, _ := homedir.Expand("~/.ops")
+	_ = os.RemoveAll(opsdir)
 	_, _ = downloadTasksFromGitHub(true, true)
 	dir, err := locateOpsRoot(".")
 	pr(1, err, nhpath(dir))
@@ -56,32 +56,32 @@ func Failing_Example_download() {
 	// 1
 	// Cloning tasks...
 	// Tasks downloaded successfully
-	// 1 <nil> /home/.nuv/0.1.0/olaris
+	// 1 <nil> /home/.ops/0.1.0/olaris
 	// Updating tasks...
 	// Tasks are already up to date!
-	// 2 <nil> /home/.nuv/0.1.0/olaris
+	// 2 <nil> /home/.ops/0.1.0/olaris
 
 }
 
 func Example_locate_root() {
 	_ = os.Chdir(workDir)
 	OpsBranch = "0.1.0"
-	nuvdir, _ := homedir.Expand("~/.ops")
-	_ = os.RemoveAll(nuvdir)
+	opsdir, _ := homedir.Expand("~/.ops")
+	_ = os.RemoveAll(opsdir)
 	_, err := locateOpsRoot(".")
 	pr(1, err)
 	dir, err := locateOpsRoot("tests")
 	pr(2, err, npath(dir))
 	// Output:
-	// 1 we cannot find nuvfiles, download them with nuv -update
+	// 1 we cannot find opsfiles, download them with ops -update
 	// 2 <nil> /work/tests/olaris
 }
 
 func Test_setOpsOlarisHash(t *testing.T) {
 	_ = os.Chdir(workDir)
 	OpsBranch = "0.1.0-testing"
-	nuvdir, _ := homedir.Expand("~/.ops")
-	_ = os.RemoveAll(nuvdir)
+	opsdir, _ := homedir.Expand("~/.ops")
+	_ = os.RemoveAll(opsdir)
 	_ = os.Setenv("OPS_BIN", workDir)
 	dir, _ := downloadTasksFromGitHub(true, true)
 	err := setOpsOlarisHash(dir)

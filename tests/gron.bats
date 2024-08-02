@@ -22,13 +22,13 @@ setup() {
 }
 
 @test "-gron help " {
-    run nuv -gron -h
+    run ops -gron -h
     assert_line --partial "Usage:"
     assert_success
 }
 
 @test "-gron with file" {
-    run nuv -gron testdata/sample.json
+    run ops -gron testdata/sample.json
     assert_line 'json = {};'
     assert_line 'json.nested = {};'
     assert_line 'json.nested["b-key"] = "b-value";'

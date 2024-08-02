@@ -22,13 +22,13 @@ setup() {
 }
 
 @test "-awk" {
-    run nuv -awk
+    run ops -awk
     assert_line "usage: goawk [-F fs] [-v var=value] [-f progfile | 'prog'] [file ...]"
     assert_failure
 }
 
 @test "-awk -h" {
-    run nuv -awk -h
+    run ops -awk -h
     assert_line "usage: goawk [-F fs] [-v var=value] [-f progfile | 'prog'] [file ...]"
     assert_line "Standard AWK arguments:"
     assert_line "Additional GoAWK features:"
@@ -36,7 +36,7 @@ setup() {
 }
 
 @test "-awk print $ 1 file" {
-    run nuv -awk '{print $1}' testdata/awk_test.txt
+    run ops -awk '{print $1}' testdata/awk_test.txt
     assert_line "This"
     assert_line "This"
     assert_line "This"
@@ -44,13 +44,13 @@ setup() {
 }
 
 @test "-awk replace" {
-    run echo "$(echo "Hello World" | nuv -awk '{$2="Nuvolaris"; print $0}')"
+    run echo "$(echo "Hello World" | ops -awk '{$2="Nuvolaris"; print $0}')"
     assert_line "Hello Nuvolaris"
     assert_success
 }
 
 @test "file not found" {
-    run nuv -awk '{print $1}' testdata/no_tests.txt
+    run ops -awk '{print $1}' testdata/no_tests.txt
     assert_line "file \"testdata/no_tests.txt\" not found"
     assert_failure
 }

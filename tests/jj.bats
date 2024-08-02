@@ -22,31 +22,31 @@ setup() {
 }
 
 @test "-jj help" {
-    run nuv -jj -h
+    run ops -jj -h
     assert_line "usage: jj [-v value] [-purnOD] [-i infile] [-o outfile] keypath"
     assert_success
 }
 
 @test "-jj get string example" {
-    run echo "$(echo '{"name":{"first":"Tom","last":"Smith"}}' | nuv -jj name.last)"
+    run echo "$(echo '{"name":{"first":"Tom","last":"Smith"}}' | ops -jj name.last)"
     assert_output "Smith"
     assert_success
 }
 
 @test "-jj get block of JSON" {
-    run echo "$(echo '{"name":{"first":"Tom","last":"Smith"}}' | nuv -jj name)"
+    run echo "$(echo '{"name":{"first":"Tom","last":"Smith"}}' | ops -jj name)"
     assert_line '{"first":"Tom","last":"Smith"}'
     assert_success
 }
 
 @test "-jj get raw string value" {
-    run echo "$(echo '{"name":{"first":"Tom","last":"Smith"}}' | nuv -jj -r name.last)"
+    run echo "$(echo '{"name":{"first":"Tom","last":"Smith"}}' | ops -jj -r name.last)"
     assert_line '"Smith"'
     assert_success
 }
 
 @test "-jj get array value by index" {
-    run echo "$(echo '{"friends":["Tom","Jane","Carol"]}' | nuv -jj friends.1)"
+    run echo "$(echo '{"friends":["Tom","Jane","Carol"]}' | ops -jj friends.1)"
     assert_line "Jane"
     assert_success
 }

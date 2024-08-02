@@ -22,45 +22,45 @@ setup() {
 }
 
 @test "datefmt print usage" {
-    run nuv -datefmt -h
+    run ops -datefmt -h
     assert_success
     assert_line "Usage:"
 
-    run nuv -datefmt --help
+    run ops -datefmt --help
     assert_success
     assert_line "Usage:"
 }
 
 @test "datefmt with input timestamp and output format" {
-    run nuv -datefmt -t 1577836800 -f DateOnly
+    run ops -datefmt -t 1577836800 -f DateOnly
     assert_success
     assert_output "2020-01-01"
 }
 
 @test "datefmt string date with in fmt" {
-    run nuv -datefmt -s "2023-01-01" --if DateOnly
+    run ops -datefmt -s "2023-01-01" --if DateOnly
     assert_success
     assert_output "Sun Jan  1 00:00:00 UTC 2023"
 }
 
 @test "datefmt with errors" {
     # missing input format
-    run nuv -datefmt -s "2023-01-01"
+    run ops -datefmt -s "2023-01-01"
     assert_failure
     assert_output "error: both --str and --if must be provided. Only str given: 2023-01-01"
 
     # missing input string
-    run nuv -datefmt --if DateOnly
+    run ops -datefmt --if DateOnly
     assert_failure
     assert_output "error: both --str and --if must be provided. Only input format given: DateOnly"
 
     # wrong input format
-    run nuv -datefmt -s "2023-01-01" --if NotAFormat
+    run ops -datefmt -s "2023-01-01" --if NotAFormat
     assert_failure
     assert_output "error: invalid input format: NotAFormat"
 
     # wrong output format
-    run nuv -datefmt -t 1577836800 -f NotAFormat
+    run ops -datefmt -t 1577836800 -f NotAFormat
     assert_failure
     assert_output "error: invalid output format: NotAFormat"
 } 

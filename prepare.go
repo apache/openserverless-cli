@@ -34,24 +34,24 @@ func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 	debug("Download tasks from github")
 	repoURL := getOpsRepo()
 	branch := getOpsBranch()
-	nuvDir, err := homedir.Expand("~/.ops")
+	opsDir, err := homedir.Expand("~/.ops")
 	if err != nil {
 		return "", err
 	}
-	if err := os.MkdirAll(nuvDir, 0755); err != nil {
+	if err := os.MkdirAll(opsDir, 0755); err != nil {
 		return "", err
 	}
 
-	nuvBranchDir := joinpath(nuvDir, branch)
-	localDir, err := homedir.Expand(joinpath(nuvBranchDir, "olaris"))
+	opsBranchDir := joinpath(opsDir, branch)
+	localDir, err := homedir.Expand(joinpath(opsBranchDir, "olaris"))
 	if err != nil {
 		return "", err
 	}
 	debug("localDir", localDir)
 
 	// Updating existing tools
-	if exists(nuvBranchDir, "olaris") {
-		trace("Updating olaris in", nuvBranchDir)
+	if exists(opsBranchDir, "olaris") {
+		trace("Updating olaris in", opsBranchDir)
 		fmt.Println("Updating tasks...")
 		r, err := git.PlainOpen(localDir)
 		if err != nil {
@@ -80,7 +80,7 @@ func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 		}
 
 		fmt.Println("Opsfiles updated successfully")
-		touchLatestCheckFile(joinpath(nuvBranchDir, LATESTCHECK))
+		touchLatestCheckFile(joinpath(opsBranchDir, LATESTCHECK))
 		return localDir, nil
 	}
 
@@ -95,14 +95,14 @@ func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 	fmt.Println("Cloning tasks...")
 	_, err = git.PlainClone(localDir, false, cloneOpts)
 	if err != nil {
-		os.RemoveAll(nuvBranchDir)
+		os.RemoveAll(opsBranchDir)
 		warn(fmt.Sprintf("failed to clone olaris on branch '%s'", branch))
 		return "", err
 	}
 
 	fmt.Println("Tasks downloaded successfully")
 
-	createLatestCheckFile(nuvBranchDir)
+	createLatestCheckFile(opsBranchDir)
 
 	// clone
 	return localDir, nil
@@ -121,40 +121,40 @@ func pullTasks(force, silent bool) (string, error) {
 		log.Fatalf("cannot download prerequisites: %v", err)
 	}
 
-	// validate OpsVersion semver against nuvroot.json
-	nuvRoot, err := readOpsRootFile(localDir)
+	// validate OpsVersion semver against opsroot.json
+	opsRoot, err := readOpsRootFile(localDir)
 	if err != nil {
 		return "", err
 	}
 
 	// check if the version is up to date
-	nuvVersion, err := semver.NewVersion(OpsVersion)
+	opsVersion, err := semver.NewVersion(OpsVersion)
 	if err != nil {
 		// in development mode, we don't have a valid semver version
-		warn("Unable to validate nuv version", OpsVersion, ":", err)
+		warn("Unable to validate ops version", OpsVersion, ":", err)
 		return localDir, nil
 	}
 
-	nuvRootVersion, err := semver.NewVersion(nuvRoot.Version)
+	opsRootVersion, err := semver.NewVersion(opsRoot.Version)
 	if err != nil {
-		warn("Unable to validate nuvroot.json version", nuvRoot.Version, ":", err)
+		warn("Unable to validate opsroot.json version", opsRoot.Version, ":", err)
 		return localDir, nil
 	}
 
 	// check if the version is up to date, if not warn the user
-	if nuvVersion.LessThan(nuvRootVersion) {
+	if opsVersion.LessThan(opsRootVersion) {
 		fmt.Println()
-		fmt.Printf("Your ops version (%v) is older than the required version (%v).\n", nuvVersion, nuvRootVersion)
+		fmt.Printf("Your ops version (%v) is older than the required version (%v).\n", opsVersion, opsRootVersion)
 		if err := autoCLIUpdate(); err != nil {
 			return "", err
 		}
 	}
 
-	err = checkOperatorVersion(nuvRoot.Config)
+	err = checkOperatorVersion(opsRoot.Config)
 	if err == nil {
 		fmt.Println()
 		fmt.Println("New operator version detected!")
-		fmt.Println("Current deployed operator can be updated with: nuv update operator")
+		fmt.Println("Current deployed operator can be updated with: ops update operator")
 	}
 
 	return localDir, nil
@@ -162,7 +162,7 @@ func pullTasks(force, silent bool) (string, error) {
 
 // locateOpsRoot locate the folder where starts execution
 // it can be a parent folder of the current folder or it can be downloaded
-// from github - it should contain a file nuvfile.yml and a file nuvtools.yml in the root
+// from github - it should contain a file opsfile.yml and a file opstools.yml in the root
 func locateOpsRoot(cur string) (string, error) {
 	cur, err := filepath.Abs(cur)
 	if err != nil {
@@ -178,31 +178,31 @@ func locateOpsRoot(cur string) (string, error) {
 
 	// is there  olaris folder?
 	olaris := joinpath(cur, "olaris")
-	if exists(cur, "olaris") && exists(olaris, NUVFILE) && exists(olaris, NUVROOT) {
+	if exists(cur, "olaris") && exists(olaris, OPSFILE) && exists(olaris, OPSROOT) {
 		trace("found sub olaris:", olaris)
 		return olaris, nil
 	}
 
 	// is there an olaris folder in ~/.ops ?
-	nuvOlarisDir := fmt.Sprintf("~/.ops/%s/olaris", getOpsBranch())
-	olaris, err = homedir.Expand(nuvOlarisDir)
-	if err == nil && exists(olaris, NUVFILE) && exists(olaris, NUVROOT) {
-		trace("found sub", nuvOlarisDir, ":", olaris)
+	opsOlarisDir := fmt.Sprintf("~/.ops/%s/olaris", getOpsBranch())
+	olaris, err = homedir.Expand(opsOlarisDir)
+	if err == nil && exists(olaris, OPSFILE) && exists(olaris, OPSROOT) {
+		trace("found sub", opsOlarisDir, ":", olaris)
 		return olaris, nil
 	}
 
-	return "", fmt.Errorf("we cannot find nuvfiles, download them with nuv -update")
+	return "", fmt.Errorf("we cannot find opsfiles, download them with ops -update")
 }
 
-// locateOpsRootSearch search for `nuvfiles.yml`
-// and goes up looking for a folder with also `nuvroot.json`
+// locateOpsRootSearch search for `opsfiles.yml`
+// and goes up looking for a folder with also `opsroot.json`
 func locateOpsRootSearch(cur string) string {
 	debug("locateOpsRootSearch:", cur)
-	// exits nuvfile.yml? if not, go up until you find it
-	if !exists(cur, NUVFILE) {
+	// exits opsfile.yml? if not, go up until you find it
+	if !exists(cur, OPSFILE) {
 		return ""
 	}
-	if exists(cur, NUVROOT) {
+	if exists(cur, OPSROOT) {
 		return cur
 	}
 	parent := parent(cur)
@@ -221,9 +221,9 @@ func autoCLIUpdate() error {
 	return cmd.Run()
 }
 
-func checkOperatorVersion(nuvRootConfig map[string]interface{}) error {
+func checkOperatorVersion(opsRootConfig map[string]interface{}) error {
 	trace("checkOperatorVersion")
-	images := nuvRootConfig["images"].(map[string]interface{})
+	images := opsRootConfig["images"].(map[string]interface{})
 	operator := images["operator"].(string)
 	opVer := strings.Split(operator, ":")[1]
 

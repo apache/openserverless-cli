@@ -17,6 +17,6 @@
  * under the License.
  */
 
-const nuv = require('nuv');
-const data = nuv.readFile(process.argv[2]);
+const ops = require('ops');
+const data = ops.readFile(process.argv[2]);
 console.log(data)

@@ -23,66 +23,66 @@ setup() {
 
 @test "help" {
     export TEST_VAR="envvar"
-    run nuv sub opts
+    run ops sub opts
     # just one as it is a cat of a message
     assert_line "Usage:"
     assert_line "  opts ciao <name>... [-c] [-e envvar]"
-    run nuv sub opts -h
+    run ops sub opts -h
     assert_line "Usage:"
-    run nuv sub opts --help
+    run ops sub opts --help
     assert_line "Usage:"
     # do not check the actual version but ensure the output is not the help test
-    run nuv sub opts --version
+    run ops sub opts --version
     refute_output "Usage:"
 }
 
 @test "cmd" {
-    run nuv sub opts hello
+    run ops sub opts hello
     assert_line "hello!"
 }
 
 @test "ciao" {
-    run nuv sub opts ciao mike
+    run ops sub opts ciao mike
     assert_line "name: mike"
     assert_line "-c: no"
 
-    run nuv sub opts ciao mike miri -c
+    run ops sub opts ciao mike miri -c
     assert_line "name: mike"
     assert_line "name: miri"
     assert_line "-c: yes"
 }
 
 @test "salve sayonara" {
-    run nuv sub opts salve aaa hi 1 2 --fl=ag
+    run ops sub opts salve aaa hi 1 2 --fl=ag
     assert_line "salve name=('aaa') hi x=1 y=2 --fl=ag"
-    run nuv sub opts sayonara opt1 10 20 --fa
+    run ops sub opts sayonara opt1 10 20 --fa
     assert_line "sayonara=true opt1=true opt2=false x=10 y=20 --fa=true --fb=false"
 }
 
 @test "errors" {
     export TEST_VAR
-    run nuv sub opts salve
+    run ops sub opts salve
     assert_line "Usage:"
     assert_failure
-    run nuv sub opts salve opt4
+    run ops sub opts salve opt4
     assert_line "Usage:"
     assert_failure
 }
 
 
 @test "shortening" {
-    run nuv s o c mike miri -c
+    run ops s o c mike miri -c
     assert_line "ciao:"
     assert_line "name: mike"
     assert_line "name: miri"
     assert_line "-c: yes"
 
-    run nuv s o sal aaa hi 1 2 --fl=ag
+    run ops s o sal aaa hi 1 2 --fl=ag
     assert_line "salve name=('aaa') hi x=1 y=2 --fl=ag"
 }
 
 @test "bad shortening" {
-    run nuv f
+    run ops f
     assert_failure
     assert_line --partial "error: ambiguous command: f."
 }

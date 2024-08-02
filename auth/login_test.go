@@ -95,12 +95,12 @@ func TestLoginCmd(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, loginResult)
 
-		// cred, err := keyring.Get(nuvSecretServiceName, "AUTH")
-		nuvHome, err := homedir.Expand("~/.ops")
+		// cred, err := keyring.Get(opsSecretServiceName, "AUTH")
+		opsHome, err := homedir.Expand("~/.ops")
 		require.NoError(t, err)
 
 		configMap, err := config.NewConfigMapBuilder().
-			WithConfigJson(filepath.Join(nuvHome, "config.json")).
+			WithConfigJson(filepath.Join(opsHome, "config.json")).
 			Build()
 		require.NoError(t, err)
 
@@ -125,15 +125,15 @@ func TestLoginCmd(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, loginResult)
 
-		// cred, err := keyring.Get(nuvSecretServiceName, "fakeCred")
+		// cred, err := keyring.Get(opsSecretServiceName, "fakeCred")
 		// require.NoError(t, err)
 		// require.Equal(t, "test", cred)
 
-		nuvHome, err := homedir.Expand("~/.ops")
+		opsHome, err := homedir.Expand("~/.ops")
 		require.NoError(t, err)
 
 		configMap, err := config.NewConfigMapBuilder().
-			WithConfigJson(filepath.Join(nuvHome, "config.json")).
+			WithConfigJson(filepath.Join(opsHome, "config.json")).
 			Build()
 		require.NoError(t, err)
 
@@ -204,7 +204,7 @@ func Test_storeCredentials(t *testing.T) {
 	require.NotNil(t, fakeCreds)
 
 	for k := range fakeCreds {
-		cred, err := keyring.Get(nuvSecretServiceName, k)
+		cred, err := keyring.Get(opsSecretServiceName, k)
 		require.NoError(t, err)
 		require.Equal(t, fakeCreds[k], cred)
 	}

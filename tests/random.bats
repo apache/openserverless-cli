@@ -21,70 +21,70 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "nuv -random help" {
-    run nuv -random -h
+@test "ops -random help" {
+    run ops -random -h
     assert_success
     assert_line "Usage:"
 
-    run nuv -random --help
+    run ops -random --help
     assert_success
     assert_line "Usage:"
 }
 
-@test "nuv -random" {
-    run nuv -random
+@test "ops -random" {
+    run ops -random
     assert_success
     refute_line "Usage:"
 }
 
-@test "nuv -random --int" {
-    run nuv -random --int
+@test "ops -random --int" {
+    run ops -random --int
     assert_line "Usage:"
 
-    run nuv -random --int aa
+    run ops -random --int aa
     assert_line "Usage:"
 
-    run nuv -random --int 1 2 3
+    run ops -random --int 1 2 3
     assert_line "Usage:"
 
-    run nuv -random --int 1 aa
+    run ops -random --int 1 aa
     assert_failure
 
-    run nuv -random --int -1
+    run ops -random --int -1
     assert_failure
 
-    run nuv -random --int 0
+    run ops -random --int 0
     assert_failure
 
-    run nuv -random --int 10 20
+    run ops -random --int 10 20
     assert_failure
 
-    run nuv -random --int 10 1
+    run ops -random --int 10 1
     assert_success
 }
 
-@test "nuv -random -str" {
-    run nuv -random --str
+@test "ops -random -str" {
+    run ops -random --str
     assert_line "Usage:"
 
-    run nuv -random --str aa
+    run ops -random --str aa
     assert_line "Usage:"
 
-    run nuv -random --str 1 2 3
+    run ops -random --str 1 2 3
     assert_line "Usage:"
 
-    run nuv -random --str -1
+    run ops -random --str -1
     assert_failure
 
-    run nuv -random --str 1 aa
+    run ops -random --str 1 aa
     assert_success
 }
 
-@test "nuv -random -u" {
-    run nuv -random -u
+@test "ops -random -u" {
+    run ops -random -u
     assert_success
 
-    run nuv -random --uuid
+    run ops -random --uuid
     assert_success
 }
     

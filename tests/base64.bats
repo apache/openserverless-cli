@@ -22,19 +22,19 @@ setup() {
 }
 
 @test "-base64 help message" {
-    run nuv -base64
-    assert_line "Usage: nuv -base64 [options] <string>"
+    run ops -base64
+    assert_line "Usage: ops -base64 [options] <string>"
 
-    run nuv -base64 -h
-    assert_line "Usage: nuv -base64 [options] <string>"
+    run ops -base64 -h
+    assert_line "Usage: ops -base64 [options] <string>"
 }
 
 @test "-base64 --encode" {
-    run nuv -base64 --encode "hello world"
+    run ops -base64 --encode "hello world"
     assert_line "aGVsbG8gd29ybGQ="
 }
 
 @test "-base64 --decode" {
-    run nuv -base64 --decode "aGVsbG8gd29ybGQ="
+    run ops -base64 --decode "aGVsbG8gd29ybGQ="
     assert_line "hello world"
 }

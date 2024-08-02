@@ -31,7 +31,7 @@ func validateTool() error {
 
 	flag.Usage = func() {
 		fmt.Println(`Usage:
-nuv -validate [-e] [-m | -n | -r <regex>] <value> [<message>]
+ops -validate [-e] [-m | -n | -r <regex>] <value> [<message>]
 
 Check if a value is valid according to the given constraints.
 If -e is specified, the value is retrieved from the environment variable with the given name.

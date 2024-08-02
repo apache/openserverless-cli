@@ -22,39 +22,39 @@ setup() {
 }
 
 @test "welcome" {
-    run nuv
+    run ops
     assert_line '* fail_then_succeed:       fail then success'
     assert_line '* failing:                 failing'
     assert_line '* sub:                     sub command'
-    assert_line '* testcmd:                 test nuv commands'
+    assert_line '* testcmd:                 test ops commands'
 }
 
 @test "testcmd" {
-    run nuv testcmd
+    run ops testcmd
     assert_line "test"
 }
 
 @test "sub" {
-    run nuv sub
+    run ops sub
     assert_line '* opts:         opts test'
     assert_line '* simple:       simple'
 }
 
 @test "sub simple" {
-    run nuv sub simple
+    run ops sub simple
     assert_line simple
 }
 
 @test "other with shortening" {
-    run nuv o
+    run ops o
     assert_line "* simple:       simple task in other"
 
-    run nuv o s
+    run ops o s
     assert_line "hidden"
 }
 
 @test "sub command not found" {
-    run nuv sub notfound
+    run ops sub notfound
     assert_line "task execution error: no command named notfound found"
     assert_failure
 }

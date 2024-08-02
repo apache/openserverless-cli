@@ -24,9 +24,9 @@ tasks:
   tool:
     desc: tool command (base64 -> hello)
     cmds:
-      - nuv -base64 -d aGVsbG8=
+      - ops -base64 -d aGVsbG8=
 
   command:
-    desc: run nuv setup status
+    desc: run ops setup status
     cmds:
-      - nuv version
+      - ops version

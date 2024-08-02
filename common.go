@@ -56,7 +56,7 @@ type OpsRootJSON struct {
 	Config  map[string]interface{} `json:"config"`
 }
 
-// default port for nuv server
+// default port for ops server
 const DefaultOpsPort = 9768
 
 func getOpsPort() string {
@@ -89,7 +89,7 @@ func getOpsRoot() (string, error) {
 func getOpsRepo() string {
 	repo := os.Getenv("OPS_REPO")
 	if repo == "" {
-		repo = NUVREPO
+		repo = OPSREPO
 	}
 	//nolint:errcheck
 	os.Setenv("OPS_REPO", repo)
@@ -108,7 +108,7 @@ func getOpsBranch() string {
 
 func readOpsRootFile(dir string) (OpsRootJSON, error) {
 	data := OpsRootJSON{}
-	json_buf, err := os.ReadFile(joinpath(dir, NUVROOT))
+	json_buf, err := os.ReadFile(joinpath(dir, OPSROOT))
 	if err != nil {
 		return OpsRootJSON{}, err
 	}

@@ -23,33 +23,33 @@ setup() {
 }
 
 @test "-rename -remove" {
-    run nuv -rename
+    run ops -rename
     assert_line "Usage: rename <source> <destination>"
 
-    run nuv -rename missing 
+    run ops -rename missing 
     assert_line "Usage: rename <source> <destination>"
 
-    run nuv -rename missing something
+    run ops -rename missing something
     assert_failure
     assert_line "rename missing something: no such file or directory" 
 
     touch something
-    run nuv -rename something somethingelse
+    run ops -rename something somethingelse
     assert_success
     assert_line "renamed something -> somethingelse"
 
-    run nuv -rename somethingelse /dev/null
+    run ops -rename somethingelse /dev/null
     assert_failure
     assert_line "rename somethingelse /dev/null: invalid cross-device link"
 
-    run nuv -remove
+    run ops -remove
     assert_line "Usage: remove <filename>"
 
-    run nuv -remove missing
+    run ops -remove missing
     assert_failure
     assert_line "remove missing: no such file or directory"
 
-    run nuv -remove somethingelse
+    run ops -remove somethingelse
     assert_success
     assert_line "removed somethingelse"
 }    

@@ -24,7 +24,7 @@ tasks:
     desc: sub command
 
   testcmd:
-    desc: test nuv commands
+    desc: test ops commands
     cmds:
       - echo test
 

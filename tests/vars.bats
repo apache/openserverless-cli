@@ -22,30 +22,30 @@ setup() {
 }
 
 @test "simple" {
-    run nuv sub vars simple
+    run ops sub vars simple
     # use top level
     assert_line 'eV=e2 pV=p2'
 
-    run env V=e1 nuv sub vars simple V=p1
+    run env V=e1 ops sub vars simple V=p1
     # override external
     assert_line 'eV=e1 pV=p1'
 }
 
 
 @test "inner" {
-    run nuv sub vars inner
+    run ops sub vars inner
     # use inner
     assert_line 'eV=e3 pV=p3'
 
-    run nuv sub vars inner V=p1
+    run ops sub vars inner V=p1
     # no override var for inner var
     assert_line 'eV=e3 pV=p3'
 
-    run env V=e1 nuv sub vars inner
+    run env V=e1 ops sub vars inner
     # env override inner env
     assert_line 'eV=e1 pV=p3'
 
-    run env V=e1 nuv sub vars inner V=p1
+    run env V=e1 ops sub vars inner V=p1
     # no override var for inner var
     # env override inner env
     assert_line 'eV=e1 pV=p3'
@@ -53,18 +53,18 @@ setup() {
 
 
 @test "override" {
-    run nuv sub vars prio
+    run ops sub vars prio
     # vars see each other does not see env
     # env sees parameters
     assert_line 'pOP=p2 pOE= eOE= eOP=p2'
 
-    run env V=e1 nuv sub vars prio
+    run env V=e1 ops sub vars prio
     assert_line 'pOP=p2 pOE=e1 eOE=e1 eOP=p2'
 
-    run nuv sub vars prio V=p1
+    run ops sub vars prio V=p1
     assert_line 'pOP=p1 pOE= eOE= eOP=p1'
 
-    run env V=e1 nuv sub vars prio V=p1
+    run env V=e1 ops sub vars prio V=p1
     assert_line 'pOP=p1 pOE=e1 eOE=e1 eOP=p1'
 }
 
@@ -72,45 +72,45 @@ setup() {
   # local override envfile
   # external override envfile
 
-  run nuv sub vars env
+  run ops sub vars env
   assert_line  'E=3 EE=2'
 
-  run env E=1 nuv sub vars env
+  run env E=1 ops sub vars env
   assert_line 'E=1 EE=2'
 
   # saved locally
-  run nuv sub vars saved
+  run ops sub vars saved
   assert_line 'S=3 SS=2 SSS=4 overriden SS=2'
 }
 
 @test "saved-vars" {
-    run nuv sub vars clean
-    run nuv sub vars v1v2
+    run ops sub vars clean
+    run ops sub vars v1v2
     assert_line 'V1=x V2='
-    run nuv sub vars save1 V1=a
-    run nuv sub vars v1v2
+    run ops sub vars save1 V1=a
+    run ops sub vars v1v2
     assert_line 'V1=a V2='
-    run nuv sub vars save1 V1=b V2=c
-    run nuv sub vars v1v2
+    run ops sub vars save1 V1=b V2=c
+    run ops sub vars v1v2
     assert_line 'V1=b V2=c'
-    run nuv sub vars save2 V2=d
-    run nuv sub vars v1v2
+    run ops sub vars save2 V2=d
+    run ops sub vars v1v2
     assert_line 'V1=b V2=d'
-    run nuv sub vars v1v2 V1=a
+    run ops sub vars v1v2 V1=a
     assert_line 'V1=a V2=d'
-    run nuv sub vars v1v2 V2=c
+    run ops sub vars v1v2 V2=c
     assert_line 'V1=b V2=c'
-    run nuv sub vars clean
+    run ops sub vars clean
 }
 
 
 
 
 
-nuv sub vars save2 V1=a
+ops sub vars save2 V1=a
 
 V1= V2=
-nuv sub vars v1v2
+ops sub vars v1v2
 
 
 

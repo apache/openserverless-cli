@@ -41,18 +41,18 @@ type LoginResult struct {
 }
 
 const usage = `Usage:
-nuv login <apihost> [<user>]
+ops login <apihost> [<user>]
 
-Login to an OpenServerless instance. If no user is specified, the default user "nuvolaris" is used.
+Login to an OpenServerless instance. If no user is specified, the default user "opsolaris" is used.
 You can set the environment variables OPS_APIHOST and OPS_USER to avoid specifying them on the command line.
 You can set OPS_PASSWORD to avoid entering the password interactively.
 
 Options:
   -h, --help   Show usage`
 
-const whiskLoginPath = "/api/v1/web/whisk-system/nuv/login"
+const whiskLoginPath = "/api/v1/web/whisk-system/ops/login"
 const defaultUser = "nuvolaris"
-const nuvSecretServiceName = "nuvolaris"
+const opsSecretServiceName = "nuvolaris"
 
 func LoginCmd() (*LoginResult, error) {
 	flag := flag.NewFlagSet("login", flag.ExitOnError)
@@ -131,13 +131,13 @@ func LoginCmd() (*LoginResult, error) {
 		return nil, errors.New("missing AUTH token from login response")
 	}
 
-	nuvHome, err := homedir.Expand("~/.ops")
+	opsHome, err := homedir.Expand("~/.ops")
 	if err != nil {
 		return nil, err
 	}
 
 	configMap, err := config.NewConfigMapBuilder().
-		WithConfigJson(filepath.Join(nuvHome, "config.json")).
+		WithConfigJson(filepath.Join(opsHome, "config.json")).
 		Build()
 
 	if err != nil {
@@ -159,7 +159,7 @@ func LoginCmd() (*LoginResult, error) {
 	// 	return nil, err
 	// }
 
-	// auth, err := keyring.Get(nuvSecretServiceName, "AUTH")
+	// auth, err := keyring.Get(opsSecretServiceName, "AUTH")
 	// if err != nil {
 	// 	return nil, err
 	// }
@@ -206,7 +206,7 @@ func doLogin(url, user, password string) (map[string]string, error) {
 
 func storeCredentials(creds map[string]string) error {
 	for k, v := range creds {
-		err := keyring.Set(nuvSecretServiceName, k, v)
+		err := keyring.Set(opsSecretServiceName, k, v)
 		if err != nil {
 			return err
 		}

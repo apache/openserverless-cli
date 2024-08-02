@@ -21,36 +21,36 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "nuv -update" {
+@test "ops -update" {
     run rm -rf ~/.ops
-    run nuv -update
+    run ops -update
     assert_line "Opsfiles downloaded successfully"
     assert_success
 }
 
-@test "nuv -update with old version warns" {
-    OPS_VERSION=0.0.0 run nuv -update
-    assert_line --partial "Your nuv version (0.0.0) is older than the required version in nuvroot.json"
-    assert_line "Attempting to update nuv..."
+@test "ops -update with old version warns" {
+    OPS_VERSION=0.0.0 run ops -update
+    assert_line --partial "Your ops version (0.0.0) is older than the required version in opsroot.json"
+    assert_line "Attempting to update ops..."
     assert_success
 }
 
-@test "nuv -update with bad version" {
-    OPS_VERSION=notsemver run nuv -update
-    assert_line "Unable to validate nuv version notsemver : Invalid Semantic Version"
+@test "ops -update with bad version" {
+    OPS_VERSION=notsemver run ops -update
+    assert_line "Unable to validate ops version notsemver : Invalid Semantic Version"
     assert_success
 }
 
-@test "nuv -update with newer version" {
-    OPS_VERSION=10.2.3 run nuv -update
+@test "ops -update with newer version" {
+    OPS_VERSION=10.2.3 run ops -update
     assert_line "Tasks are already up to date!"
     assert_success
 }
 
-@test "nuv -update on branch" {
+@test "ops -update on branch" {
     run rm -rf ~/.ops
     export OPS_BRANCH=0.1.0
-    run nuv -update
+    run ops -update
     assert_line "Opsfiles downloaded successfully"
     assert_success
 }

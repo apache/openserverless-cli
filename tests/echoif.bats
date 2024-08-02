@@ -22,57 +22,57 @@ setup() {
 }
 
 @test "-echoif help message" {
-    run nuv -echoif
+    run ops -echoif
     assert_line "Usage: echoif <a> <b>"
 
-    run nuv -echoif -h
+    run ops -echoif -h
     assert_line "Usage: echoif <a> <b>"
 }
 
 @test "-echoif echoes a with successful previous command" {
     run echo "ok"
-    run nuv -echoif "a" "b"
+    run ops -echoif "a" "b"
     assert_line "a"
 }
 
 @test "-echoif echoes b with failed previous command" {
-    run nuv failing
-    run nuv -echoif "a" "b"
+    run ops failing
+    run ops -echoif "a" "b"
     refute_line "b"
 }
 
 @test "-echoifempty help message" {
-    run nuv -echoifempty
+    run ops -echoifempty
     assert_line "Usage: echoifempty <str> <a> <b>"
 
-    run nuv -echoifempty -h
+    run ops -echoifempty -h
     assert_line "Usage: echoifempty <str> <a> <b>"
 }
 
 @test "-echoifempty echoes a if string is empty" {
-    run nuv -echoifempty "" "a" "b"
+    run ops -echoifempty "" "a" "b"
     assert_line "a"
 }
 
 @test "-echoifempty echoes b if string is not empty" {
-    run nuv -echoifempty "not empty" "a" "b"
+    run ops -echoifempty "not empty" "a" "b"
     assert_line "b"
 }
 
 @test "-echoifexists help message" {
-    run nuv -echoifexists
+    run ops -echoifexists
     assert_line "Usage: echoifexists <file> <a> <b>"
 
-    run nuv -echoifexists -h
+    run ops -echoifexists -h
     assert_line "Usage: echoifexists <file> <a> <b>"
 }
 
 @test "-echoifexists echoes a if file exists" {
-    run nuv -echoifexists "testdata/_1vars_" "a" "b"
+    run ops -echoifexists "testdata/_1vars_" "a" "b"
     assert_line "a"
 }
 
 @test "-echoifexists echoes b if file does not exist" {
-    run nuv -echoifexists "testdata/_1vars_not_exists_" "a" "b"
+    run ops -echoifexists "testdata/_1vars_not_exists_" "a" "b"
     assert_line "b"
 }

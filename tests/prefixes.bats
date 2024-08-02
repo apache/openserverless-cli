@@ -21,27 +21,27 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "nuv sub invoked with prefix" {
-    run nuv sub
+@test "ops sub invoked with prefix" {
+    run ops sub
     # just one as it is a cat of a message
     assert_line "* opts:         opts test"
     assert_line "* simple:       simple"
 
-    run nuv s
+    run ops s
     assert_line "* opts:         opts test"
     assert_line "* simple:       simple"
 }
 
-@test "nuv sub simple invoked with prefixes" {
-    run nuv sub simple
+@test "ops sub simple invoked with prefixes" {
+    run ops sub simple
     assert_line "ops: [simple] echo simple"
     assert_line "simple"
 
-    run nuv s simple
+    run ops s simple
     assert_line "ops: [simple] echo simple"
     assert_line "simple"
 
-    run nuv s s
+    run ops s s
     assert_line "ops: [simple] echo simple"
     assert_line "simple"
 }

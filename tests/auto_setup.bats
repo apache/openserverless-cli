@@ -24,7 +24,7 @@ setup() {
 
 @test "first run auto setups" {
     run rm -rf ~/.ops
-    run nuv
+    run ops
     assert_success
     assert_output --partial "Welcome to ops! Setting up..."
     run ls ~/.ops
@@ -34,7 +34,7 @@ setup() {
 @test "wrong branch fails to setup" {
     run rm -rf ~/.ops
     export OPS_BRANCH=wrong
-    run nuv
+    run ops
     assert_failure
     assert_output --partial "Welcome to ops! Setting up..."
     assert_output --partial "failed to clone olaris on branch 'wrong'"
@@ -43,7 +43,7 @@ setup() {
 @test "correct branch setups" {
     run rm -rf ~/.ops
     export OPS_BRANCH=0.1.0
-    run nuv
+    run ops
     assert_success
     assert_output --partial "Welcome to ops! Setting up..."
     run ls ~/.ops

@@ -41,16 +41,16 @@ func (e *TaskNotFoundErr) Error() string {
 }
 
 func help() error {
-	if os.Getenv("OPS_NO_NUVOPTS") == "" && exists(".", NUVOPTS) {
-		os.Args = []string{"envsubst", "-no-unset", "-i", NUVOPTS}
+	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS) {
+		os.Args = []string{"envsubst", "-no-unset", "-i", DOCOPTS}
 		return envsubst.EnvsubstMain()
 	}
 	// In case of syntax error, Task will return an error
 	list := "-l"
-	if os.Getenv("OPS_NO_NUVOPTS") != "" {
+	if os.Getenv("OPS_NO_DOCOPTS") != "" {
 		list = "--list-all"
 	}
-	_, err := Task("-t", NUVFILE, list)
+	_, err := Task("-t", OPSFILE, list)
 
 	return err
 }
@@ -187,7 +187,7 @@ func Ops(base string, args []string) error {
 			return err
 		}
 		// if valid, check if it's a folder and move to it
-		if isDir(taskName) && exists(taskName, NUVFILE) {
+		if isDir(taskName) && exists(taskName, OPSFILE) {
 			if err := os.Chdir(taskName); err != nil {
 				return err
 			}
@@ -223,10 +223,10 @@ func Ops(base string, args []string) error {
 	savedArgs := loadSavedArgs()
 
 	// parsed args
-	if os.Getenv("OPS_NO_NUVOPTS") == "" && exists(".", NUVOPTS) {
+	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS) {
 		trace("PREPARSE:", rest)
-		parsedArgs := parseArgs(readfile(NUVOPTS), rest)
-		prefix := []string{"-t", NUVFILE}
+		parsedArgs := parseArgs(readfile(DOCOPTS), rest)
+		prefix := []string{"-t", OPSFILE}
 		if len(rest) > 0 && rest[0][0] != '-' {
 			prefix = append(prefix, rest[0])
 		}
@@ -246,7 +246,7 @@ func Ops(base string, args []string) error {
 	mainTask := rest[0]
 
 	// unparsed args - separate variable assignments from extra args
-	pre := []string{"-t", NUVFILE, mainTask}
+	pre := []string{"-t", OPSFILE, mainTask}
 	pre = append(pre, savedArgs...)
 	post := []string{"--"}
 	args1 := rest[1:]
@@ -270,7 +270,7 @@ func Ops(base string, args []string) error {
 }
 
 // validateTaskName does the following:
-// 1. Check that the given task name is found in the nuvfile.yaml and return it
+// 1. Check that the given task name is found in the opsfile.yaml and return it
 // 2. If not found, check if the input is a prefix of any task name, if it is for only one return the proper task name
 // 3. If the prefix is valid for more than one task, return an error
 // 4. If the prefix is not valid for any task, return an error
@@ -304,19 +304,19 @@ func validateTaskName(dir string, name string) (string, error) {
 	return "", fmt.Errorf("ambiguous command: %s. Possible matches: %v", name, candidates)
 }
 
-// obtains the task names from the nuvfile.yaml inside the given directory
+// obtains the task names from the opsfile.yaml inside the given directory
 func getTaskNamesList(dir string) []string {
 	m := make(map[interface{}]interface{})
 	var taskNames []string
-	if exists(dir, NUVFILE) {
-		dat, err := os.ReadFile(joinpath(dir, NUVFILE))
+	if exists(dir, OPSFILE) {
+		dat, err := os.ReadFile(joinpath(dir, OPSFILE))
 		if err != nil {
 			return make([]string, 0)
 		}
 
 		err = yaml.Unmarshal(dat, &m)
 		if err != nil {
-			warn("error reading nuvfile.yml")
+			warn("error reading opsfile.yml")
 			return make([]string, 0)
 		}
 		tasksMap, ok := m["tasks"].(map[string]interface{})
@@ -331,7 +331,7 @@ func getTaskNamesList(dir string) []string {
 
 	}
 
-	// for each subfolder, check if it has a nuvfile.yaml
+	// for each subfolder, check if it has a opsfile.yaml
 	// if it does, add it to the list of tasks
 
 	// get subfolders
@@ -344,7 +344,7 @@ func getTaskNamesList(dir string) []string {
 	for _, f := range subfolders {
 		if f.IsDir() {
 			subfolder := joinpath(dir, f.Name())
-			if exists(subfolder, NUVFILE) {
+			if exists(subfolder, OPSFILE) {
 				// check if not contained
 				name := f.Name()
 				if !slices.Contains(taskNames, name) {

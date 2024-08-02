@@ -23,100 +23,100 @@ setup() {
     run rm -rf ~/.ops
 }
 
-@test "nuv prints 'Plugins:'" {
-    run nuv
+@test "ops prints 'Plugins:'" {
+    run ops
     assert_line 'Plugins:'
     assert_line "  plugin (local)"
 }
 
-@test "nuv skips invalid plugin folders (without nuvfile.yaml)" {
+@test "ops skips invalid plugin folders (without opsfile.yaml)" {
     run mkdir olaris-test2
-    run nuv
+    run ops
     refute_line "  test2 (local)"
     run rm -rf olaris-test2
 }
 
-@test "nuv help on sub cmds plugin" {
-    run nuv plugin sub
+@test "ops help on sub cmds plugin" {
+    run ops plugin sub
     assert_line '* opts:         opts test'
     assert_line '* simple:       simple'
 }
 
-@test "nuv exec sub simple plugin cmd" {
-    run nuv plugin sub simple
+@test "ops exec sub simple plugin cmd" {
+    run ops plugin sub simple
     assert_line 'simple'
 }
 
-@test "original nuv sub simple still works" {
-    run nuv sub simple
+@test "original ops sub simple still works" {
+    run ops sub simple
     assert_line 'simple'
 }
 
-@test "config in plugin nuvroot is added with prefix" {
-    run nuv -config -d
+@test "config in plugin opsroot is added with prefix" {
+    run ops -config -d
     assert_line 'PLUGIN_KEY=value'
     assert_line 'PLUGIN_ANOTHER_KEY=a plugin value'
 }
 
 @test "other plugin without olaris is shown" {
     cd testdata
-    run nuv -update
-    run nuv
+    run ops -update
+    run ops
     assert_line 'Plugins:'
     assert_line "  other (local)"
 }
 
 @test "other sub simple prints simple" {
     cd testdata
-    run nuv -update
-    run nuv other sub simple
+    run ops -update
+    run ops other sub simple
     assert_line 'simple'
 }
 
-@test "other tool runs nuv tool" {
+@test "other tool runs ops tool" {
     cd testdata
-    run nuv -update
-    run nuv other tool
+    run ops -update
+    run ops other tool
     assert_line 'hello'
     run rm -rf ~/.ops
 }
 
-@test "other command runs nuv command" {
+@test "other command runs ops command" {
     cd testdata
-    run nuv -update
-    run nuv other command
+    run ops -update
+    run ops other command
     assert_line --partial 'nothing installed yet'
 }
 
 # Plugin Tool Tests
 
-@test "nuv -plugin with wrong name" {
-    run nuv -plugin https://github.com/giusdp/olari
+@test "ops -plugin with wrong name" {
+    run ops -plugin https://github.com/giusdp/olari
     assert_line "error: plugin repository must be a https url and plugin must start with 'olaris-'"
     assert_failure
 
-    run nuv -plugin olaris-test
+    run ops -plugin olaris-test
     assert_line "error: plugin repository must be a https url and plugin must start with 'olaris-'"
     assert_failure
 }
 
-@test "nuv -plugin with correct plugin repo" {
-    run nuv -plugin https://github.com/giusdp/olaris-test.git
+@test "ops -plugin with correct plugin repo" {
+    run ops -plugin https://github.com/giusdp/olaris-test.git
     assert_success
 
-    run nuv
+    run ops
     assert_line 'Plugins:'
     assert_line "  plugin (local)"
-    assert_line "  test (nuv)"
+    assert_line "  test (ops)"
 
     run rm -rf ~/.ops/olaris-test
 }
 
-@test "nuv -plugin on existing plugin will update it" {
-    run nuv -plugin https://github.com/giusdp/olaris-test.git
+@test "ops -plugin on existing plugin will update it" {
+    run ops -plugin https://github.com/giusdp/olaris-test.git
     assert_success
 
-    run nuv -plugin https://github.com/giusdp/olaris-test.git
+    run ops -plugin https://github.com/giusdp/olaris-test.git
     assert_success
     assert_line "Updating plugin olaris-test"
     assert_line "The plugin repo is already up to date!"
