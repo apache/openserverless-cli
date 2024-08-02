@@ -82,9 +82,9 @@ func Test_setNuvOlarisHash(t *testing.T) {
 	NuvBranch = "0.1.0-testing"
 	nuvdir, _ := homedir.Expand("~/.nuv")
 	_ = os.RemoveAll(nuvdir)
-	_ = os.Setenv("NUV_BIN", workDir)
+	_ = os.Setenv("OPS_BIN", workDir)
 	dir, _ := downloadTasksFromGitHub(true, true)
 	err := setNuvOlarisHash(dir)
 	require.NoError(t, err)
-	require.NotEmpty(t, os.Getenv("NUV_OLARIS"))
+	require.NotEmpty(t, os.Getenv("OPS_OLARIS"))
 }

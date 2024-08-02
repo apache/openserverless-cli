@@ -29,8 +29,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/apache/openserverless-cli/config"
+	"github.com/mitchellh/go-homedir"
 	"github.com/zalando/go-keyring"
 )
 
@@ -44,8 +44,8 @@ const usage = `Usage:
 nuv login <apihost> [<user>]
 
 Login to a Nuvolaris instance. If no user is specified, the default user "nuvolaris" is used.
-You can use the environment variables NUV_APIHOST and NUV_USER to avoid specifying them on the command line.
-And NUV_PASSWORD to avoid entering the password interactively.
+You can use the environment variables OPS_APIHOST and OPS_USER to avoid specifying them on the command line.
+And OPS_PASSWORD to avoid entering the password interactively.
 
 Options:
   -h, --help   Show usage`
@@ -75,12 +75,12 @@ func LoginCmd() (*LoginResult, error) {
 
 	args := flag.Args()
 
-	if len(args) == 0 && os.Getenv("NUV_APIHOST") == "" {
+	if len(args) == 0 && os.Getenv("OPS_APIHOST") == "" {
 		flag.Usage()
 		return nil, errors.New("missing apihost")
 	}
 
-	password := os.Getenv("NUV_PASSWORD")
+	password := os.Getenv("OPS_PASSWORD")
 	if password == "" {
 		fmt.Print("Enter Password: ")
 		pwd, err := AskPassword()
@@ -91,17 +91,17 @@ func LoginCmd() (*LoginResult, error) {
 		fmt.Println()
 	}
 
-	apihost := os.Getenv("NUV_APIHOST")
+	apihost := os.Getenv("OPS_APIHOST")
 	if apihost == "" {
 		apihost = args[0]
 	}
 	url := apihost + whiskLoginPath
 
 	// try to get the user from the environment
-	user := os.Getenv("NUV_USER")
+	user := os.Getenv("OPS_USER")
 	if user == "" {
 		// if env var not set, try to get it from the command line
-		if os.Getenv("NUV_APIHOST") != "" {
+		if os.Getenv("OPS_APIHOST") != "" {
 			// if apihost env var was set, treat the first arg as the user
 			if len(args) > 0 {
 				user = args[0]
@@ -110,7 +110,7 @@ func LoginCmd() (*LoginResult, error) {
 			// if apihost env var was not set, treat the second arg as the user
 			if len(args) > 1 {
 				user = args[1]
-			} 
+			}
 		}
 	}
 

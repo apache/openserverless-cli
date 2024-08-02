@@ -33,7 +33,7 @@ setup() {
 
 @test "wrong branch fails to setup" {
     run rm -rf ~/.nuv
-    export NUV_BRANCH=wrong
+    export OPS_BRANCH=wrong
     run nuv
     assert_failure
     assert_output --partial "Welcome to ops! Setting up..."
@@ -42,7 +42,7 @@ setup() {
 
 @test "correct branch setups" {
     run rm -rf ~/.nuv
-    export NUV_BRANCH=0.1.0
+    export OPS_BRANCH=0.1.0
     run nuv
     assert_success
     assert_output --partial "Welcome to ops! Setting up..."

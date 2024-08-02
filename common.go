@@ -29,28 +29,28 @@ import (
 )
 
 // default files
-const NUVFILE = "nuvfile.yml"
-const NUVROOT = "nuvroot.json"
-const NUVOPTS = "nuvopts.txt"
-const CONFIGFILE = "config.json"
+const OPSFILE = "opsfile.yml"
+const OPSROOT = "opsroot.json"
+const DOCOPTS = "docopts.txt"
 const PREREQ = "prereq.yml"
+const CONFIGFILE = "config.json"
 
 // repo where download tasks
-const NUVREPO = "http://github.com/apache/openserverless-task"
+const OPSREPO = "http://github.com/apache/openserverless-task"
 
 // branch where download tasks
 // defaults to test - will be changed in compilation
 
 //go:embed version.txt
-var NuvVersion string
+var OpsVersion string
 
 //go:embed branch.txt
-var NuvBranch string
+var OpsBranch string
 
 //go:embed runtimes.json
 var WSK_RUNTIMES_JSON string
 
-// Represents nuvroot.json. It is used to parse the file.
+// Represents opsroot.json. It is used to parse the file.
 type NuvRootJSON struct {
 	Version string                 `json:"version"`
 	Config  map[string]interface{} `json:"config"`
@@ -60,18 +60,18 @@ type NuvRootJSON struct {
 const DefaultNuvPort = 9768
 
 func getNuvPort() string {
-	port := os.Getenv("NUV_PORT")
+	port := os.Getenv("OPS_PORT")
 	if port == "" {
 		port = fmt.Sprintf("%d", DefaultNuvPort)
 	}
 	//nolint:errcheck
-	os.Setenv("NUV_PORT", port)
+	os.Setenv("OPS_PORT", port)
 	return port
 }
 
 // get defaults
 func getNuvRoot() (string, error) {
-	root := os.Getenv("NUV_ROOT")
+	root := os.Getenv("OPS_ROOT")
 	if root == "" {
 		dir, err := os.Getwd()
 		if err == nil {
@@ -82,27 +82,27 @@ func getNuvRoot() (string, error) {
 		}
 	}
 	//nolint:errcheck
-	os.Setenv("NUV_ROOT", root)
+	os.Setenv("OPS_ROOT", root)
 	return root, nil
 }
 
 func getNuvRepo() string {
-	repo := os.Getenv("NUV_REPO")
+	repo := os.Getenv("OPS_REPO")
 	if repo == "" {
 		repo = NUVREPO
 	}
 	//nolint:errcheck
-	os.Setenv("NUV_REPO", repo)
+	os.Setenv("OPS_REPO", repo)
 	return repo
 }
 
 func getNuvBranch() string {
-	branch := os.Getenv("NUV_BRANCH")
+	branch := os.Getenv("OPS_BRANCH")
 	if branch == "" {
 		branch = strings.TrimSpace(NuvBranch)
 	}
 	//nolint:errcheck
-	os.Setenv("NUV_BRANCH", branch)
+	os.Setenv("OPS_BRANCH", branch)
 	return branch
 }
 
@@ -113,7 +113,7 @@ func readNuvRootFile(dir string) (NuvRootJSON, error) {
 		return NuvRootJSON{}, err
 	}
 	if err := json.Unmarshal(json_buf, &data); err != nil {
-		warn("nuvroot.json parsed with an error", err)
+		warn("opsroot.json parsed with an error", err)
 	}
 	return data, nil
 }

@@ -41,13 +41,13 @@ func (e *TaskNotFoundErr) Error() string {
 }
 
 func help() error {
-	if os.Getenv("NUV_NO_NUVOPTS") == "" && exists(".", NUVOPTS) {
+	if os.Getenv("OPS_NO_NUVOPTS") == "" && exists(".", NUVOPTS) {
 		os.Args = []string{"envsubst", "-no-unset", "-i", NUVOPTS}
 		return envsubst.EnvsubstMain()
 	}
 	// In case of syntax error, Task will return an error
 	list := "-l"
-	if os.Getenv("NUV_NO_NUVOPTS") != "" {
+	if os.Getenv("OPS_NO_NUVOPTS") != "" {
 		list = "--list-all"
 	}
 	_, err := Task("-t", NUVFILE, list)
@@ -101,16 +101,16 @@ func parseArgs(usage string, args []string) []string {
 	return res
 }
 
-// sets up a tmp folder and NUV_TMP envvar
+// sets up a tmp folder and OPS_TMP envvar
 func setupTmp() error {
 	var err error
-	tmp := os.Getenv("NUV_TMP")
+	tmp := os.Getenv("OPS_TMP")
 	if tmp == "" {
 		tmp, err = homedir.Expand("~/.nuv/tmp")
 		if err != nil {
 			return err
 		}
-		os.Setenv("NUV_TMP", tmp)
+		os.Setenv("OPS_TMP", tmp)
 	}
 	return os.MkdirAll(tmp, 0755)
 }
@@ -223,7 +223,7 @@ func Nuv(base string, args []string) error {
 	savedArgs := loadSavedArgs()
 
 	// parsed args
-	if os.Getenv("NUV_NO_NUVOPTS") == "" && exists(".", NUVOPTS) {
+	if os.Getenv("OPS_NO_NUVOPTS") == "" && exists(".", NUVOPTS) {
 		trace("PREPARSE:", rest)
 		parsedArgs := parseArgs(readfile(NUVOPTS), rest)
 		prefix := []string{"-t", NUVFILE}

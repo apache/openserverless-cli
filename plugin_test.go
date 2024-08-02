@@ -70,7 +70,7 @@ func TestGetAllNuvRootPlugins(t *testing.T) {
 	t.Run("success: get all the nuvroots.json from plugins with 1 plugin", func(t *testing.T) {
 		tempDir := t.TempDir()
 		plgFolder := setupPluginTest(tempDir, t)
-		os.Setenv("NUV_ROOT_PLUGIN", tempDir)
+		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
 		nuvRoots, err := GetNuvRootPlugins()
 		require.NoError(t, err)
@@ -80,7 +80,7 @@ func TestGetAllNuvRootPlugins(t *testing.T) {
 
 	t.Run("success: get all the nuvroots.json from plugins with 2 plugins", func(t *testing.T) {
 		tempDir := t.TempDir()
-		os.Setenv("NUV_ROOT_PLUGIN", tempDir)
+		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 		plgFolder := setupPluginTest(tempDir, t)
 
 		// create the olaris-test2 folder
@@ -107,7 +107,7 @@ func TestGetAllNuvRootPlugins(t *testing.T) {
 
 	t.Run("empty: no plugins folder found (olaris-*)", func(t *testing.T) {
 		tempDir := t.TempDir()
-		os.Setenv("NUV_ROOT_PLUGIN", tempDir)
+		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
 		// Test when the folder is not found
 		nuvRoots, err := GetNuvRootPlugins()
@@ -119,7 +119,7 @@ func TestGetAllNuvRootPlugins(t *testing.T) {
 func TestFindPluginTask(t *testing.T) {
 	t.Run("success: plugin task found in ./olaris-test", func(t *testing.T) {
 		tempDir := t.TempDir()
-		os.Setenv("NUV_ROOT_PLUGIN", tempDir)
+		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 		plgFolder := setupPluginTest(tempDir, t)
 
 		fld, err := findTaskInPlugins("test")
@@ -129,7 +129,7 @@ func TestFindPluginTask(t *testing.T) {
 
 	t.Run("error: no plugins folder found (olaris-*)", func(t *testing.T) {
 		tempDir := t.TempDir()
-		os.Setenv("NUV_ROOT_PLUGIN", tempDir)
+		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
 		// Test when the folder is not found
 		fld, err := findTaskInPlugins("grep")
@@ -143,7 +143,7 @@ func TestNewPlugins(t *testing.T) {
 		tempDir := t.TempDir()
 		plgFolder := setupPluginTest(tempDir, t)
 
-		os.Setenv("NUV_ROOT_PLUGIN", tempDir)
+		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
 		p, err := newPlugins()
 		require.NoError(t, err)
@@ -154,7 +154,7 @@ func TestNewPlugins(t *testing.T) {
 
 	t.Run("non existent local dir results in empty local field", func(t *testing.T) {
 		localDir := "/path/to/nonexistent/dir"
-		os.Setenv("NUV_ROOT_PLUGIN", localDir)
+		os.Setenv("OPS_ROOT_PLUGIN", localDir)
 		p, err := newPlugins()
 		require.NoError(t, err)
 		require.NotNil(t, p)

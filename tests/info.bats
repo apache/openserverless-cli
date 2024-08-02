@@ -19,7 +19,7 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    export NUV_VERSION="test"
+    export OPS_VERSION="test"
 }
 
 @test "version" {
@@ -33,10 +33,10 @@ setup() {
 @test "-info" {
     run nuv -info
     WD=$(pwd)
-    assert_line "NUV_VERSION: test"
-    assert_line "NUV_PWD: $WD"
-    assert_line "NUV_ROOT: $WD/olaris"
-    assert_line "NUV_TMP: $HOME/.nuv/tmp"
-    assert_line --partial "NUV_OLARIS: "
+    assert_line "OPS_VERSION: test"
+    assert_line "OPS_PWD: $WD"
+    assert_line "OPS_ROOT: $WD/olaris"
+    assert_line "OPS_TMP: $HOME/.nuv/tmp"
+    assert_line --partial "OPS_OLARIS: "
     assert_success
 }

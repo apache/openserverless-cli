@@ -242,7 +242,7 @@ func setNuvOlarisHash(olarisDir string) error {
 		return err
 	}
 	debug("olaris hash", h.Hash().String())
-	os.Setenv("NUV_OLARIS", h.Hash().String())
-	trace("NUV_OLARIS", os.Getenv("NUV_OLARIS"))
+	os.Setenv("OPS_OLARIS", h.Hash().String())
+	trace("OPS_OLARIS", os.Getenv("OPS_OLARIS"))
 	return nil
 }

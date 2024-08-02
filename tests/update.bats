@@ -29,27 +29,27 @@ setup() {
 }
 
 @test "nuv -update with old version warns" {
-    NUV_VERSION=0.0.0 run nuv -update
+    OPS_VERSION=0.0.0 run nuv -update
     assert_line --partial "Your nuv version (0.0.0) is older than the required version in nuvroot.json"
     assert_line "Attempting to update nuv..."
     assert_success
 }
 
 @test "nuv -update with bad version" {
-    NUV_VERSION=notsemver run nuv -update
+    OPS_VERSION=notsemver run nuv -update
     assert_line "Unable to validate nuv version notsemver : Invalid Semantic Version"
     assert_success
 }
 
 @test "nuv -update with newer version" {
-    NUV_VERSION=10.2.3 run nuv -update
+    OPS_VERSION=10.2.3 run nuv -update
     assert_line "Tasks are already up to date!"
     assert_success
 }
 
 @test "nuv -update on branch" {
     run rm -rf ~/.nuv
-    export NUV_BRANCH=0.1.0
+    export OPS_BRANCH=0.1.0
     run nuv -update
     assert_line "Nuvfiles downloaded successfully"
     assert_success

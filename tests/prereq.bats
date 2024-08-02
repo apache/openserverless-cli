@@ -19,7 +19,7 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    export NUV_BRANCH="0.1.0-testing"
+    export OPS_BRANCH="0.1.0-testing"
     rm -Rvf ~/.nuv/
     cd prereq
 }

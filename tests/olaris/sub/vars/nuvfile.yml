@@ -89,7 +89,7 @@ tasks:
   tmp:
     silent: true
     cmds:
-    - echo $NUV_TMP
+    - echo $OPS_TMP
 
   clean:
     silent: true

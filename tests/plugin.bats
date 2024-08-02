@@ -19,7 +19,7 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    export NUV_BRANCH="$(cat ../branch.txt)"
+    export OPS_BRANCH="$(cat ../branch.txt)"
     run rm -rf ~/.nuv
 }
 

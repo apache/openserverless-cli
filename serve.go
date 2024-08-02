@@ -33,7 +33,7 @@ import (
 func Serve(olarisDir string, args []string) error {
 	flag := flag.NewFlagSet("serve", flag.ExitOnError)
 	flag.Usage = func() {
-		fmt.Println(`Serve a local directory on http://localhost:9768. You can change port with the NUV_PORT environment variable.
+		fmt.Println(`Serve a local directory on http://localhost:9768. You can change port with the OPS_PORT environment variable.
 
 Usage:
   nuv -serve [options] <dir>
@@ -72,7 +72,7 @@ Options:
 
 	// run nuv server and open browser
 	port := getNuvPort()
-	webDirPath := joinpath(os.Getenv("NUV_PWD"), webDir)
+	webDirPath := joinpath(os.Getenv("OPS_PWD"), webDir)
 	log.Println("Serving directory: " + webDirPath)
 
 	if !noBrowserFlag {

@@ -139,7 +139,7 @@ func Example_setupTmp() {
 	nuvdir, _ := homedir.Expand("~/.nuv")
 	os.RemoveAll(nuvdir)
 	setupTmp()
-	fmt.Println(nhpath(os.Getenv("NUV_TMP")))
+	fmt.Println(nhpath(os.Getenv("OPS_TMP")))
 	os.RemoveAll(nuvdir)
 	// Output:
 	// /home/.nuv/tmp

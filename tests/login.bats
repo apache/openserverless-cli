@@ -32,45 +32,45 @@ setup() {
     assert_line "nuv login <apihost> [<user>]"
 }
 
-@test "nuv -login with NUV_PASSWORD env does not prompt for password" {
-    export NUV_PASSWORD=1234
+@test "nuv -login with OPS_PASSWORD env does not prompt for password" {
+    export OPS_PASSWORD=1234
     run nuv -login localhost
     refute_line "Enter Password:"
 }
 
-@test "nuv -login with NUV_USER env defines username" {
-    export NUV_PASSWORD=1234
-    export NUV_USER=foo
+@test "nuv -login with OPS_USER env defines username" {
+    export OPS_PASSWORD=1234
+    export OPS_USER=foo
     run nuv -login localhost
     assert_line "Logging in as foo to localhost"
 }
 
-@test "nuv -login with NUV_USER and NUV_PASSWORD env" {
-    export NUV_PASSWORD=1234
-    export NUV_USER=foo
+@test "nuv -login with OPS_USER and OPS_PASSWORD env" {
+    export OPS_PASSWORD=1234
+    export OPS_USER=foo
     run nuv -login localhost
     assert_line "Logging in as foo to localhost"
     refute_line "Enter Password:"
 }
 
-@test "nuv -login with NUV_APIHOST env" {
-    export NUV_APIHOST=localhost
-    export NUV_PASSWORD=1234
+@test "nuv -login with OPS_APIHOST env" {
+    export OPS_APIHOST=localhost
+    export OPS_PASSWORD=1234
     run nuv -login
     assert_line "Logging in as nuvolaris to localhost"
 }
 
-@test "nuv -login with NUV_APIHOST and NUV_USER env" {
-    export NUV_APIHOST=localhost
-    export NUV_USER=foo
-    export NUV_PASSWORD=1234
+@test "nuv -login with OPS_APIHOST and OPS_USER env" {
+    export OPS_APIHOST=localhost
+    export OPS_USER=foo
+    export OPS_PASSWORD=1234
     run nuv -login
     assert_line "Logging in as foo to localhost"
 }
 
-@test "nuv -login with NUV_APIHOST, user is now first argument" {
-    export NUV_APIHOST=localhost
-    export NUV_PASSWORD=1234
+@test "nuv -login with OPS_APIHOST, user is now first argument" {
+    export OPS_APIHOST=localhost
+    export OPS_PASSWORD=1234
     run nuv -login hello
     assert_line "Logging in as hello to localhost"
     refute_line "Enter Password:"
