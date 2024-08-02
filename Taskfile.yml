@@ -89,7 +89,7 @@ tasks:
   utest:
     desc: unit test (use F=-v to verbose)
     cmds:
-      - rm -Rf ~/.nuv
+      - rm -Rf ~/.ops
       - go clean -testcache
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli/config
@@ -111,7 +111,7 @@ tasks:
     dir: tests
     cmds:
       - task: bats
-      - rm -Rf ~/.nuv/olaris
+      - rm -Rf ~/.ops/olaris
       - |
         if test -z "{{.T}}"
         then bats/bin/bats {{.F}} .

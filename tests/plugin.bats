@@ -20,7 +20,7 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     export OPS_BRANCH="$(cat ../branch.txt)"
-    run rm -rf ~/.nuv
+    run rm -rf ~/.ops
 }
 
 @test "nuv prints 'Plugins:'" {
@@ -78,7 +78,7 @@ setup() {
     run nuv -update
     run nuv other tool
     assert_line 'hello'
-    run rm -rf ~/.nuv
+    run rm -rf ~/.ops
 }
 
 @test "other command runs nuv command" {
@@ -109,7 +109,7 @@ setup() {
     assert_line "  plugin (local)"
     assert_line "  test (nuv)"
 
-    run rm -rf ~/.nuv/olaris-test
+    run rm -rf ~/.ops/olaris-test
 }
 
 @test "nuv -plugin on existing plugin will update it" {
@@ -121,5 +121,5 @@ setup() {
     assert_line "Updating plugin olaris-test"
     assert_line "The plugin repo is already up to date!"
 
-    run rm -rf ~/.nuv/olaris-test
+    run rm -rf ~/.ops/olaris-test
 }

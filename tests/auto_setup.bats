@@ -23,16 +23,16 @@ setup() {
 }
 
 @test "first run auto setups" {
-    run rm -rf ~/.nuv
+    run rm -rf ~/.ops
     run nuv
     assert_success
     assert_output --partial "Welcome to ops! Setting up..."
-    run ls ~/.nuv
+    run ls ~/.ops
     assert_success
 }
 
 @test "wrong branch fails to setup" {
-    run rm -rf ~/.nuv
+    run rm -rf ~/.ops
     export OPS_BRANCH=wrong
     run nuv
     assert_failure
@@ -41,12 +41,12 @@ setup() {
 }
 
 @test "correct branch setups" {
-    run rm -rf ~/.nuv
+    run rm -rf ~/.ops
     export OPS_BRANCH=0.1.0
     run nuv
     assert_success
     assert_output --partial "Welcome to ops! Setting up..."
-    run ls ~/.nuv
+    run ls ~/.ops
     assert_success
     assert_output --partial "0.1.0"
 }

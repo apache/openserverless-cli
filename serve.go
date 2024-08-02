@@ -71,7 +71,7 @@ Options:
 	webDir := flag.Arg(0)
 
 	// run nuv server and open browser
-	port := getNuvPort()
+	port := getOpsPort()
 	webDirPath := joinpath(os.Getenv("OPS_PWD"), webDir)
 	log.Println("Serving directory: " + webDirPath)
 
@@ -114,11 +114,11 @@ Options:
 	handler := http.HandlerFunc(customHandler)
 
 	if checkPortAvailable(port) {
-		log.Println("Nuvolaris server started at http://localhost:" + port)
+		log.Println("Opsolaris server started at http://localhost:" + port)
 		addr := fmt.Sprintf(":%s", port)
 		return http.ListenAndServe(addr, handler)
 	} else {
-		log.Println("Nuvolaris server failed to start. Port already in use?")
+		log.Println("Opsolaris server failed to start. Port already in use?")
 		return nil
 	}
 }

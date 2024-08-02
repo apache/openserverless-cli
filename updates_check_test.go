@@ -68,11 +68,11 @@ func Example_checkUpdated_uptodate() {
 		pr("failed to create temp dir", err)
 	}
 	defer os.RemoveAll(tmpDir)
-	tmpDirBranch := joinpath(tmpDir, getNuvBranch())
+	tmpDirBranch := joinpath(tmpDir, getOpsBranch())
 	olarisTmpPath := joinpath(tmpDirBranch, "olaris")
 
 	_, _ = git.PlainClone(olarisTmpPath, false, &git.CloneOptions{
-		URL: getNuvRepo(),
+		URL: getOpsRepo(),
 	},
 	)
 
@@ -103,11 +103,11 @@ func Example_checkUpdated_outdated() {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	tmpDirBranch := joinpath(tmpDir, getNuvBranch())
+	tmpDirBranch := joinpath(tmpDir, getOpsBranch())
 	olarisTmpPath := joinpath(tmpDirBranch, "olaris")
 
 	repo, _ := git.PlainClone(olarisTmpPath, false, &git.CloneOptions{
-		URL: getNuvRepo(),
+		URL: getOpsRepo(),
 	},
 	)
 

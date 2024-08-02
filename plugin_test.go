@@ -66,13 +66,13 @@ func setupPluginTest(dir string, t *testing.T) string {
 	return olarisTestDir
 }
 
-func TestGetAllNuvRootPlugins(t *testing.T) {
+func TestGetAllOpsRootPlugins(t *testing.T) {
 	t.Run("success: get all the nuvroots.json from plugins with 1 plugin", func(t *testing.T) {
 		tempDir := t.TempDir()
 		plgFolder := setupPluginTest(tempDir, t)
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
-		nuvRoots, err := GetNuvRootPlugins()
+		nuvRoots, err := GetOpsRootPlugins()
 		require.NoError(t, err)
 		require.Len(t, nuvRoots, 1)
 		require.Equal(t, joinpath(plgFolder, NUVROOT), nuvRoots[getPluginName(plgFolder)])
@@ -98,7 +98,7 @@ func TestGetAllNuvRootPlugins(t *testing.T) {
 		err = copyFile(nuvfileYML, filepath.Join(olarisTestDir, "nuvfile.yml"))
 		require.NoError(t, err)
 
-		nuvRoots, err := GetNuvRootPlugins()
+		nuvRoots, err := GetOpsRootPlugins()
 		require.NoError(t, err)
 		require.Len(t, nuvRoots, 2)
 		require.Equal(t, joinpath(plgFolder, NUVROOT), nuvRoots[getPluginName(plgFolder)])
@@ -110,7 +110,7 @@ func TestGetAllNuvRootPlugins(t *testing.T) {
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
 		// Test when the folder is not found
-		nuvRoots, err := GetNuvRootPlugins()
+		nuvRoots, err := GetOpsRootPlugins()
 		require.NoError(t, err)
 		require.Empty(t, nuvRoots)
 	})

@@ -31,13 +31,13 @@ func Example_nuvArg() {
 	// test
 	_ = os.Chdir(workDir)
 	olaris, _ := filepath.Abs(joinpath("tests", "olaris"))
-	err := Nuv(olaris, split("testcmd"))
+	err := Ops(olaris, split("testcmd"))
 	pr(2, err)
-	err = Nuv(olaris, split("testcmd arg"))
+	err = Ops(olaris, split("testcmd arg"))
 	pr(3, err)
-	err = Nuv(olaris, split("testcmd arg VAR=1"))
+	err = Ops(olaris, split("testcmd arg VAR=1"))
 	pr(4, err)
-	err = Nuv(olaris, split("testcmd VAR=1 arg"))
+	err = Ops(olaris, split("testcmd VAR=1 arg"))
 	pr(5, err)
 	// Output:
 	// (olaris) task [-t nuvfile.yml testcmd --]
@@ -50,18 +50,18 @@ func Example_nuvArg() {
 	//5 <nil>
 }
 
-func ExampleNuv() {
+func ExampleOps() {
 	// test
 	_ = os.Chdir(workDir)
 	os.Setenv("TEST_VAR", "evar")
 	olaris, _ := filepath.Abs(joinpath("tests", "olaris"))
-	err := Nuv(olaris, split(""))
+	err := Ops(olaris, split(""))
 	pr(1, err)
-	err = Nuv(olaris, split("sub"))
+	err = Ops(olaris, split("sub"))
 	pr(4, err)
-	err = Nuv(olaris, split("sub opts"))
+	err = Ops(olaris, split("sub opts"))
 	pr(5, err)
-	_ = Nuv(olaris, split("sub opts ciao 1"))
+	_ = Ops(olaris, split("sub opts ciao 1"))
 	// pr(6, err)
 	// Output:
 	// (olaris) task [-t nuvfile.yml -l]
@@ -104,7 +104,7 @@ func ExampleParseArgs() {
 }
 
 func Test_validateTaskName(t *testing.T) {
-	testNuvfile := "tasks:\n  task1: a\n  task2: b\n  test: c\n"
+	testOpsfile := "tasks:\n  task1: a\n  task2: b\n  test: c\n"
 
 	type validateTaskTest struct {
 		argTask  string
@@ -120,7 +120,7 @@ func Test_validateTaskName(t *testing.T) {
 		{"", "command name is empty"},
 	}
 
-	tmpDir := createTmpNuvfile(t, testNuvfile)
+	tmpDir := createTmpOpsfile(t, testOpsfile)
 	defer os.RemoveAll(tmpDir)
 	for _, tt := range validateTaskTests {
 		task, err := validateTaskName(tmpDir, tt.argTask)
@@ -136,7 +136,7 @@ func Test_validateTaskName(t *testing.T) {
 
 func Example_setupTmp() {
 	_ = os.Chdir(workDir)
-	nuvdir, _ := homedir.Expand("~/.nuv")
+	nuvdir, _ := homedir.Expand("~/.ops")
 	os.RemoveAll(nuvdir)
 	setupTmp()
 	fmt.Println(nhpath(os.Getenv("OPS_TMP")))
@@ -157,7 +157,7 @@ func Example_loadArgs() {
 
 func Test_getTaskNamesList(t *testing.T) {
 	t.Run("empty nuvfile should return empty array", func(t *testing.T) {
-		tmpDir := createTmpNuvfile(t, "")
+		tmpDir := createTmpOpsfile(t, "")
 
 		tasks := getTaskNamesList(tmpDir)
 		if len(tasks) != 0 {
@@ -166,7 +166,7 @@ func Test_getTaskNamesList(t *testing.T) {
 	})
 
 	t.Run("should return array of task names if tasks in nuvfile", func(t *testing.T) {
-		tmpDir := createTmpNuvfile(t, "tasks:\n  task1: a\n  task2: b\n")
+		tmpDir := createTmpOpsfile(t, "tasks:\n  task1: a\n  task2: b\n")
 		defer os.RemoveAll(tmpDir)
 
 		tasks := getTaskNamesList(tmpDir)
@@ -181,7 +181,7 @@ func Test_getTaskNamesList(t *testing.T) {
 
 	t.Run("should return array of task names if tasks in nuvfile + subfolders names as tasks with nuvfile in them", func(t *testing.T) {
 
-		tmpDir := createTmpNuvfile(t, "tasks:\n  task1: a\n  task2: b\n")
+		tmpDir := createTmpOpsfile(t, "tasks:\n  task1: a\n  task2: b\n")
 		defer os.RemoveAll(tmpDir)
 
 		// create subfolder with nuvfile
@@ -190,8 +190,8 @@ func Test_getTaskNamesList(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		subNuvfile := filepath.Join(subDir, "nuvfile.yml")
-		err = os.WriteFile(subNuvfile, []byte("tasks:\n  task3: a\n  task4: b\n"), 0644)
+		subOpsfile := filepath.Join(subDir, "nuvfile.yml")
+		err = os.WriteFile(subOpsfile, []byte("tasks:\n  task3: a\n  task4: b\n"), 0644)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -215,7 +215,7 @@ func Test_getTaskNamesList(t *testing.T) {
 
 	t.Run("avoids duplicate when subfolder with nuvfile has same name as task", func(t *testing.T) {
 
-		tmpDir := createTmpNuvfile(t, "tasks:\n  task1: a\n  task2: b\n")
+		tmpDir := createTmpOpsfile(t, "tasks:\n  task1: a\n  task2: b\n")
 		defer os.RemoveAll(tmpDir)
 
 		// create subfolder with nuvfile
@@ -224,8 +224,8 @@ func Test_getTaskNamesList(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		subNuvfile := filepath.Join(subDir, "nuvfile.yml")
-		err = os.WriteFile(subNuvfile, []byte("tasks:\n  task3: a\n  task4: b\n"), 0644)
+		subOpsfile := filepath.Join(subDir, "nuvfile.yml")
+		err = os.WriteFile(subOpsfile, []byte("tasks:\n  task3: a\n  task4: b\n"), 0644)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -242,8 +242,8 @@ func Test_getTaskNamesList(t *testing.T) {
 
 }
 
-// createTmpNuvfile creates a temp folder with nuvfile.yml
-func createTmpNuvfile(t *testing.T, content string) string {
+// createTmpOpsfile creates a temp folder with nuvfile.yml
+func createTmpOpsfile(t *testing.T, content string) string {
 	t.Helper()
 	// create temp folder with nuvfile.yml
 	tmpDir, err := os.MkdirTemp("", "nuv-test")

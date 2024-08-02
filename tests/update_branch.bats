@@ -20,9 +20,9 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     export OPS_BRANCH="$(cat ../branch.txt)"
-    rm -rf ~/.nuv
+    rm -rf ~/.ops
     run nuv -update
-    cd ~/.nuv/$OPS_BRANCH/olaris
+    cd ~/.ops/$OPS_BRANCH/olaris
 }
 
 @test "nuv -update on olaris with old commit updates correctly" {
@@ -31,7 +31,7 @@ setup() {
     assert_line --partial "Your branch is behind"
 
     run nuv -update
-    assert_line "Nuvfiles updated successfully"
+    assert_line "Opsfiles updated successfully"
     assert_success
 
     run git status

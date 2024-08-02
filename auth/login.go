@@ -43,9 +43,9 @@ type LoginResult struct {
 const usage = `Usage:
 nuv login <apihost> [<user>]
 
-Login to a Nuvolaris instance. If no user is specified, the default user "nuvolaris" is used.
-You can use the environment variables OPS_APIHOST and OPS_USER to avoid specifying them on the command line.
-And OPS_PASSWORD to avoid entering the password interactively.
+Login to an OpenServerless instance. If no user is specified, the default user "nuvolaris" is used.
+You can set the environment variables OPS_APIHOST and OPS_USER to avoid specifying them on the command line.
+You can set OPS_PASSWORD to avoid entering the password interactively.
 
 Options:
   -h, --help   Show usage`
@@ -131,7 +131,7 @@ func LoginCmd() (*LoginResult, error) {
 		return nil, errors.New("missing AUTH token from login response")
 	}
 
-	nuvHome, err := homedir.Expand("~/.nuv")
+	nuvHome, err := homedir.Expand("~/.ops")
 	if err != nil {
 		return nil, err
 	}

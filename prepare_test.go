@@ -26,11 +26,11 @@ import (
 
 func Example_locate() {
 	_ = os.Chdir(workDir)
-	dir, err := locateNuvRoot("tests")
+	dir, err := locateOpsRoot("tests")
 	pr(1, err, npath(dir))
-	dir, err = locateNuvRoot(joinpath("tests", "olaris"))
+	dir, err = locateOpsRoot(joinpath("tests", "olaris"))
 	pr(2, err, npath(dir))
-	dir, err = locateNuvRoot(joinpath("tests", joinpath("olaris", "sub")))
+	dir, err = locateOpsRoot(joinpath("tests", joinpath("olaris", "sub")))
 	pr(3, err, npath(dir))
 	// Output:
 	// 1 <nil> /work/tests/olaris
@@ -43,14 +43,14 @@ func Example_locate() {
 func Failing_Example_download() {
 	pr(1)
 	_ = os.Chdir(workDir)
-	NuvBranch = "0.1.0"
-	nuvdir, _ := homedir.Expand("~/.nuv")
+	OpsBranch = "0.1.0"
+	nuvdir, _ := homedir.Expand("~/.ops")
 	_ = os.RemoveAll(nuvdir)
 	_, _ = downloadTasksFromGitHub(true, true)
-	dir, err := locateNuvRoot(".")
+	dir, err := locateOpsRoot(".")
 	pr(1, err, nhpath(dir))
 	_, _ = downloadTasksFromGitHub(true, true)
-	dir, err = locateNuvRoot(".")
+	dir, err = locateOpsRoot(".")
 	pr(2, err, nhpath(dir))
 	// Output:
 	// 1
@@ -65,26 +65,26 @@ func Failing_Example_download() {
 
 func Example_locate_root() {
 	_ = os.Chdir(workDir)
-	NuvBranch = "0.1.0"
-	nuvdir, _ := homedir.Expand("~/.nuv")
+	OpsBranch = "0.1.0"
+	nuvdir, _ := homedir.Expand("~/.ops")
 	_ = os.RemoveAll(nuvdir)
-	_, err := locateNuvRoot(".")
+	_, err := locateOpsRoot(".")
 	pr(1, err)
-	dir, err := locateNuvRoot("tests")
+	dir, err := locateOpsRoot("tests")
 	pr(2, err, npath(dir))
 	// Output:
 	// 1 we cannot find nuvfiles, download them with nuv -update
 	// 2 <nil> /work/tests/olaris
 }
 
-func Test_setNuvOlarisHash(t *testing.T) {
+func Test_setOpsOlarisHash(t *testing.T) {
 	_ = os.Chdir(workDir)
-	NuvBranch = "0.1.0-testing"
-	nuvdir, _ := homedir.Expand("~/.nuv")
+	OpsBranch = "0.1.0-testing"
+	nuvdir, _ := homedir.Expand("~/.ops")
 	_ = os.RemoveAll(nuvdir)
 	_ = os.Setenv("OPS_BIN", workDir)
 	dir, _ := downloadTasksFromGitHub(true, true)
-	err := setNuvOlarisHash(dir)
+	err := setOpsOlarisHash(dir)
 	require.NoError(t, err)
 	require.NotEmpty(t, os.Getenv("OPS_OLARIS"))
 }

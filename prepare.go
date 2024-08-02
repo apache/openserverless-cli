@@ -32,9 +32,9 @@ import (
 
 func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 	debug("Download tasks from github")
-	repoURL := getNuvRepo()
-	branch := getNuvBranch()
-	nuvDir, err := homedir.Expand("~/.nuv")
+	repoURL := getOpsRepo()
+	branch := getOpsBranch()
+	nuvDir, err := homedir.Expand("~/.ops")
 	if err != nil {
 		return "", err
 	}
@@ -79,7 +79,7 @@ func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 			return "", err
 		}
 
-		fmt.Println("Nuvfiles updated successfully")
+		fmt.Println("Opsfiles updated successfully")
 		touchLatestCheckFile(joinpath(nuvBranchDir, LATESTCHECK))
 		return localDir, nil
 	}
@@ -121,17 +121,17 @@ func pullTasks(force, silent bool) (string, error) {
 		log.Fatalf("cannot download prerequisites: %v", err)
 	}
 
-	// validate NuvVersion semver against nuvroot.json
-	nuvRoot, err := readNuvRootFile(localDir)
+	// validate OpsVersion semver against nuvroot.json
+	nuvRoot, err := readOpsRootFile(localDir)
 	if err != nil {
 		return "", err
 	}
 
 	// check if the version is up to date
-	nuvVersion, err := semver.NewVersion(NuvVersion)
+	nuvVersion, err := semver.NewVersion(OpsVersion)
 	if err != nil {
 		// in development mode, we don't have a valid semver version
-		warn("Unable to validate nuv version", NuvVersion, ":", err)
+		warn("Unable to validate nuv version", OpsVersion, ":", err)
 		return localDir, nil
 	}
 
@@ -160,17 +160,17 @@ func pullTasks(force, silent bool) (string, error) {
 	return localDir, nil
 }
 
-// locateNuvRoot locate the folder where starts execution
+// locateOpsRoot locate the folder where starts execution
 // it can be a parent folder of the current folder or it can be downloaded
 // from github - it should contain a file nuvfile.yml and a file nuvtools.yml in the root
-func locateNuvRoot(cur string) (string, error) {
+func locateOpsRoot(cur string) (string, error) {
 	cur, err := filepath.Abs(cur)
 	if err != nil {
 		return "", err
 	}
 
 	// search the root from here
-	search := locateNuvRootSearch(cur)
+	search := locateOpsRootSearch(cur)
 	if search != "" {
 		trace("found searching up:", search)
 		return search, nil
@@ -183,8 +183,8 @@ func locateNuvRoot(cur string) (string, error) {
 		return olaris, nil
 	}
 
-	// is there an olaris folder in ~/.nuv ?
-	nuvOlarisDir := fmt.Sprintf("~/.nuv/%s/olaris", getNuvBranch())
+	// is there an olaris folder in ~/.ops ?
+	nuvOlarisDir := fmt.Sprintf("~/.ops/%s/olaris", getOpsBranch())
 	olaris, err = homedir.Expand(nuvOlarisDir)
 	if err == nil && exists(olaris, NUVFILE) && exists(olaris, NUVROOT) {
 		trace("found sub", nuvOlarisDir, ":", olaris)
@@ -194,10 +194,10 @@ func locateNuvRoot(cur string) (string, error) {
 	return "", fmt.Errorf("we cannot find nuvfiles, download them with nuv -update")
 }
 
-// locateNuvRootSearch search for `nuvfiles.yml`
+// locateOpsRootSearch search for `nuvfiles.yml`
 // and goes up looking for a folder with also `nuvroot.json`
-func locateNuvRootSearch(cur string) string {
-	debug("locateNuvRootSearch:", cur)
+func locateOpsRootSearch(cur string) string {
+	debug("locateOpsRootSearch:", cur)
 	// exits nuvfile.yml? if not, go up until you find it
 	if !exists(cur, NUVFILE) {
 		return ""
@@ -209,7 +209,7 @@ func locateNuvRootSearch(cur string) string {
 	if parent == "" {
 		return ""
 	}
-	return locateNuvRootSearch(parent)
+	return locateOpsRootSearch(parent)
 }
 
 func autoCLIUpdate() error {
@@ -231,8 +231,8 @@ func checkOperatorVersion(nuvRootConfig map[string]interface{}) error {
 	return cmd.Run()
 }
 
-func setNuvOlarisHash(olarisDir string) error {
-	trace("setNuvOlarisHash", olarisDir)
+func setOpsOlarisHash(olarisDir string) error {
+	trace("setOpsOlarisHash", olarisDir)
 	r, err := git.PlainOpen(olarisDir)
 	if err != nil {
 		return err

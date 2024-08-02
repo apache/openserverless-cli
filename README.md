@@ -158,14 +158,14 @@ Available tools:
 
 The following environment variables allows to ovverride certain defaults.
 
-- `OPS_HOME` is the home dir, defaults to `~/.nuv` if not defined
+- `OPS_HOME` is the home dir, defaults to `~/.ops` if not defined
 - `OPS_ROOT` is the folder where `ops` looks for its tasks. If not defined, if will first look in current directory for an `olaris` folder otherwise download it from githut fron the `OPS_REPO` with a git clone
-- `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults to `~/.nuv/<os>-<arch>/bin`. All the prerequisites are downloaded in this directory
+- `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults to `~/.ops/<os>-<arch>/bin`. All the prerequisites are downloaded in this directory
 - `OPS_CMD` is the actual command executed - defaults to the absolute path of the target of the symbolic link but it can be overriden.
 - `OPS_REPO` is the github repo where `ops` downloads its tasks. If not defined, it defaults to `https://github.com/apache/openserverless-task`.
 - `OPS_BRANCH` is the branch where `nuv` looks for its tasks. The branch to use is defined at build time and it is the base version (without the patch level). Chech branch.txt for the current value
 - `OPS_VERSION` can be defined to set nuv's version value. It is useful to override version validations when updating tasks (and you know what you are doing).  Current value is in version.txt
-- `OPS_TMP` is a temporary folder where you can store temp files - defaults to `~/.nuv/tmp` 
+- `OPS_TMP` is a temporary folder where you can store temp files - defaults to `~/.ops/tmp` 
 - `OPS_APIHOST` is the host for `nuv -login`. It is used in place of the first argument of `nuv -login`. If empty, the command will expect the first argument to be the apihost.
 - `OPS_USER`: set the username for `nuv -login`. The default is `nuvolaris`. It can be overriden by passing the username as an argument to `nuv -login` or by setting the environment variable.
 - `OPS_PASSWORD`: set the password for `nuv -login`. If not set, `nuv -login` will prompt for the password. It is useful for tests and non-interactive environments.

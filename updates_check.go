@@ -31,7 +31,7 @@ const LATESTCHECK = ".latestcheck"
 
 func checkUpdated(base string, timeInterval time.Duration) {
 	trace("checkUpdated", base)
-	olaris_base := joinpath(base, getNuvBranch())
+	olaris_base := joinpath(base, getOpsBranch())
 	latest_check_path := joinpath(olaris_base, LATESTCHECK)
 	olaris_path := joinpath(olaris_base, "olaris")
 

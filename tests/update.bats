@@ -22,9 +22,9 @@ setup() {
 }
 
 @test "nuv -update" {
-    run rm -rf ~/.nuv
+    run rm -rf ~/.ops
     run nuv -update
-    assert_line "Nuvfiles downloaded successfully"
+    assert_line "Opsfiles downloaded successfully"
     assert_success
 }
 
@@ -48,9 +48,9 @@ setup() {
 }
 
 @test "nuv -update on branch" {
-    run rm -rf ~/.nuv
+    run rm -rf ~/.ops
     export OPS_BRANCH=0.1.0
     run nuv -update
-    assert_line "Nuvfiles downloaded successfully"
+    assert_line "Opsfiles downloaded successfully"
     assert_success
 }

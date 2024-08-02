@@ -61,7 +61,7 @@ func downloadPluginTasksFromRepo(repo string) error {
 		return fmt.Errorf("plugin repository must be a https url and plugin must start with 'olaris-'")
 	}
 
-	pluginDir, err := homedir.Expand("~/.nuv/" + repoName)
+	pluginDir, err := homedir.Expand("~/.ops/" + repoName)
 	if err != nil {
 		return err
 	}
@@ -139,12 +139,12 @@ func printPluginsHelp() error {
 	return nil
 }
 
-// GetNuvRootPlugins returns the map with all the olaris-*/nuvroot.json files
-// in the local and ~/.nuv folders, pointed by their plugin names.
+// GetOpsRootPlugins returns the map with all the olaris-*/nuvroot.json files
+// in the local and ~/.ops folders, pointed by their plugin names.
 // If the same plugin is found in both folders, the one in the local folder
 // is used.
 // Useful to build the config map including the plugin configs
-func GetNuvRootPlugins() (map[string]string, error) {
+func GetOpsRootPlugins() (map[string]string, error) {
 	plgs, err := newPlugins()
 	if err != nil {
 		return nil, err
@@ -197,7 +197,7 @@ func findTaskInPlugins(plg string) (string, error) {
 	return "", &TaskNotFoundErr{input: plg}
 }
 
-// plugins struct holds the list of local and ~/.nuv olaris-* folders
+// plugins struct holds the list of local and ~/.ops olaris-* folders
 type plugins struct {
 	local []string
 	nuv   []string
@@ -223,17 +223,17 @@ func newPlugins() (*plugins, error) {
 		localOlarisFolders = append(localOlarisFolders, folder)
 	}
 
-	// Search in ~/.nuv/olaris-*
-	nuvHome, err := homedir.Expand("~/.nuv")
+	// Search in ~/.ops/olaris-*
+	nuvHome, err := homedir.Expand("~/.ops")
 	if err != nil {
 		return nil, err
 	}
 
-	olarisNuvFolders, err := filepath.Glob(filepath.Join(nuvHome, "olaris-*"))
+	olarisOpsFolders, err := filepath.Glob(filepath.Join(nuvHome, "olaris-*"))
 	if err != nil {
 		return nil, err
 	}
-	for _, folder := range olarisNuvFolders {
+	for _, folder := range olarisOpsFolders {
 		if !isDir(folder) || !exists(folder, NUVFILE) {
 			continue
 		}

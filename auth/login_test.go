@@ -25,8 +25,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/apache/openserverless-cli/config"
+	"github.com/mitchellh/go-homedir"
 	"github.com/stretchr/testify/require"
 	"github.com/zalando/go-keyring"
 )
@@ -96,7 +96,7 @@ func TestLoginCmd(t *testing.T) {
 		require.NotNil(t, loginResult)
 
 		// cred, err := keyring.Get(nuvSecretServiceName, "AUTH")
-		nuvHome, err := homedir.Expand("~/.nuv")
+		nuvHome, err := homedir.Expand("~/.ops")
 		require.NoError(t, err)
 
 		configMap, err := config.NewConfigMapBuilder().
@@ -129,7 +129,7 @@ func TestLoginCmd(t *testing.T) {
 		// require.NoError(t, err)
 		// require.Equal(t, "test", cred)
 
-		nuvHome, err := homedir.Expand("~/.nuv")
+		nuvHome, err := homedir.Expand("~/.ops")
 		require.NoError(t, err)
 
 		configMap, err := config.NewConfigMapBuilder().

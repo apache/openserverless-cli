@@ -69,7 +69,7 @@ func parseArgs(usage string, args []string) []string {
 	res := []string{}
 	// parse args
 	parser := docopt.Parser{}
-	opts, err := parser.ParseArgs(usage, args, NuvVersion)
+	opts, err := parser.ParseArgs(usage, args, OpsVersion)
 	if err != nil {
 		warn(err)
 		return res
@@ -106,7 +106,7 @@ func setupTmp() error {
 	var err error
 	tmp := os.Getenv("OPS_TMP")
 	if tmp == "" {
-		tmp, err = homedir.Expand("~/.nuv/tmp")
+		tmp, err = homedir.Expand("~/.ops/tmp")
 		if err != nil {
 			return err
 		}
@@ -152,13 +152,13 @@ func loadSavedArgs() []string {
 	return res
 }
 
-// Nuv parses args moving into the folder corresponding to args
+// Ops parses args moving into the folder corresponding to args
 // then parses them with docopts and invokes the task
-func Nuv(base string, args []string) error {
-	trace("Nuv run in", base, "with", args)
+func Ops(base string, args []string) error {
+	trace("Ops run in", base, "with", args)
 	// go down using args as subcommands
 	err := os.Chdir(base)
-	debug("Nuv chdir", base)
+	debug("Ops chdir", base)
 
 	if err != nil {
 		return err

@@ -44,11 +44,11 @@ import (
 // To interact with the ConfigMap, use the Insert, Get, and Delete by passing
 // keys in the form above. Only the config map is modified by these functions.
 // The nuvRootConfig map is only used to read the config keys in nuvroot.json.
-// The pluginNuvRootConfigs map is only used to read the config keys in
+// The pluginOpsRootConfigs map is only used to read the config keys in
 // plugins (from their nuvroot.json). It is a map that maps the plugin name to
 // the config map for that plugin.
 type ConfigMap struct {
-	pluginNuvRootConfigs map[string]map[string]interface{}
+	pluginOpsRootConfigs map[string]map[string]interface{}
 	nuvRootConfig        map[string]interface{}
 	config               map[string]interface{}
 	configPath           string
@@ -127,7 +127,7 @@ func (c *ConfigMap) Flatten() map[string]string {
 
 	merged := mergeMaps(c.nuvRootConfig, c.config)
 
-	for name, pluginConfig := range c.pluginNuvRootConfigs {
+	for name, pluginConfig := range c.pluginOpsRootConfigs {
 		// edge case: check that merged does not contain name already
 		if _, ok := merged[name]; ok {
 			log.Printf("config has key with same name as plugin %s. Plugin config will be ignored.", name)

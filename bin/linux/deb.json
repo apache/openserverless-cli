@@ -1,8 +1,8 @@
 {
     "name": "nuv",
     "maintainer": "Michele Sciabarra <michele@nuvolaris.io>",
-    "summary": "Nuvolaris CLI Tools",
-    "description": "Command Line Tools for Nuvolaris",
+    "summary": "Opsolaris CLI Tools",
+    "description": "Command Line Tools for Opsolaris",
     "license": "LICENSE",
     "arch": "!arch!",
     "homepage": "http://github.com/nuvolaris/nuv",

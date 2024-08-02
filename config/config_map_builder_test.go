@@ -61,7 +61,7 @@ func TestConfigMapBuilder(t *testing.T) {
 				want: ConfigMap{
 					config:               map[string]interface{}{},
 					nuvRootConfig:        map[string]interface{}{},
-					pluginNuvRootConfigs: map[string]map[string]interface{}{},
+					pluginOpsRootConfigs: map[string]map[string]interface{}{},
 				},
 				err: nil,
 			},
@@ -78,7 +78,7 @@ func TestConfigMapBuilder(t *testing.T) {
 						},
 					},
 					configPath:           configJsonPath,
-					pluginNuvRootConfigs: map[string]map[string]interface{}{},
+					pluginOpsRootConfigs: map[string]map[string]interface{}{},
 				},
 			},
 			{
@@ -93,7 +93,7 @@ func TestConfigMapBuilder(t *testing.T) {
 						},
 					},
 					config:               map[string]interface{}{},
-					pluginNuvRootConfigs: map[string]map[string]interface{}{},
+					pluginOpsRootConfigs: map[string]map[string]interface{}{},
 				},
 			},
 			{
@@ -114,7 +114,7 @@ func TestConfigMapBuilder(t *testing.T) {
 						},
 					},
 					configPath:           configJsonPath,
-					pluginNuvRootConfigs: map[string]map[string]interface{}{},
+					pluginOpsRootConfigs: map[string]map[string]interface{}{},
 				},
 			},
 		}
@@ -124,7 +124,7 @@ func TestConfigMapBuilder(t *testing.T) {
 
 				got, err := NewConfigMapBuilder().
 					WithConfigJson(tc.configJson).
-					WithNuvRoot(tc.nuvRoot).
+					WithOpsRoot(tc.nuvRoot).
 					Build()
 
 				// if we expect an error but got none
@@ -163,7 +163,7 @@ func TestConfigMapBuilder(t *testing.T) {
 		}
 	}`)
 
-		pluginNuvRoot := createFakeConfigFile(t, "nuvroot.json", tmpDir, `
+		pluginOpsRoot := createFakeConfigFile(t, "nuvroot.json", tmpDir, `
 	{
 		"version": "0.3.0",
 		"config": {
@@ -178,7 +178,7 @@ func TestConfigMapBuilder(t *testing.T) {
 			name           string
 			configJson     string
 			nuvRoot        string
-			pluginNuvRoots map[string]string
+			pluginOpsRoots map[string]string
 			want           ConfigMap
 			err            error
 		}{
@@ -186,8 +186,8 @@ func TestConfigMapBuilder(t *testing.T) {
 				name:       "should return configmap containing plugin nuvroot",
 				configJson: configJsonPath,
 				nuvRoot:    nuvRootPath,
-				pluginNuvRoots: map[string]string{
-					"plugin": pluginNuvRoot,
+				pluginOpsRoots: map[string]string{
+					"plugin": pluginOpsRoot,
 				},
 
 				want: ConfigMap{
@@ -204,7 +204,7 @@ func TestConfigMapBuilder(t *testing.T) {
 						},
 					},
 					configPath: configJsonPath,
-					pluginNuvRootConfigs: map[string]map[string]interface{}{
+					pluginOpsRootConfigs: map[string]map[string]interface{}{
 						"plugin": {
 							"nuvroot": "value",
 							"another": map[string]interface{}{
@@ -223,8 +223,8 @@ func TestConfigMapBuilder(t *testing.T) {
 
 				got, err := NewConfigMapBuilder().
 					WithConfigJson(tc.configJson).
-					WithNuvRoot(tc.nuvRoot).
-					WithPluginNuvRoots(tc.pluginNuvRoots).
+					WithOpsRoot(tc.nuvRoot).
+					WithPluginOpsRoots(tc.pluginOpsRoots).
 					Build()
 
 				// if we expect an error but got none

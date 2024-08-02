@@ -32,7 +32,7 @@ func ExampleConfigTool_readValue() {
 
 	nuvRootPath := filepath.Join(tmpDir, "nuvroot.json")
 	configPath := filepath.Join(tmpDir, "config.json")
-	cm, _ := NewConfigMapBuilder().WithNuvRoot(nuvRootPath).WithConfigJson(configPath).Build()
+	cm, _ := NewConfigMapBuilder().WithOpsRoot(nuvRootPath).WithConfigJson(configPath).Build()
 
 	os.Args = []string{"config", "FOO=bar"}
 	err := ConfigTool(cm)
@@ -69,7 +69,7 @@ func TestConfigTool(t *testing.T) {
 	}
 
 	buildCM := func(nv string, c string) ConfigMap {
-		cm, _ := NewConfigMapBuilder().WithConfigJson(c).WithNuvRoot(nv).Build()
+		cm, _ := NewConfigMapBuilder().WithConfigJson(c).WithOpsRoot(nv).Build()
 		return cm
 	}
 	t.Run("new config.json", func(t *testing.T) {

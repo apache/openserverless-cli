@@ -51,18 +51,18 @@ var OpsBranch string
 var WSK_RUNTIMES_JSON string
 
 // Represents opsroot.json. It is used to parse the file.
-type NuvRootJSON struct {
+type OpsRootJSON struct {
 	Version string                 `json:"version"`
 	Config  map[string]interface{} `json:"config"`
 }
 
 // default port for nuv server
-const DefaultNuvPort = 9768
+const DefaultOpsPort = 9768
 
-func getNuvPort() string {
+func getOpsPort() string {
 	port := os.Getenv("OPS_PORT")
 	if port == "" {
-		port = fmt.Sprintf("%d", DefaultNuvPort)
+		port = fmt.Sprintf("%d", DefaultOpsPort)
 	}
 	//nolint:errcheck
 	os.Setenv("OPS_PORT", port)
@@ -70,12 +70,12 @@ func getNuvPort() string {
 }
 
 // get defaults
-func getNuvRoot() (string, error) {
+func getOpsRoot() (string, error) {
 	root := os.Getenv("OPS_ROOT")
 	if root == "" {
 		dir, err := os.Getwd()
 		if err == nil {
-			root, err = locateNuvRoot(dir)
+			root, err = locateOpsRoot(dir)
 		}
 		if err != nil {
 			return "", err
@@ -86,7 +86,7 @@ func getNuvRoot() (string, error) {
 	return root, nil
 }
 
-func getNuvRepo() string {
+func getOpsRepo() string {
 	repo := os.Getenv("OPS_REPO")
 	if repo == "" {
 		repo = NUVREPO
@@ -96,21 +96,21 @@ func getNuvRepo() string {
 	return repo
 }
 
-func getNuvBranch() string {
+func getOpsBranch() string {
 	branch := os.Getenv("OPS_BRANCH")
 	if branch == "" {
-		branch = strings.TrimSpace(NuvBranch)
+		branch = strings.TrimSpace(OpsBranch)
 	}
 	//nolint:errcheck
 	os.Setenv("OPS_BRANCH", branch)
 	return branch
 }
 
-func readNuvRootFile(dir string) (NuvRootJSON, error) {
-	data := NuvRootJSON{}
+func readOpsRootFile(dir string) (OpsRootJSON, error) {
+	data := OpsRootJSON{}
 	json_buf, err := os.ReadFile(joinpath(dir, NUVROOT))
 	if err != nil {
-		return NuvRootJSON{}, err
+		return OpsRootJSON{}, err
 	}
 	if err := json.Unmarshal(json_buf, &data); err != nil {
 		warn("opsroot.json parsed with an error", err)

@@ -20,7 +20,7 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     export OPS_BRANCH="0.1.0-testing"
-    rm -Rvf ~/.nuv/
+    rm -Rvf ~/.ops/
     cd prereq
 }
 
@@ -47,25 +47,25 @@ setup() {
 @test "windows" {
     run env __OS=windows ops
     assert_line --partial "ensuring prerequisite 7zz"
-    assert test -e ~/.nuv/windows-*/bin/7zz.exe
+    assert test -e ~/.ops/windows-*/bin/7zz.exe
 }
 
 @test "linux" {
     run env __OS=linux __ARCH=amd64 ops
     assert_line --partial "ensuring prerequisite 7zz"
-    assert test -e ~/.nuv/linux-amd64/bin/7zz
+    assert test -e ~/.ops/linux-amd64/bin/7zz
 
     run env __OS=linux __ARCH=arm64 ops
     assert_line --partial "ensuring prerequisite 7zz"
-    assert test -e ~/.nuv/linux-arm64/bin/7zz
+    assert test -e ~/.ops/linux-arm64/bin/7zz
 }
 
 @test "darwin" {
     run env __OS=darwin __ARCH=amd64 ops
     assert_line --partial "ensuring prerequisite 7zz"
-    assert test -e ~/.nuv/darwin-amd64/bin/7zz
+    assert test -e ~/.ops/darwin-amd64/bin/7zz
 
     run env __OS=darwin __ARCH=arm64 ops
     assert_line --partial "ensuring prerequisite 7zz"
-    assert test -e ~/.nuv/darwin-arm64/bin/7zz
+    assert test -e ~/.ops/darwin-arm64/bin/7zz
 }

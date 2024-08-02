@@ -82,7 +82,7 @@ func setupBinPath() error {
 	return err
 }
 
-func setNuvRootPluginEnv() {
+func setOpsRootPluginEnv() {
 	if os.Getenv("OPS_ROOT_PLUGIN") == "" {
 		//nolint:errcheck
 		os.Setenv("OPS_ROOT_PLUGIN", os.Getenv("OPS_PWD"))
@@ -122,9 +122,9 @@ func executeMainToolsAndExit(cmd string, args []string, nuvHome string) int {
 
 	switch cmd {
 	case "version":
-		fmt.Println(NuvVersion)
+		fmt.Println(OpsVersion)
 	case "v":
-		fmt.Println(NuvVersion)
+		fmt.Println(OpsVersion)
 
 	case "info":
 		info()
@@ -144,7 +144,7 @@ func executeMainToolsAndExit(cmd string, args []string, nuvHome string) int {
 		if err != nil {
 			log.Fatalf("error: %v", err)
 		}
-		if err := setNuvOlarisHash(dir); err != nil {
+		if err := setOpsOlarisHash(dir); err != nil {
 			log.Fatal("unable to set OPS_OLARIS...", err.Error())
 		}
 
@@ -219,10 +219,10 @@ func Main() {
 
 	// set runtime version as environment variable
 	if os.Getenv("OPS_VERSION") != "" {
-		NuvVersion = os.Getenv("OPS_VERSION")
+		OpsVersion = os.Getenv("OPS_VERSION")
 	} else {
-		NuvVersion = strings.TrimSpace(NuvVersion)
-		os.Setenv("OPS_VERSION", NuvVersion)
+		OpsVersion = strings.TrimSpace(OpsVersion)
+		os.Setenv("OPS_VERSION", OpsVersion)
 	}
 
 	// setup OPS_CMD
@@ -237,27 +237,27 @@ func Main() {
 	// setup home
 	nuvHome := os.Getenv("OPS_HOME")
 	if nuvHome == "" {
-		nuvHome, err = homedir.Expand("~/.nuv")
+		nuvHome, err = homedir.Expand("~/.ops")
 	}
 	if err != nil {
 		log.Fatalf("cannot setup home: %s", err.Error())
 	}
 	os.Setenv("OPS_HOME", nuvHome)
 
-	// add ~/.nuv/<os>-<arch>/bin to the path at the beginning
+	// add ~/.ops/<os>-<arch>/bin to the path at the beginning
 	err = setupBinPath()
 	if err != nil {
 		log.Fatalf("cannot setup PATH: %s", err.Error())
 	}
 
-	// ensure there is ~/.nuv/tmp
+	// ensure there is ~/.ops/tmp
 	err = setupTmp()
 	if err != nil {
 		log.Fatalf("cannot setup OPS_TMP: %s", err.Error())
 	}
 
 	//  setup the OPS_PWD variable
-	err = setNuvPwdEnv()
+	err = setOpsPwdEnv()
 	if err != nil {
 		log.Fatalf("cannot setup OPS_PWD: %s", err.Error())
 	}
@@ -266,13 +266,13 @@ func Main() {
 	os.Setenv("OPS_TOOLS", strings.Join(append(mainTools, tools.ToolList...), " "))
 
 	// OPS_REPO && OPS_ROOT_PLUGIN
-	getNuvRepo()
-	setNuvRootPluginEnv()
+	getOpsRepo()
+	setOpsRootPluginEnv()
 
 	// Check if olaris exists. If not, download tasks
-	olarisDir, err := getNuvRoot()
+	olarisDir, err := getOpsRoot()
 	if err != nil {
-		olarisDir := joinpath(joinpath(nuvHome, getNuvBranch()), "olaris")
+		olarisDir := joinpath(joinpath(nuvHome, getOpsBranch()), "olaris")
 		if !isDir(olarisDir) {
 			log.Println("Welcome to ops! Setting up...")
 			olarisDir, err = pullTasks(true, true)
@@ -288,7 +288,7 @@ func Main() {
 			checkUpdated(nuvHome, 24*time.Hour)
 		}
 	}
-	if err = setNuvOlarisHash(olarisDir); err != nil {
+	if err = setOpsOlarisHash(olarisDir); err != nil {
 		os.Setenv("OPS_OLARIS", "<local>")
 	}
 
@@ -335,7 +335,7 @@ func Main() {
 		os.Exit(exitCode)
 	}
 
-	if err := runNuv(nuvRootDir, args); err != nil {
+	if err := runOps(nuvRootDir, args); err != nil {
 		log.Fatalf("task execution error: %s", err.Error())
 	}
 }
@@ -361,7 +361,7 @@ func parseInvokeArgs(rest []string) []string {
 
 // getRootDirOrExit returns the olaris dir or exits (Fatal) if not found
 func getRootDirOrExit() string {
-	dir, err := getNuvRoot()
+	dir, err := getOpsRoot()
 	if err != nil {
 		log.Fatalf("error: %s", err.Error())
 	}
@@ -396,8 +396,8 @@ func wskPropertySet(apihost, auth string) error {
 	return nil
 }
 
-func runNuv(baseDir string, args []string) error {
-	err := Nuv(baseDir, args[1:])
+func runOps(baseDir string, args []string) error {
+	err := Ops(baseDir, args[1:])
 	if err == nil {
 		return nil
 	}
@@ -413,7 +413,7 @@ func runNuv(baseDir string, args []string) error {
 		}
 
 		debug("Found plugin", plgDir)
-		if err := Nuv(plgDir, args[2:]); err != nil {
+		if err := Ops(plgDir, args[2:]); err != nil {
 			log.Fatalf("error: %s", err.Error())
 		}
 		return nil
@@ -422,7 +422,7 @@ func runNuv(baseDir string, args []string) error {
 	return err
 }
 
-func setNuvPwdEnv() error {
+func setOpsPwdEnv() error {
 	if os.Getenv("OPS_PWD") == "" {
 		dir, err := os.Getwd()
 		if err != nil {
@@ -436,15 +436,15 @@ func setNuvPwdEnv() error {
 }
 
 func buildConfigMap(nuvRootPath string, configPath string) (*config.ConfigMap, error) {
-	plgNuvRootMap, err := GetNuvRootPlugins()
+	plgOpsRootMap, err := GetOpsRootPlugins()
 	if err != nil {
 		return nil, err
 	}
 
 	configMap, err := config.NewConfigMapBuilder().
-		WithNuvRoot(nuvRootPath).
+		WithOpsRoot(nuvRootPath).
 		WithConfigJson(configPath).
-		WithPluginNuvRoots(plgNuvRootMap).
+		WithPluginOpsRoots(plgOpsRootMap).
 		Build()
 
 	if err != nil {

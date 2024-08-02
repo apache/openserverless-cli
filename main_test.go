@@ -76,18 +76,18 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestSetupNuvRootPlugin(t *testing.T) {
+func TestSetupOpsRootPlugin(t *testing.T) {
 	// Test case 1: OPS_ROOT_PLUGIN is not set
 	os.Unsetenv("OPS_ROOT_PLUGIN")
-	os.Setenv("OPS_PWD", "/path/to/nuv")
-	setNuvRootPluginEnv()
+	os.Setenv("OPS_PWD", "/path/to/ops")
+	setOpsRootPluginEnv()
 	if os.Getenv("OPS_ROOT_PLUGIN") != "/path/to/nuv" {
 		t.Errorf("OPS_ROOT_PLUGIN not set correctly, expected /path/to/nuv but got %s", os.Getenv("OPS_ROOT_PLUGIN"))
 	}
 
 	// Test case 2: OPS_ROOT_PLUGIN is already set
 	os.Setenv("OPS_ROOT_PLUGIN", "/path/to/nuv/root")
-	setNuvRootPluginEnv()
+	setOpsRootPluginEnv()
 	if os.Getenv("OPS_ROOT_PLUGIN") != "/path/to/nuv/root" {
 		t.Errorf("OPS_ROOT_PLUGIN not set correctly, expected /path/to/nuv/root but got %s", os.Getenv("OPS_ROOT_PLUGIN"))
 	}

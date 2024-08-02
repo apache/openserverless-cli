@@ -26,12 +26,12 @@ import (
 type configMapBuilder struct {
 	configJsonPath string
 	nuvRootPath    string
-	pluginNuvRoots map[string]string
+	pluginOpsRoots map[string]string
 }
 
 func NewConfigMapBuilder() *configMapBuilder {
 	return &configMapBuilder{
-		pluginNuvRoots: make(map[string]string),
+		pluginOpsRoots: make(map[string]string),
 	}
 }
 
@@ -44,18 +44,18 @@ func (b *configMapBuilder) WithConfigJson(file string) *configMapBuilder {
 	return b
 }
 
-// WithNuvRoot works like WithConfigJson, with the difference that
-// the NuvRoot is read and only it's inner "config":{} object is parsed
+// WithOpsRoot works like WithConfigJson, with the difference that
+// the OpsRoot is read and only it's inner "config":{} object is parsed
 // ignoring the rest of the content.
-func (b *configMapBuilder) WithNuvRoot(file string) *configMapBuilder {
+func (b *configMapBuilder) WithOpsRoot(file string) *configMapBuilder {
 	b.nuvRootPath = file
 	return b
 }
 
-// WithPluginNuvRoots works like WithPluginNuvRoot, but it allows to add multiple
+// WithPluginOpsRoots works like WithPluginOpsRoot, but it allows to add multiple
 // plugin nuvroot.json files at once.
-func (b *configMapBuilder) WithPluginNuvRoots(nrts map[string]string) *configMapBuilder {
-	b.pluginNuvRoots = nrts
+func (b *configMapBuilder) WithPluginOpsRoots(nrts map[string]string) *configMapBuilder {
+	b.pluginOpsRoots = nrts
 	return b
 }
 
@@ -65,22 +65,22 @@ func (b *configMapBuilder) Build() (ConfigMap, error) {
 		return ConfigMap{}, err
 	}
 
-	nuvRootMap, err := readConfig(b.nuvRootPath, fromNuvRoot)
+	nuvRootMap, err := readConfig(b.nuvRootPath, fromOpsRoot)
 	if err != nil {
 		return ConfigMap{}, err
 	}
 
-	pluginNuvRootConfigs := make(map[string]map[string]interface{}, 0)
-	for plgName, nuvRootPath := range b.pluginNuvRoots {
-		pluginNuvRootMap, err := readConfig(nuvRootPath, fromNuvRoot)
+	pluginOpsRootConfigs := make(map[string]map[string]interface{}, 0)
+	for plgName, nuvRootPath := range b.pluginOpsRoots {
+		pluginOpsRootMap, err := readConfig(nuvRootPath, fromOpsRoot)
 		if err != nil {
 			return ConfigMap{}, err
 		}
-		pluginNuvRootConfigs[plgName] = pluginNuvRootMap
+		pluginOpsRootConfigs[plgName] = pluginOpsRootMap
 	}
 
 	return ConfigMap{
-		pluginNuvRootConfigs: pluginNuvRootConfigs,
+		pluginOpsRootConfigs: pluginOpsRootConfigs,
 		nuvRootConfig:        nuvRootMap,
 		config:               configJsonMap,
 		configPath:           b.configJsonPath,
@@ -124,7 +124,7 @@ func fromConfigJson(configPath string) (map[string]interface{}, error) {
 	return data, nil
 }
 
-func fromNuvRoot(nuvRootPath string) (map[string]interface{}, error) {
+func fromOpsRoot(nuvRootPath string) (map[string]interface{}, error) {
 	data := make(map[string]interface{})
 	json_buf, err := os.ReadFile(nuvRootPath)
 	if err != nil {

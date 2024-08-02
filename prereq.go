@@ -91,7 +91,7 @@ func binDir() (string, error) {
 	var err error
 	bindir := os.Getenv("OPS_BIN")
 	if bindir == "" {
-		bindir, err = homedir.Expand(fmt.Sprintf("~/.nuv/%s-%s/bin", getOS(), getARCH()))
+		bindir, err = homedir.Expand(fmt.Sprintf("~/.ops/%s-%s/bin", getOS(), getARCH()))
 		if err != nil {
 			return "", err
 		}
