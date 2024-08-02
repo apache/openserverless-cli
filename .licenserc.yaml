@@ -23,6 +23,7 @@ header:
 
   paths-ignore:
     - nuv
+    - ops
     - env
     - go.mod
     - go.sum
