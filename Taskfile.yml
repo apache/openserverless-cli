@@ -34,17 +34,18 @@ tasks:
     cmds:
     - git tag -d $(git tag)
     - echo "{{.BASEVER}}-$(date +%y%m%d%H%M).{{.VARIANT}}" >version.txt
-    - git tag -f "v$(cat version.txt)"
     - echo "{{.BASEVER}}" >branch.txt
     - git add version.txt branch.txt
-    - git tag
+    - git commit -m "version files"
+    - git tag -f "v$(cat version.txt)"
+ 
 
   trigger:
-    desc: create tag, commit changed all files and push triggering a build
-    prompt: are you sure you want to commit, tag and push triggering a build?
+    desc: create tag,  and push triggering a build
+    prompt: did you commit everyting?
     cmds:
+    - git diff --exit-code
     - task: tag
-    - git commit -m "$(cat version.txt)" -a
     - git push origin main --tags
 
   rebuild:
