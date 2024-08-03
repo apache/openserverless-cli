@@ -29,7 +29,7 @@ func Example_ensureBindir() {
 	// cleanup
 	bindir, err := EnsureBindir()
 	if err == nil {
-		os.RemoveAll(bindir)
+		RemoveAll(bindir)
 	} else {
 		fmt.Println(err)
 	}
@@ -52,7 +52,7 @@ func Example_ensureBindir() {
 
 func Example_touchAndClean() {
 	bindir, _ := EnsureBindir()
-	os.RemoveAll(bindir)
+	RemoveAll(bindir)
 	bindir, _ = EnsureBindir()
 	touch(bindir, "hello")
 	err := touchAndClean(bindir, "hello", "1.2.3")
@@ -66,7 +66,7 @@ func Example_touchAndClean() {
 
 func Example_downloadPrereq() {
 	bindir, _ := EnsureBindir()
-	os.RemoveAll(bindir)
+	RemoveAll(bindir)
 
 	prqdir := joinpath(joinpath(workDir, "tests"), "prereq")
 	prq, _ := loadPrereq(prqdir)
@@ -87,7 +87,7 @@ func Example_downloadPrereq() {
 
 func Example_ensurePrereq() {
 	bindir, _ := EnsureBindir()
-	os.RemoveAll(bindir)
+	RemoveAll(bindir)
 	dir := joinpath(joinpath(workDir, "tests"), "prereq")
 	fmt.Println(ensurePrereq(dir))
 	fmt.Println(ensurePrereq(joinpath(dir, "sub")))
