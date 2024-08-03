@@ -15,7 +15,7 @@ build:
  
 changelog:
   sort: asc
-  filters:
+filters:
     include:
       - "^add:"
       - "^fix:"
