@@ -1,10 +1,10 @@
 version: 2
 
-build:
-  - main: ./cmd/ops
+builds:
+  - env:
+    - CGO_ENABLED=0
+    main: ./cmd/ops
     binary: ops
-    env:
-      - CGO_ENABLED=0
     goos:
       - linux
       - windows
@@ -13,10 +13,21 @@ build:
       - amd64
       - arm64
  
+archives:
+  - id: default
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- .Arch }}
+
 changelog:
   sort: asc
-filters:
-    include:
-      - "^add:"
-      - "^fix:"
-      - "^change:"
+  filters:
+      include:
+        - "^add:"
+        - "^fix:"
+        - "^change:"
