@@ -1,21 +1,4 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
-
-# The lines below are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/need to use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj
-
-version: 2
-
-before:
-  hooks:
-    # You may remove this if you don't use go modules.
-    #- go mod tidy
-    # you may remove this if you don't need go generate
-    #- go generate ./...
-
-builds:
+build:
   - main: ./cmd/ops
     binary: ops
     env:
@@ -27,25 +10,10 @@ builds:
     goarch:
       - amd64
       - arm64
-    ignore:
-      - goos: windows
-        goarch: arm64
-
-archives:
-  - format: tar.gz
-    name_template: >- 
-      {{ .ProjectName }}_
-      {{ .Version }}_
-      {{ .Runtime.Goos }}_
-      {{ .Runtime.Goarch }}
-    # use zip for windows archives
-    format_overrides:
-      - goos: windows
-        format: zip
-
+ 
 changelog:
   sort: asc
   filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
+    include:
+      - "^add:"
+      - "^fix:"
