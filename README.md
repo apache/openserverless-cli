@@ -153,30 +153,32 @@ Available tools:
 -wsk
 ```
 
-## Environment variables
+## Environment variables for tasks
 
-The following environment variables allows to ovverride certain defaults.
+As a convenience, the system sets the following variables but you cannot override them:
 
-- `OPS_HOME` is the home dir, defaults to `~/.ops` if not defined
-- `OPS_ROOT` is the folder where `ops` looks for its tasks. If not defined, if will first look in current directory for an `olaris` folder otherwise download it from githut fron the `OPS_REPO` with a git clone
-- `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults to `~/.ops/<os>-<arch>/bin`. All the prerequisites are downloaded in this directory
-- `OPS_CMD` is the actual command executed - defaults to the absolute path of the target of the symbolic link but it can be overriden.
+- `OPS` is the actual command you are using, so you can refer to ops itself in opsfiles as `$OPS`.
+- `OPS_PWD` is the folder where `ops` is executed (the current working directory). It is used to preserve the original working directory because `ops` changes to the acutal folder where the tasks are for execution.
+
+The following environment variables are always set and you can  ovverride them.
+
+- `OPS_CMD` is the actual command executed - defaults to the absolute path of the target of the symbolic link but it can be overriden. `OPS` will take this value.
+- `OPS_VERSION` can be defined to set ops's version value. It is useful to override version validations when updating tasks (and you know what you are doing).  Current value is defined at build time and stored in sources in version.txt
+- `OPS_HOME` is the home dir, defaults to `~/.ops` 
 - `OPS_REPO` is the github repo where `ops` downloads its tasks. If not defined, it defaults to `https://github.com/apache/openserverless-task`.
-- `OPS_BRANCH` is the branch where `ops` looks for its tasks. The branch to use is defined at build time and it is the base version (without the patch level). Chech branch.txt for the current value
-- `OPS_VERSION` can be defined to set ops's version value. It is useful to override version validations when updating tasks (and you know what you are doing).  Current value is in version.txt
+- `OPS_BRANCH` is the branch where `ops` looks for its tasks. The branch to use is defined at build time and it is ususally the base version (without the patch level). Check `branch.txt` for the current value
+- `OPS_ROOT` is the folder where `ops` looks for its tasks. If not defined, if will follow the algirithm described before to finding it locally. Otherwise download it from github, git clones or git updates the `$OPS_REPO` in the `$OPS_BRANCH` and store it is `$OPS_HOME/$OPS_BRANCH/olaris`
+
+- `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults to `~/.ops/{{.OS}}-{{.ARCH}}/bin`. All the prerequisites are downloaded in this directory. It is automatically added to the PATH at the beginning when executing opsfiles.
 - `OPS_TMP` is a temporary folder where you can store temp files - defaults to `~/.ops/tmp` 
 - `OPS_APIHOST` is the host for `ops -login`. It is used in place of the first argument of `ops -login`. If empty, the command will expect the first argument to be the apihost.
-- `OPS_USER`: set the username for `ops -login`. The default is `nuvolaris`. It can be overriden by passing the username as an argument to `ops -login` or by setting the environment variable.
+- `OPS_USER` is set the username for `ops -login`. The default is `nuvolaris`. It can be overriden by passing the username as an argument to `ops -login` or by setting the environment variable.
 - `OPS_PASSWORD`: set the password for `ops -login`. If not set, `ops -login` will prompt for the password. It is useful for tests and non-interactive environments.
-- `OPS_PWD` is the folder where `ops` is executed (the current working directory). It is used to preserve the original working directory when `ops` is used again in tasks (e.g. ops -realpath to retrieve the correct path). Change it only if you know what you are doing!
 - `OPS_ROOT_PLUGIN` is the folder where `ops` looks for plugins. If not defined, it defaults to the same directory where  `ops` is located.
-- `OPS_OLARIS` holds the head commit hash of the used olaris repo. You can see the hash with `ops -info`.
-- `OPS_PORT` is the port where `ops` will run embedde web server for the configurator. If not defined, it defaults to `9678`.
-- `OPS_NO_DOCOPTS` can be defined to disable docopts parsing. Useful to test hidden tasks. When this is enabled it also shows all the tasks instead of just those with a description.
-- `OPS_NO_PREREQ` disable downloading of prerequisites - you have to ensure at least coreutils is in the path to make things work
+- `OPS_PORT` is the port where `ops` will run embedded web server for the configurator. If not defined, it defaults to `9678`.
+- `OPS_OLARIS` holds the head commit hash of the used olaris repo. If it is a local version its value is `<local>`. You can see the hash with `ops -info`.
 
-
-## Internal environment variables
+## Special purpose environment variables
 
 The following variables have a special purpose and used for test and debug
 
@@ -184,8 +186,9 @@ The following variables have a special purpose and used for test and debug
 - `TRACE` when set gives mode detailes tracing informations, also enable DEBUG=1
 - `EXTRA` appends extra arguments to the task invocation - useful when you need to set extra variables with a docopts active.
 - `__OS` overrides the value of the detected operating system - useful to test prereq scripts
--  `__ARCH` overrides the value of the detected architecture - useful to test prereq scripts
+- `__ARCH` overrides the value of the detected architecture - useful to test prereq scripts
 - `OPS_RUNTIMES_JSON` is used for the values of the runtimes json if the system is unable to read in other ways the current runtimes json. It is normally compiled in when you buid from the current version of the runtimes.json. It can be overriden
 - `OPS_COREUTILS` is a string, a space separated list, which lists all the commands the coreutils binary provided. It should be kept updated with the values of the current version used. It can be overriden
 - `OPS_TOOLS` is a string, a space separated list, which lists all the commands provided as internal tool by the ops binary. It shold be kept updated with the current list of tools provided. It can be overriden defining externally
-
+- `OPS_NO_DOCOPTS` can be defined to disable docopts parsing. Useful to test hidden tasks. When this is enabled it also shows all the tasks instead of just those with a description.
+- `OPS_NO_PREREQ` disable downloading of prerequisites - you have to ensure at least coreutils is in the path to make things work

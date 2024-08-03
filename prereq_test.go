@@ -94,7 +94,7 @@ func Example_downloadPrereq() {
 
 func Example_ensurePrereq() {
 	bindir, err := EnsureBindir()
-	if err != nil {
+	if err == nil {
 		RemoveAll(bindir)
 	}
 	dir := joinpath(joinpath(workDir, "tests"), "prereq")

@@ -79,7 +79,7 @@ func Example_locate_root() {
 
 func Test_setOpsOlarisHash(t *testing.T) {
 	_ = os.Chdir(workDir)
-	OpsBranch = "0.1.0-testing"
+	OpsBranch = "0.1.0"
 	opsdir, _ := homedir.Expand("~/.ops")
 	_ = RemoveAll(opsdir)
 	dir, _ := downloadTasksFromGitHub(true, true)

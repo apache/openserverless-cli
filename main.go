@@ -91,9 +91,9 @@ func setOpsRootPluginEnv() {
 }
 
 func info() {
+	fmt.Println("OPS_CMD:", os.Getenv("OPS_CMD"))
 	fmt.Println("OPS_VERSION:", os.Getenv("OPS_VERSION"))
 	fmt.Println("OPS_BRANCH:", os.Getenv("OPS_BRANCH"))
-	fmt.Println("OPS_CMD:", os.Getenv("OPS_CMD"))
 	fmt.Println("OPS_BIN:", os.Getenv("OPS_BIN"))
 	fmt.Println("OPS_TMP:", os.Getenv("OPS_TMP"))
 	fmt.Println("OPS_HOME:", os.Getenv("OPS_HOME"))
@@ -227,12 +227,13 @@ func Main() {
 
 	// setup OPS_CMD
 	me := args[0]
-	if strings.Contains("ops ops.exe ops ops.exe", filepath.Base(me)) {
+	if strings.Contains("ops ops.exe", filepath.Base(me)) {
 		_, err = setupCmd(me)
 		if err != nil {
 			log.Fatalf("cannot setup cmd: %s", err.Error())
 		}
 	}
+	os.Setenv("OPS", me)
 
 	// setup home
 	opsHome := os.Getenv("OPS_HOME")

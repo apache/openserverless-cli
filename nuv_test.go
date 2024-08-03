@@ -87,7 +87,7 @@ func ExampleOps() {
 
 func ExampleParseArgs() {
 	_ = os.Chdir(workDir)
-	usage := readfile("tests/olaris/sub/opts/opsopts.txt")
+	usage := readfile("tests/olaris/sub/opts/docopts.txt")
 	args := parseArgs(usage, split("ciao mike miri max"))
 	pr(1, args)
 	args = parseArgs(usage, split("ciao mike -c"))
