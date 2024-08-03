@@ -17,3 +17,4 @@ changelog:
     include:
       - "^add:"
       - "^fix:"
+      - "^change:"
