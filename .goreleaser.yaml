@@ -33,10 +33,11 @@ builds:
 
 archives:
   - format: tar.gz
-    name_template: 
+    name_template: >- 
       {{ .ProjectName }}_
-      {{ Os }}_
-      {{ Arch }}
+      {{ .Version }}_
+      {{ .Runtime.Goos }}_
+      {{ .Runtime.Goarch }}
     # use zip for windows archives
     format_overrides:
       - goos: windows
