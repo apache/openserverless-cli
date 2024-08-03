@@ -31,7 +31,7 @@ setup() {
     assert_line --partial "Your branch is behind"
 
     run ops -update
-    assert_line "Opsfiles updated successfully"
+    assert_line "Tasks updated successfully"
     assert_success
 
     run git status

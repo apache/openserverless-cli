@@ -27,6 +27,7 @@ pkgs.mkShellNoCC {
     delve
     silver-searcher
     jq
+    p7zip
   ];
   buildInputs = [
     pkgs.uutils-coreutils

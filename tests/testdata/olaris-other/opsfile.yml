@@ -29,4 +29,4 @@ tasks:
   command:
     desc: run ops setup status
     cmds:
-      - ops version
+      - ops util system

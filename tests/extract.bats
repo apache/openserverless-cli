@@ -19,7 +19,7 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    rm  7zip.tar.xz 7zz coreutils.tar.gz coreutils.zip coreutils.exe
+    rm -f  7zip.tar.xz 7zz coreutils.tar.gz coreutils.zip coreutils.exe
 }
 
 @test "extract" {

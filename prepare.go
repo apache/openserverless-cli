@@ -79,7 +79,7 @@ func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 			return "", err
 		}
 
-		fmt.Println("Opsfiles updated successfully")
+		fmt.Println("Tasks updated successfully")
 		touchLatestCheckFile(joinpath(opsBranchDir, LATESTCHECK))
 		return localDir, nil
 	}
@@ -113,7 +113,7 @@ func pullTasks(force, silent bool) (string, error) {
 	localDir, err := downloadTasksFromGitHub(force, silent)
 	debug("localDir", localDir)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("cannot update tasks because: %s\nremove the folder ~/.ops and run ops -update", err.Error())
 	}
 
 	err = ensurePrereq(localDir)

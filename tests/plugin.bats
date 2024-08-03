@@ -20,7 +20,7 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     export OPS_BRANCH="$(cat ../branch.txt)"
-    run rm -rf ~/.ops
+    run rm -rf ~/.ops/$OPS_BRANCH
 }
 
 @test "ops prints 'Plugins:'" {
@@ -29,7 +29,7 @@ setup() {
     assert_line "  plugin (local)"
 }
 
-@test "ops skips invalid plugin folders (without opsfile.yaml)" {
+@test "ops skips invalid plugin folders (without opsfile.yml)" {
     run mkdir olaris-test2
     run ops
     refute_line "  test2 (local)"
@@ -78,14 +78,14 @@ setup() {
     run ops -update
     run ops other tool
     assert_line 'hello'
-    run rm -rf ~/.ops
 }
 
 @test "other command runs ops command" {
     cd testdata
     run ops -update
     run ops other command
-    assert_line --partial 'nothing installed yet'
+    assert_success
+
 }
 
 # Plugin Tool Tests

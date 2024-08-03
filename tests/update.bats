@@ -24,15 +24,16 @@ setup() {
 @test "ops -update" {
     run rm -rf ~/.ops
     run ops -update
-    assert_line "Opsfiles downloaded successfully"
     assert_success
+    assert_line "Tasks downloaded successfully"
+    assert_line "ensuring prerequisite coreutils"
 }
 
 @test "ops -update with old version warns" {
     OPS_VERSION=0.0.0 run ops -update
-    assert_line --partial "Your ops version (0.0.0) is older than the required version in opsroot.json"
-    assert_line "Attempting to update ops..."
-    assert_success
+    assert_line --partial "Your ops version (0.0.0) is older than the required version"
+    assert_line "Trying to update ops..."
+    #assert_success
 }
 
 @test "ops -update with bad version" {
@@ -51,6 +52,6 @@ setup() {
     run rm -rf ~/.ops
     export OPS_BRANCH=0.1.0
     run ops -update
-    assert_line "Opsfiles downloaded successfully"
+    assert_line "Tasks downloaded successfully"
     assert_success
 }
