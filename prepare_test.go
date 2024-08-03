@@ -82,7 +82,6 @@ func Test_setOpsOlarisHash(t *testing.T) {
 	OpsBranch = "0.1.0-testing"
 	opsdir, _ := homedir.Expand("~/.ops")
 	_ = RemoveAll(opsdir)
-	_ = os.Setenv("OPS_BIN", workDir)
 	dir, _ := downloadTasksFromGitHub(true, true)
 	err := setOpsOlarisHash(dir)
 	require.NoError(t, err)

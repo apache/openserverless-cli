@@ -67,7 +67,8 @@ func nhpath(dir string) string {
 }
 
 func RemoveAll(dir string) error {
-	fmt.Println("****" + dir)
+	//fmt.Println("****" + dir)
+	os.RemoveAll(dir)
 	return nil
 }
 

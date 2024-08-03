@@ -35,7 +35,9 @@ func Example_ensureBindir() {
 	}
 	// ensure no dir
 	_, err = os.Stat(bindir)
-	fmt.Println(1, after(":", err.Error()))
+	if err != nil {
+		fmt.Println(1, after(":", err.Error()))
+	}
 	bindir1, err := EnsureBindir()
 	if err != nil {
 		fmt.Println(err)
