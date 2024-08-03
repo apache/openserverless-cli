@@ -67,7 +67,7 @@ func Example_checkUpdated_uptodate() {
 	if err != nil {
 		pr("failed to create temp dir", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer RemoveAll(tmpDir)
 	tmpDirBranch := joinpath(tmpDir, getOpsBranch())
 	olarisTmpPath := joinpath(tmpDirBranch, "olaris")
 
@@ -101,7 +101,7 @@ func Example_checkUpdated_outdated() {
 	if err != nil {
 		pr("failed to create temp dir", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer RemoveAll(tmpDir)
 
 	tmpDirBranch := joinpath(tmpDir, getOpsBranch())
 	olarisTmpPath := joinpath(tmpDirBranch, "olaris")

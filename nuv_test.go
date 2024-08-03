@@ -121,7 +121,7 @@ func Test_validateTaskName(t *testing.T) {
 	}
 
 	tmpDir := createTmpOpsfile(t, testOpsfile)
-	defer os.RemoveAll(tmpDir)
+	defer RemoveAll(tmpDir)
 	for _, tt := range validateTaskTests {
 		task, err := validateTaskName(tmpDir, tt.argTask)
 		if err != nil && !strings.Contains(err.Error(), tt.expected) {
@@ -137,10 +137,10 @@ func Test_validateTaskName(t *testing.T) {
 func Example_setupTmp() {
 	_ = os.Chdir(workDir)
 	opsdir, _ := homedir.Expand("~/.ops")
-	os.RemoveAll(opsdir)
+	RemoveAll(opsdir)
 	setupTmp()
 	fmt.Println(nhpath(os.Getenv("OPS_TMP")))
-	os.RemoveAll(opsdir)
+	RemoveAll(opsdir)
 	// Output:
 	// /home/.ops/tmp
 }
@@ -167,7 +167,7 @@ func Test_getTaskNamesList(t *testing.T) {
 
 	t.Run("should return array of task names if tasks in opsfile", func(t *testing.T) {
 		tmpDir := createTmpOpsfile(t, "tasks:\n  task1: a\n  task2: b\n")
-		defer os.RemoveAll(tmpDir)
+		defer RemoveAll(tmpDir)
 
 		tasks := getTaskNamesList(tmpDir)
 		if len(tasks) != 2 {
@@ -182,7 +182,7 @@ func Test_getTaskNamesList(t *testing.T) {
 	t.Run("should return array of task names if tasks in opsfile + subfolders names as tasks with opsfile in them", func(t *testing.T) {
 
 		tmpDir := createTmpOpsfile(t, "tasks:\n  task1: a\n  task2: b\n")
-		defer os.RemoveAll(tmpDir)
+		defer RemoveAll(tmpDir)
 
 		// create subfolder with opsfile
 		subDir := filepath.Join(tmpDir, "sub")
@@ -216,7 +216,7 @@ func Test_getTaskNamesList(t *testing.T) {
 	t.Run("avoids duplicate when subfolder with opsfile has same name as task", func(t *testing.T) {
 
 		tmpDir := createTmpOpsfile(t, "tasks:\n  task1: a\n  task2: b\n")
-		defer os.RemoveAll(tmpDir)
+		defer RemoveAll(tmpDir)
 
 		// create subfolder with opsfile
 		subDir := filepath.Join(tmpDir, "task1")

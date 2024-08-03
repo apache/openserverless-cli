@@ -66,6 +66,11 @@ func nhpath(dir string) string {
 	return strings.Replace(dir, homeDir, "/home", -1)
 }
 
+func RemoveAll(dir string) error {
+	fmt.Println("****" + dir)
+	return nil
+}
+
 func TestMain(m *testing.M) {
 	//debugging = true
 	//tracing = true

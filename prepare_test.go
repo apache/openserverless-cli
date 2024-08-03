@@ -45,7 +45,7 @@ func Failing_Example_download() {
 	_ = os.Chdir(workDir)
 	OpsBranch = "0.1.0"
 	opsdir, _ := homedir.Expand("~/.ops")
-	_ = os.RemoveAll(opsdir)
+	_ = RemoveAll(opsdir)
 	_, _ = downloadTasksFromGitHub(true, true)
 	dir, err := locateOpsRoot(".")
 	pr(1, err, nhpath(dir))
@@ -67,7 +67,7 @@ func Example_locate_root() {
 	_ = os.Chdir(workDir)
 	OpsBranch = "0.1.0"
 	opsdir, _ := homedir.Expand("~/.ops")
-	_ = os.RemoveAll(opsdir)
+	_ = RemoveAll(opsdir)
 	_, err := locateOpsRoot(".")
 	pr(1, err)
 	dir, err := locateOpsRoot("tests")
@@ -81,7 +81,7 @@ func Test_setOpsOlarisHash(t *testing.T) {
 	_ = os.Chdir(workDir)
 	OpsBranch = "0.1.0-testing"
 	opsdir, _ := homedir.Expand("~/.ops")
-	_ = os.RemoveAll(opsdir)
+	_ = RemoveAll(opsdir)
 	_ = os.Setenv("OPS_BIN", workDir)
 	dir, _ := downloadTasksFromGitHub(true, true)
 	err := setOpsOlarisHash(dir)

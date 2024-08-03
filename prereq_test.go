@@ -26,21 +26,33 @@ func Example_loadPrereq() {
 }
 
 func Example_ensureBindir() {
-	bindir, _ := EnsureBindir()
-	os.RemoveAll(bindir)
-	_, err1 := os.Stat(bindir)
-	bindir1, _ := EnsureBindir()
-	_, err2 := os.Stat(bindir)
-	fmt.Printf("no dir:%s\ncreated: %t\nyes dir: %v\n", after(":", err1.Error()), bindir1 == bindir, err2)
+	// cleanup
+	bindir, err := EnsureBindir()
+	if err == nil {
+		os.RemoveAll(bindir)
+	} else {
+		fmt.Println(err)
+	}
+	// ensure no dir
+	_, err = os.Stat(bindir)
+	fmt.Println(1, after(":", err.Error()))
+	bindir1, err := EnsureBindir()
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = os.Stat(bindir1)
+	fmt.Println(2, err)
+	fmt.Println(3, bindir == bindir1)
+
 	// Output:
-	// no dir: no such file or directory
-	// created: true
-	// yes dir: <nil>
+	// 1  no such file or directory
+	// 2 <nil>
+	// 3 true
 }
 
 func Example_touchAndClean() {
 	bindir, _ := EnsureBindir()
-	os.RemoveAll(bindir)
+	RemoveAll(bindir)
 	bindir, _ = EnsureBindir()
 	touch(bindir, "hello")
 	err := touchAndClean(bindir, "hello", "1.2.3")
@@ -54,7 +66,7 @@ func Example_touchAndClean() {
 
 func Example_downloadPrereq() {
 	bindir, _ := EnsureBindir()
-	os.RemoveAll(bindir)
+	RemoveAll(bindir)
 
 	prqdir := joinpath(joinpath(workDir, "tests"), "prereq")
 	prq, _ := loadPrereq(prqdir)
@@ -75,7 +87,7 @@ func Example_downloadPrereq() {
 
 func Example_ensurePrereq() {
 	bindir, _ := EnsureBindir()
-	os.RemoveAll(bindir)
+	RemoveAll(bindir)
 	dir := joinpath(joinpath(workDir, "tests"), "prereq")
 	fmt.Println(ensurePrereq(dir))
 	fmt.Println(ensurePrereq(joinpath(dir, "sub")))
