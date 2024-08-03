@@ -51,11 +51,14 @@ func Example_ensureBindir() {
 }
 
 func Example_touchAndClean() {
-	bindir, _ := EnsureBindir()
-	RemoveAll(bindir)
+	bindir, err := EnsureBindir()
+	if err != nil {
+		RemoveAll(bindir)
+	}
+
 	bindir, _ = EnsureBindir()
 	touch(bindir, "hello")
-	err := touchAndClean(bindir, "hello", "1.2.3")
+	err = touchAndClean(bindir, "hello", "1.2.3")
 	fmt.Println(err, exists(bindir, "hello"), exists(bindir, "hello-1.2.3"), exists(bindir, "hello-1.2.4"))
 	err = touchAndClean(bindir, "hello", "1.2.4")
 	fmt.Println(err, exists(bindir, "hello"), exists(bindir, "hello-1.2.3"), exists(bindir, "hello-1.2.4"))
@@ -65,8 +68,10 @@ func Example_touchAndClean() {
 }
 
 func Example_downloadPrereq() {
-	bindir, _ := EnsureBindir()
-	RemoveAll(bindir)
+	bindir, err := EnsureBindir()
+	if err != nil {
+		RemoveAll(bindir)
+	}
 
 	prqdir := joinpath(joinpath(workDir, "tests"), "prereq")
 	prq, _ := loadPrereq(prqdir)
@@ -86,8 +91,10 @@ func Example_downloadPrereq() {
 }
 
 func Example_ensurePrereq() {
-	bindir, _ := EnsureBindir()
-	RemoveAll(bindir)
+	bindir, err := EnsureBindir()
+	if err != nil {
+		RemoveAll(bindir)
+	}
 	dir := joinpath(joinpath(workDir, "tests"), "prereq")
 	fmt.Println(ensurePrereq(dir))
 	fmt.Println(ensurePrereq(joinpath(dir, "sub")))
