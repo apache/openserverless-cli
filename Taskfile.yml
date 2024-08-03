@@ -45,7 +45,7 @@ tasks:
     cmds:
     - task: tag
     - git commit -m "$(cat version.txt)" -a
-    - git push --tags
+    - git push origin main --tags
 
   rebuild:
     - rm -f ops

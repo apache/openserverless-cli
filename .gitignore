@@ -40,3 +40,4 @@ tests/prereq/olaris/bin
 dist/
 tests/coreutils*
 tests/7z*
+7z*
