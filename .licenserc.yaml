@@ -22,6 +22,8 @@ header:
     copyright-owner: Apache Software Foundation
 
   paths-ignore:
+    - version.txt
+    - branch.txt
     - nuv
     - ops
     - env
@@ -38,6 +40,10 @@ header:
     - 'LICENSE'
     - 'tests/bats/**'
     - 'tests/test_helper/**'
+    - '**/*.md'
+    - '**/*.txt'
+    - '*.code-workspace'
+    - 'empty_file'
 
 dependency:
   files:

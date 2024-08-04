@@ -15,27 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package tools
+package main
 
-import (
-	"fmt"
-	"os"
-)
+import ops "github.com/apache/openserverless-cli"
 
-func Remove() (int, error) {
-	if len(os.Args) != 2 {
-		fmt.Println("Remove a file\nUsage: remove <filename>")
-		return 0, nil
-	}
-
-	filename := os.Args[1]
-
-	err := os.Remove(filename)
-	if err != nil {
-		return 1, err
-	}
-
-	fmt.Printf("removed %s\n", filename)
-
-	return 0, nil
+func main() {
+	ops.Main()
 }
