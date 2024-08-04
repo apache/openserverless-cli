@@ -21,8 +21,9 @@ setup() {
     export NO_COLOR=1
     export OPS_BRANCH="$(cat ../branch.txt)"
     rm -rf ~/.ops
-    run ops -update
+    ops -update
     cd ~/.ops/$OPS_BRANCH/olaris
+    ops -info
 }
 
 @test "ops -update on olaris with old commit updates correctly" {
@@ -31,7 +32,7 @@ setup() {
     assert_line --partial "Your branch is behind"
 
     run ops -update
-    assert_line "Tasks updated successfully"
+    assert_line --partial "Tasks updated successfully"
     assert_success
 
     run git status

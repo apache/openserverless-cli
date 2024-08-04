@@ -191,7 +191,7 @@ func locateOpsRoot(cur string) (string, error) {
 		return olaris, nil
 	}
 
-	return "", fmt.Errorf("we cannot find opsfiles, download them with ops -update")
+	return "", fmt.Errorf("cannot find opsfiles, download them with ops -update")
 }
 
 // locateOpsRootSearch search for `opsfiles.yml`

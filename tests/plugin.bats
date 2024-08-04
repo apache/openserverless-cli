@@ -101,7 +101,7 @@ setup() {
 }
 
 @test "ops -plugin with correct plugin repo" {
-    run ops -plugin https://github.com/giusdp/olaris-test.git
+    run ops -plugin https://github.com/sciabarracom/olaris-test.git
     assert_success
 
     run ops

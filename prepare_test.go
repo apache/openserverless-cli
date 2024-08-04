@@ -40,8 +40,7 @@ func Example_locate() {
 
 // TODO: undestand why it fails when executed with others
 // it works executed alone
-func Failing_Example_download() {
-	pr(1)
+func Example_download() {
 	_ = os.Chdir(workDir)
 	OpsBranch = "0.1.0"
 	opsdir, _ := homedir.Expand("~/.ops")
@@ -53,7 +52,6 @@ func Failing_Example_download() {
 	dir, err = locateOpsRoot(".")
 	pr(2, err, nhpath(dir))
 	// Output:
-	// 1
 	// Cloning tasks...
 	// Tasks downloaded successfully
 	// 1 <nil> /home/.ops/0.1.0/olaris
@@ -73,7 +71,7 @@ func Example_locate_root() {
 	dir, err := locateOpsRoot("tests")
 	pr(2, err, npath(dir))
 	// Output:
-	// 1 we cannot find opsfiles, download them with ops -update
+	// 1 cannot find opsfiles, download them with ops -update
 	// 2 <nil> /work/tests/olaris
 }
 

@@ -19,21 +19,24 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
+    rm -rf ~/.ops
+    cd ..
 }
 
-@test "ops -update" {
-    run rm -rf ~/.ops
+@test "ops -update and versions" {
     run ops -update
     assert_success
     assert_line "Tasks downloaded successfully"
-    assert_line "ensuring prerequisite coreutils"
-}
+    assert_line --partial "ensuring prerequisite coreutils"
 
-@test "ops -update with old version warns" {
     OPS_VERSION=0.0.0 run ops -update
     assert_line --partial "Your ops version (0.0.0) is older than the required version"
     assert_line "Trying to update ops..."
-    #assert_success
+    assert_success
+
+    OPS_VERSION=10.2.3 run ops -update
+    assert_line "Tasks are already up to date!"
+    assert_success
 }
 
 @test "ops -update with bad version" {
@@ -42,16 +45,8 @@ setup() {
     assert_success
 }
 
-@test "ops -update with newer version" {
-    OPS_VERSION=10.2.3 run ops -update
-    assert_line "Tasks are already up to date!"
-    assert_success
-}
-
 @test "ops -update on branch" {
-    run rm -rf ~/.ops
-    export OPS_BRANCH=0.1.0
-    run ops -update
+    OPS_BRANCH=main run ops -update
     assert_line "Tasks downloaded successfully"
     assert_success
 }

@@ -57,7 +57,7 @@ setup() {
     export OPS_APIHOST=localhost
     export OPS_PASSWORD=1234
     run ops -login
-    assert_line "Logging in as opsolaris to localhost"
+    assert_line "Logging in as nuvolaris to localhost"
 }
 
 @test "ops -login with OPS_APIHOST and OPS_USER env" {
