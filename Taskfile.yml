@@ -36,7 +36,7 @@ tasks:
     - echo "{{.BASEVER}}-$(date +%y%m%d%H%M).{{.VARIANT}}" >version.txt
     - echo "{{.BASEVER}}" >branch.txt
     - git add version.txt branch.txt
-    - git commit -m "$(cat version.txt)"
+    - git commit -m "$(cat version.txt)" || true
     - git tag -f "v$(cat version.txt)"
  
 
