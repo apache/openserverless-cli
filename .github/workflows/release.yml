@@ -25,11 +25,10 @@ jobs:
       - name: Run Tests
         run: |
              ls -l
-             cd openserverless-cli
-             ls -l
-             sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
-             ./bin/task install
-             ./bin/task tests
+             sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+             task install
+             ops --version
+             task tests
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
