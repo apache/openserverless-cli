@@ -44,7 +44,7 @@ jobs:
              ls -l
              sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
              task install
-             ops --version
+             ops -version
              task tests
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
