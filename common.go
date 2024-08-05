@@ -18,6 +18,7 @@
 package openserverless
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -198,4 +199,26 @@ func touch(dir string, name string) error {
 	}
 	f.Close()
 	return nil
+}
+
+// confirm prompts the user for a yes/no answer and returns true if the answer is "yes".
+func confirm(prompt string) bool {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print(prompt)
+		response, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Printf("Error reading input: %v\n", err)
+			return false
+		}
+
+		response = strings.TrimSpace(strings.ToLower(response))
+		if response == "yes" || response == "y" {
+			return true
+		} else if response == "no" || response == "n" {
+			return false
+		}
+
+		fmt.Println("Please type yes or no and then press enter.")
+	}
 }

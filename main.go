@@ -148,6 +148,33 @@ func executeMainToolsAndExit(cmd string, args []string, opsHome string) int {
 			log.Fatal("unable to set OPS_OLARIS...", err.Error())
 		}
 
+	case "reset":
+		home := os.Getenv("OPS_HOME")
+		if home == "" {
+			log.Fatal("cannot determine the ops home dir")
+			return 1
+		}
+		info, err := os.Stat(home)
+		if os.IsNotExist(err) {
+			fmt.Printf("%s does not exists - nothing to to do\n", home)
+			return 1
+		}
+		if err != nil {
+			log.Fatal("error in reading the ops home dir", err.Error())
+		}
+		if !info.IsDir() {
+			log.Fatal("cannot reset, not a directory", home)
+		}
+		if !confirm(fmt.Sprintf("I am going to remove the subfolder %s, are you sure", home)) {
+			log.Fatal("reset aborted")
+		}
+		err = os.RemoveAll(home)
+		if err != nil {
+			log.Fatal("ops reset error:", err.Error())
+		}
+		fmt.Println("ops reset complete")
+		return 0
+
 	case "retry":
 		if err := tools.ExpBackoffRetry(args[1:]); err != nil {
 			log.Fatalf("error: %s", err.Error())
