@@ -4,10 +4,22 @@ OS="$(uname -s)"
 ARCH="$(uname -m)"
 
 case "$OS-$ARCH" in 
-(Linux-x86-64)  SUFFIX="_linux_amd64" ; EXT=".tar.gz" ;;
-(Linux-arm64)   SUFFIX="_linux_arm64" ; EXT=".tar.gz";;
-(Darwin-x86_64) SUFFIX="_darwin_amd64" ; EXT=".tar.gz" ;;
-(Darwin-arm64)  SUFFIX="_darwin_arm64" ; EXT=".tar.gz" ;;
+(Linux-x86_64)  
+   SUFFIX="_linux_amd64"
+   EXT=".tar.gz" 
+;;
+(Linux-arm64)   
+   SUFFIX="_linux_arm64" 
+   EXT=".tar.gz"
+;;
+(Darwin-x86_64) 
+   SUFFIX="_darwin_amd64"
+   EXT=".tar.gz" 
+;;
+(Darwin-arm64)  
+  SUFFIX="_darwin_arm64"
+  EXT=".tar.gz" 
+;;
 (MINGW64_NT-*)  SUFFIX="_windows_amd64" ; EXT=".zip"  ;;
 (*) echo "unknown system"; exit 1 ;;
 esac
@@ -20,8 +32,8 @@ mkdir -p ~/.local/bin
 curl -sL "$URL" -o "/tmp/$FILE"
 
 if test "$EXT" == ".zip"
-then unzip "$FILE" ops.exe -d "~/.local/bin"
-else tar xzvf "$FILE" ops -C "~/.local/bin"
+then unzip "/tmp/$FILE" ops.exe -d ~/.local/bin
+else tar  xzvf "/tmp/$FILE" -C ~/.local/bin ops 
 fi
 
 if ! test -e  ~/.local/bin/ops*

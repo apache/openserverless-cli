@@ -32,9 +32,9 @@ To be implemented: quick install in Windows with PowerShell
 irm bit.ly/get-ops-exe | iex
 ````
 
-# What is ops?
+# What is `ops`?
 
-Ops is the OpenServerless CLI.
+Well, as you can guess it helps with operations: `ops` is the OpenServerless CLI.
 
 It is a task executor on steroids. 
 
