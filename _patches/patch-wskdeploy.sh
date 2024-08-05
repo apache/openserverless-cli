@@ -39,5 +39,7 @@ git commit -m "patching sh for ops" -a
 git tag $DTAG
 git push origin-auth openserverless -f --tags
 VER=$(git rev-parse HEAD)
-GOBIN=$HERE go install github.com/sciabarracom/openwhisk-wskdeploy@$VER
+cd ..
+mkdir -p bin
+GOBIN=$HERE/bin go install github.com/sciabarracom/openwhisk-wskdeploy@$VER
 

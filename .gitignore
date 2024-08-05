@@ -36,8 +36,7 @@ tests/prereq/olaris/bin
 tests/coreutils*
 tests/7z*
 !_patch
-_patch/task
-_patch/gosh
-_patch/wsk
-_patch/openwhisk-wskdeploy
-_patch/openwhisk-cli
+_patch/bin/task
+_patch/bin/gosh
+_patch/bin/wsk
+_patch/bin/openwhisk-wskdeploy

@@ -22,7 +22,8 @@ HERE=$PWD
 SHVER=$(git ls-remote https://github.com/sciabarracom/sh | awk '/refs\/heads\/openserverless/{print $1}')
 STAG="v3.38.0"
 DTAG="v3.38.10"
-cd taskfile
+cd task
+git reset --hard
 go clean -cache -modcache
 git checkout "$STAG" -B openserverless
 mkdir -p cmd/taskmain
@@ -80,5 +81,7 @@ go build
 git tag $DTAG
 git push origin-auth openserverless -f --tags
 VER=$(git rev-parse HEAD)
-GOBIN=$HERE go install github.com/sciabarracom/task/v3/cmd/task@$VER
+cd ..
+mkdir -p bin
+GOBIN=$HERE/bin go install github.com/sciabarracom/task/v3/cmd/task@$VER 
 

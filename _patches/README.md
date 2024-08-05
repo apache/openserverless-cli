@@ -39,11 +39,12 @@ This is the procedure we followed to build the patched versions of:
    bash patch-wsk.sh
 
 4. regenerate the go.mod/go.sum in top level (using the latest versions  if you changed them!)
+
 cd ..
 rm go.mod go.sum
 go mod init github.com/apache/openserverless-cli
 go get github.com/sciabarracom/openwhisk-cli@v1.2.1
-go get github.com/sciabarracom/task/v3/cmd/taskmain@v3.38.9
+go get github.com/sciabarracom/task/v3/cmd/taskmain@v3.38.10
 go mod tidy
 go build
 

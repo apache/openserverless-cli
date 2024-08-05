@@ -45,5 +45,7 @@ git commit -m "patching sh for ops" -a
 git tag $DTAG
 git push -f origin-auth openserverless --tags
 VER=$(git rev-parse --short HEAD)
-GOBIN=$HERE go install github.com/sciabarracom/sh/v3/cmd/gosh@$VER
+cd ..
+mkdir -p bin
+GOBIN=$HERE/bin go install github.com/sciabarracom/sh/v3/cmd/gosh@$VER
 OPS_CMD=$(which ops) OPS_TOOLS="jq awk" OPS_COREUTILS="ls cp mv" TRACE=1 ./gosh

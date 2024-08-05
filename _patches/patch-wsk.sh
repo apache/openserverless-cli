@@ -45,5 +45,7 @@ git tag $DTAG
 git push origin-auth openserverless -f --tags
 go clean -modcache -cache -testcache -fuzzcache
 VER=$(git rev-parse HEAD)
-GOBIN=$HERE go install github.com/sciabarracom/openwhisk-cli@$VER
+cd ..
+mkdir -p bin
+GOBIN=$HERE/bin go install github.com/sciabarracom/openwhisk-cli@$VER
 
