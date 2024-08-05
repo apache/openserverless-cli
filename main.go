@@ -108,7 +108,7 @@ func info() {
 
 // not available in taskfiles
 var mainTools = []string{
-	"task", "version", "info", "help", "serve", "update", "retry", "login", "config", "plugin",
+	"task", "version", "info", "help", "serve", "update", "retry", "login", "config", "plugin", "reset",
 }
 
 func executeMainToolsAndExit(cmd string, args []string, opsHome string) int {
@@ -165,7 +165,7 @@ func executeMainToolsAndExit(cmd string, args []string, opsHome string) int {
 		if !info.IsDir() {
 			log.Fatal("cannot reset, not a directory", home)
 		}
-		if !confirm(fmt.Sprintf("I am going to remove the subfolder %s, are you sure", home)) {
+		if !confirm(fmt.Sprintf("I am going to remove the subfolder %s, are you sure :", home)) {
 			log.Fatal("reset aborted")
 		}
 		err = os.RemoveAll(home)

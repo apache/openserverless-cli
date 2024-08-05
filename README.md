@@ -18,23 +18,32 @@
   ~
 -->
 
-**WARNING: this is still work in progress**
+# `ops`, the Apache OpenServerless all-mighty CLI tool.
 
-The code may not build, there can be errors, and it can even destroy your hard disk or send you in another dimension.
+Quick install in Linux, MacOSX and Windows with WSL or GitBash:
 
-Documentation is also work in progress....
+```
+curl -sL bit.ly/get-ops | bash
+````
 
-# `ops`, the OpenServerless all-mighty CLI tool.
+To be implemented: quick install in Windows with PowerShell 
 
-Ops is a task executor on steroids. 
+```
+irm bit.ly/get-ops-exe | iex
+````
 
+# What is ops?
 
-- it embeds [`Task`](https://taskfile.dev))
+Ops is the OpenServerless CLI.
+
+It is a task executor on steroids. 
+
+- it embeds [`task`](https://taskfile.dev))
 - it embeds [`wsk`](https://github.com/apache/openwhisk-cli)
-- it embeds many other utility commands (check with `ops -help`)
-- automatically download other commad line tools he neeeds as prerequisites
-- automatically download a predefined set of tasks downloaded from github 
-- taskfiles are organized in  commands and subcommands, hiearachally
+- it embeds a lot of other utility commands (check with `ops -help`)
+- automatically download and updated commad line tools he neeeds as prerequisites
+- automatically download and updated a predefined set of tasks  from github 
+- taskfiles are organized in commands and subcommands, hiearachally
 - taskfiles have options powered by [docopt](http://docopt.org/)
 - it supports plugins
 
