@@ -2,11 +2,12 @@
 
 OS="$(uname -s)"
 ARCH="$(uname -m)"
+CMD="ops"
 
 case "$OS-$ARCH" in 
 (Linux-x86_64)  
    SUFFIX="_linux_amd64"
-   EXT=".tar.gz" 
+   EXT=".tar.gz"
 ;;
 (Linux-arm64)   
    SUFFIX="_linux_arm64" 
@@ -20,20 +21,30 @@ case "$OS-$ARCH" in
   SUFFIX="_darwin_arm64"
   EXT=".tar.gz" 
 ;;
-(MINGW64_NT-*)  SUFFIX="_windows_amd64" ; EXT=".zip"  ;;
-(*) echo "unknown system"; exit 1 ;;
+(MINGW64_NT-*)  
+   SUFFIX="_windows_amd64" ; 
+   EXT=".zip"
+   CMD="ops.exe"
+;;
+(*) 
+   echo "unknown system - exiting"
+   exit 1 
+;;
 esac
 
 OPSROOT="https://raw.githubusercontent.com/apache/openserverless-task/main/opsroot.json"
 VERSION="$(curl -sL $OPSROOT | sed -n 's/^.*"version": "\([^"]*\)",/\1/p')"
 FILE="openserverless-cli_${VERSION}$SUFFIX$EXT"
 URL="https://github.com/apache/openserverless-cli/releases/download/v$VERSION/$FILE"
+
 mkdir -p ~/.local/bin
 curl -sL "$URL" -o "/tmp/$FILE"
 
 if test "$EXT" == ".zip"
-then unzip "/tmp/$FILE" ops.exe -d ~/.local/bin
-else tar  xzvf "/tmp/$FILE" -C ~/.local/bin ops 
+then 
+   unzip -o -d ~/.local/bin "/tmp/$FILE" "$CMD"
+else 
+   tar xzvf "/tmp/$FILE" -C ~/.local/bin "$CMD"
 fi
 
 if ! test -e  ~/.local/bin/ops*
