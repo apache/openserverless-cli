@@ -91,6 +91,7 @@ func Example_downloadPrereq() {
 	if err != nil {
 		RemoveAll(bindir)
 	}
+	PrereqSeenMap = map[string]string{}
 
 	prqdir := joinpath(joinpath(workDir, "tests"), "prereq")
 	prq, _ := loadPrereq(prqdir)
@@ -116,6 +117,7 @@ func Example_ensurePrereq() {
 	} else {
 		fmt.Printf("ERROR CANNOT REMOVE DIR %v\n", err)
 	}
+	PrereqSeenMap = map[string]string{}
 	dir := joinpath(joinpath(workDir, "tests"), "prereq")
 	fmt.Println(ensurePrereq(dir))
 	fmt.Println(ensurePrereq(joinpath(dir, "sub")))
