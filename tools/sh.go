@@ -102,7 +102,7 @@ func runInteractive(r *interp.Runner, stdin io.Reader, stdout, stderr io.Writer)
 				return false
 			}
 		}
-		fmt.Fprintf(stdout, "$ ")
+		fmt.Fprintf(stdout, "@ ")
 		return true
 	}
 	if err := parser.Interactive(stdin, fn); err != nil {
