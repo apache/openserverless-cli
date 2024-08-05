@@ -90,7 +90,7 @@ tasks:
     desc: unit test (use F=-v to verbose)
     cmds:
       - rm -Rf ~/.ops
-      - go clean -testcache
+      - go clean -testcache -cache
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli/config
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli/tools  

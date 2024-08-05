@@ -113,6 +113,8 @@ func Example_ensurePrereq() {
 	bindir, err := EnsureBindir()
 	if err == nil {
 		RemoveAll(bindir)
+	} else {
+		fmt.Printf("ERROR CANNOT REMOVE DIR %v\n", err)
 	}
 	dir := joinpath(joinpath(workDir, "tests"), "prereq")
 	fmt.Println(ensurePrereq(dir))

@@ -1,4 +1,4 @@
-# Patches:
+# Patches to the tools
 
 - changes to mvdan/sh:
    - rename to sciabarracom/sh

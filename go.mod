@@ -20,7 +20,7 @@ require (
 	github.com/nuvolaris/jj v0.0.0-20231020143327-10b90948a5d2
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/sciabarracom/openwhisk-cli v1.2.1
-	github.com/sciabarracom/sh/v3 v3.8.2
+	github.com/sciabarracom/sh/v3 v3.8.3
 	github.com/sciabarracom/task/v3 v3.38.9
 	github.com/stretchr/testify v1.9.0
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8

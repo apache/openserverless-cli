@@ -54,7 +54,7 @@ func isBuiltin(name string) bool {
 	if isTools(name) {
 		return true
 	}
-	return IsBuiltin1(name)
+	return isBuiltin_orig(name)
 }
 
 func (r *Runner) builtinCode(ctx context.Context, pos syntax.Pos, name string, args []string) int {
@@ -65,19 +65,20 @@ func (r *Runner) builtinCode(ctx context.Context, pos syntax.Pos, name string, a
 			cmd = append(cmd, name)
 		}
 		args = append(cmd, args...)
-		fmt.Printf("%v\n", args)
-		r.exitShell(ctx, 1)
+		if os.Getenv("TRACE") != "" {
+			fmt.Printf("%v\n", args)
+		}
 		r.exec(ctx, args)
 		return r.exit
 	}
 
 	if isTools(name) {
 		args = append([]string{os.Getenv("OPS_CMD"), "-" + name}, args...)
-		fmt.Printf("%v\n", args)
-		r.exitShell(ctx, 1)
+		if os.Getenv("TRACE") != "" {
+			fmt.Printf("%v\n", args)
+		}
 		r.exec(ctx, args)
 		return r.exit
-
 	}
-	return r.BuiltinCode1(ctx, pos, name, args)
+	return r.builtinCode_orig(ctx, pos, name, args)
 }

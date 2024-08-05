@@ -45,11 +45,6 @@ func preflightChecks() error {
 
 	preflight.check(checkInstalled("curl"))
 	preflight.check(checkInstalled("ssh"))
-	if getOS() != "windows" {
-		preflight.check(checkInstalled("grep"))
-		preflight.check(checkInstalled("xz"))
-		preflight.check(checkInstalled("gunzip"))
-	}
 	return preflight.err
 }
 

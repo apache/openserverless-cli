@@ -21,21 +21,29 @@ cd "$(dirname $0)"
 go clean -cache -modcache -testcache
 HERE=$PWD
 STAG="v3.8.0"
-DTAG="v3.8.2"
+DTAG="v3.8.3"
 cd sh
+git reset --hard
 git checkout "$STAG" -B openserverless
 cp $HERE/builtin_extra.go interp/builtin_extra.go
 git add interp/builtin_extra.go
-sed  -i -e 's!) builtinCode(!) BuiltinCode1(!' -e 's!func isBuiltin!func IsBuiltin1!' interp/builtin.go
+sed  -i -e 's!) builtinCode(!) builtinCode_orig(!' -e 's!func isBuiltin!func isBuiltin_orig!' interp/builtin.go
 find . \( -name \*.go -o -name go.mod \) | while read file 
 do echo $file 
    sed -i 's!mvdan.cc/sh!github.com/sciabarracom/sh!' $file 
 done
 go clean -modcache -cache -testcache -fuzzcache
 go mod tidy
+
+#echo >>go.mod "replace github.com/sciabarracom/sh/v3/interp => ./interp" 
+#echo >>go.mod "replace github.com/sciabarracom/sh/v3/syntax => ./syntax"
+#go build ./cmd/gosh
+#
+#exit
+
 git commit -m "patching sh for ops" -a
 git tag $DTAG
 git push -f origin-auth openserverless --tags
 VER=$(git rev-parse --short HEAD)
 GOBIN=$HERE go install github.com/sciabarracom/sh/v3/cmd/gosh@$VER
-
+OPS_CMD=$(which ops) OPS_TOOLS="jq awk" OPS_COREUTILS="ls cp mv" TRACE=1 ./gosh

@@ -175,53 +175,67 @@ func touchAndClean(dir string, name string, version string) error {
 
 // download a prerequisite
 func downloadPrereq(name string, task PrereqTask) error {
+
+	// names and version
+	// xname = executeable name
+	// vname = versioned executable name
 	version, ok := task.Vars["VERSION"]
 	if !ok {
+		trace("return because no version for ", name)
 		return nil
 	}
+	xname := addExeExt(name)
+	vname := xname + "-" + version
 
+	// ensure bindir
 	bindir, err := EnsureBindir()
 	if err != nil {
 		return err
 	}
 
 	// check if file and version exists
-	vname := name + "-" + version
 	trace("checking", vname, version)
-	if exists(bindir, name) {
-		// check if there is an inconsistency in the versions
-		if exists(bindir, vname) {
-			trace("already downloaded", vname)
+	if exists(bindir, vname) {
+		trace("already downloaded", vname)
+		return nil
+	}
+
+	// checking different versions of the same file
+	oldver, seen := PrereqSeenMap[name]
+	if seen {
+		if oldver == version {
+			trace("same version again", vname)
 			return nil
 		}
-		oldver, seen := PrereqSeenMap[name]
-		if seen {
-			if oldver == version {
-				trace("same version again", vname)
-				return nil
-			}
-			return fmt.Errorf("WARNING: %s prerequisite found twice with different versions!\nPrevious version: %s, ignoring %s", name, oldver, version)
-		}
+		return fmt.Errorf("WARNING: %s prerequisite found twice with different versions!\nPrevious version: %s, ignoring %s", name, oldver, version)
 	}
+	PrereqSeenMap[name] = version
 
 	if taskDryRun {
 		fmt.Printf("downloading %s %s\n", name, version)
 		touch(bindir, name)
-		touchAndClean(bindir, name, version)
 	} else {
 		fmt.Printf("ensuring prerequisite %s %s\n", name, version)
 		execPrereqTask(bindir, name)
 		// check if file and version exists
 
-		// fixing the name for windows adding .exe
-		name = addExeExt(name)
-		if !exists(bindir, name) {
+		if !exists(bindir, xname) {
 			return fmt.Errorf("failed to download %s version %s", name, version)
 		}
+		// check if a file is zero length and remove in this case
+		fileInfo, err := os.Stat(joinpath(bindir, xname))
+		if err != nil {
+			return fmt.Errorf("failed to download %s version %s", name, version)
+		}
+		if fileInfo.Size() == 0 {
+			trace("removing the empty file ", xname)
+			err := os.Remove(joinpath(bindir, xname))
+			if err != nil {
+				return fmt.Errorf("cannot remove empty %s ", xname)
+			}
+		}
 	}
-
-	PrereqSeenMap[name] = version
-	return touchAndClean(bindir, name, version)
+	return touchAndClean(bindir, xname, version)
 }
 
 // ensure prereq are satified looking at the prereq.yml
@@ -237,6 +251,7 @@ func ensurePrereq(root string) error {
 	trace("ensurePrereq in", root)
 	prereq, err := loadPrereq(root)
 	for task := range prereq.Tasks {
+		trace("prereq", task)
 		err = downloadPrereq(task, prereq.Tasks[task])
 		if err != nil {
 			fmt.Printf("error in prereq %s: %v\n", task, err)
