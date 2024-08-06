@@ -23,13 +23,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"slices"
 	"strings"
 	"time"
 
 	"github.com/apache/openserverless-cli/auth"
 	"github.com/apache/openserverless-cli/config"
 	"github.com/apache/openserverless-cli/tools"
+	"golang.org/x/exp/slices"
 
 	"github.com/mitchellh/go-homedir"
 
@@ -116,23 +116,22 @@ func InfoAndExit(args []string) {
 	if len(args) < 2 {
 		fmt.Println("Welcome to ops, the all-mighty, extensibile apache OPenServerless CLI Tool.")
 		fmt.Println("Let's start with the basics:")
-		fmt.Println("-v | --version version       (mention this when you ask for help)")
-		fmt.Println("-h | --help    help          (the manuale is here)")
-		fmt.Println("-u | --update  update        (get the latest version of everything)")
-		fmt.Println("-i | --info    CLI infos     (let's check the CLI)")
-		fmt.Println("-c | --config  manage config (let's check the server configuration)")
-		fmt.Println("-l | --login   login         (you have to login first, you know)")
-		fmt.Println("--i-really-want-to-reset     (if you are desperate and nothing works)")
-		fmt.Println("But wait! There is more, much much more. Please RTFM.")
+		fmt.Println("-h | -help    list commands   (top level command, start here)")
+		fmt.Println("-t | -tools   list tools      (embedded tools, prefixed by '-')")
+		fmt.Println("-v | -version current version (mention this when you ask for help)")
+		fmt.Println("-i | -info    CLI infos       (let's check the CLI)")
+		fmt.Println("-u | -update  download latest (get the latest commands and prerequisites)")
+		fmt.Println("-l | -login   access system   (you have to login first)")
+		fmt.Println("-c | -config  manage config   (server configuration)")
+		fmt.Println("-reset        clean downloads (if nothing works, try this)")
 		os.Exit(0)
 	}
 	// if we have at least one arg
 	switch args[1] {
-	case "-v", "--version":
+	case "-v", "-version":
 		fmt.Println(OpsVersion)
 		os.Exit(0)
-
-	case "-h", "--help":
+	case "-t", "-tools":
 		tools.Help(mainTools)
 		os.Exit(0)
 	default:
@@ -145,7 +144,7 @@ func executeTools(cmd string, args []string, opsHome string) int {
 
 	switch cmd {
 	case "", "task":
-		exitCode, err := Task(args[2:]...)
+		exitCode, err := Task(args...)
 		if err != nil {
 			log.Println(err)
 		}
@@ -198,7 +197,7 @@ func executeTools(cmd string, args []string, opsHome string) int {
 		}
 		return 0
 
-	case "i-really-want-to-reset", "reset":
+	case "reset":
 		home := os.Getenv("OPS_HOME")
 		if home == "" {
 			log.Fatal("cannot determine the ops home dir")
@@ -222,7 +221,7 @@ func executeTools(cmd string, args []string, opsHome string) int {
 		if err != nil {
 			log.Fatal("ops reset error:", err.Error())
 		}
-		fmt.Println("ops reset complete")
+		fmt.Println("ops -reset complete - execute ops -update to reload")
 		return 0
 
 	case "retry":
@@ -258,7 +257,7 @@ func executeTools(cmd string, args []string, opsHome string) int {
 		warn("unknown tool", "-"+cmd)
 		return 1
 	}
-	return 0 // unreachable - or it should be!
+	//return 0 // unreachable - or it should be!
 }
 
 func Main() {
@@ -275,6 +274,27 @@ func Main() {
 	if os.Getenv("WSK_RUNTIMES_JSON") == "" {
 		os.Setenv("WSK_RUNTIMES_JSON", WSK_RUNTIMES_JSON)
 		trace("WSK_RUNTIMES_JSON len=", len(WSK_RUNTIMES_JSON))
+	}
+
+	// in case args[1] is a wsk wrapper command invoke it and exit
+	// CLI: ops action ... (wsk wrapper)
+	if len(os.Args) > 1 {
+		if expand, ok := IsWskWrapperCommand(os.Args[1]); ok {
+			trace("wsk wrapper command")
+			debug("extracted cmd", expand)
+			rest := os.Args[2:]
+			debug("extracted args", rest)
+
+			// if "invoke" is in the command, parse all a=b into -p a b
+			if (len(expand) > 2 && expand[2] == "invoke") || slices.Contains(rest, "invoke") {
+				rest = parseInvokeArgs(rest)
+			}
+
+			if err := tools.Wsk(expand, rest...); err != nil {
+				log.Fatalf("error: %s", err.Error())
+			}
+			os.Exit(0)
+		}
 	}
 
 	// set runtime version as environment variable
@@ -368,42 +388,23 @@ func Main() {
 		log.Fatalf("failed preflight check: %s", err.Error())
 	}
 
-	// in case args[1] is a wsk wrapper command invoke it and exit
-	// CLI: ops action ... (wsk wrapper)
-	if len(os.Args) > 1 {
-		if expand, ok := IsWskWrapperCommand(os.Args[1]); ok {
-			trace("wsk wrapper command")
-			debug("extracted cmd", expand)
-			rest := os.Args[2:]
-			debug("extracted args", rest)
-
-			// if "invoke" is in the command, parse all a=b into -p a b
-			if (len(expand) > 2 && expand[2] == "invoke") || slices.Contains(rest, "invoke") {
-				rest = parseInvokeArgs(rest)
-			}
-
-			if err := tools.Wsk(expand, rest...); err != nil {
-				log.Fatalf("error: %s", err.Error())
-			}
-			os.Exit(0)
-		}
-	}
-
 	// first argument with prefix "-" is considered an embedded tool
 	// using "-" or "--" or "-task" invokes the embedded task
 	// CLI: ops -<tool> (embedded tool)
-	if len(os.Args) > 1 && len(os.Args[1]) > 0 && os.Args[1][0] == '-' {
-		cmd := os.Args[1]
-		// remove extra hyphen if any
-		if len(cmd) > 0 && cmd[0] == '-' {
-			cmd = cmd[1:]
+	args := os.Args
+	if len(args) > 1 && len(args[1]) > 0 && args[1][0] == '-' {
+		cmd := args[1][1:]
+		if cmd != "h" && cmd != "help" {
+			// execute the embeded tool and exit
+			exitCode := executeTools(cmd, args[2:], opsHome)
+			os.Exit(exitCode)
+		} else {
+			// remove -t to show tasks
+			args = args[1:]
 		}
-		// execute the embeded tool and exit
-		exitCode := executeTools(cmd, os.Args[1:], opsHome)
-		os.Exit(exitCode)
 	}
 
-	if err := runOps(opsRootDir, os.Args[1:]); err != nil {
+	if err := runOps(opsRootDir, args); err != nil {
 		log.Fatalf("task execution error: %s", err.Error())
 	}
 }
@@ -522,19 +523,19 @@ func buildConfigMap(opsRootPath string, configPath string) (*config.ConfigMap, e
 	return &configMap, nil
 }
 
-func IsWskWrapperCommand(name string) ([]string, bool) {
-	wskWrapperCommands := map[string][]string{
-		"action":     {"wsk", "action"},
-		"activation": {"wsk", "activation"},
-		"invoke":     {"wsk", "action", "invoke", "-r"},
-		"logs":       {"wsk", "activation", "logs"},
-		"package":    {"wsk", "package"},
-		"result":     {"wsk", "activation", "result"},
-		"rule":       {"wsk", "rule"},
-		"trigger":    {"wsk", "trigger"},
-		"url":        {"wsk", "action", "get", "--url"},
-	}
+var wskWrapperCommands = map[string][]string{
+	"action":     {"wsk", "action"},
+	"activation": {"wsk", "activation"},
+	"invoke":     {"wsk", "action", "invoke", "-r"},
+	"logs":       {"wsk", "activation", "logs"},
+	"package":    {"wsk", "package"},
+	"result":     {"wsk", "activation", "result"},
+	"rule":       {"wsk", "rule"},
+	"trigger":    {"wsk", "trigger"},
+	"url":        {"wsk", "action", "get", "--url"},
+}
 
+func IsWskWrapperCommand(name string) ([]string, bool) {
 	cmd, ok := wskWrapperCommands[name]
 	return cmd, ok
 }

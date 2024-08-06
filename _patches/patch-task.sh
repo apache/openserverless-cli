@@ -21,18 +21,22 @@ cd "$(dirname $0)"
 HERE=$PWD
 SHVER=$(git ls-remote https://github.com/sciabarracom/sh | awk '/refs\/heads\/openserverless/{print $1}')
 STAG="v3.38.0"
-DTAG="v3.38.10"
+DTAG="v3.38.11"
 cd task
 git reset --hard
 go clean -cache -modcache
 git checkout "$STAG" -B openserverless
 mkdir -p cmd/taskmain
+
+sed -i -e 's/func init/func FlagInit/' internal/flags/flags.go
+sed -i -e 's/func init/func FlagInit/' internal/experiments/experiments.go
+
 cat cmd/task/task.go \
 | sed -e 's/package main/package taskmain/' \
 | sed -e 's/func main()/func _main()/' \
 | tee cmd/taskmain/task.go
-sed -i -e 's/func init/func FlagInit/' internal/flags/flags.go
-cat   <<EOF >>cmd/taskmain/task.go
+
+cat  <<EOF >>cmd/taskmain/task.go
 
 var todoFlagInit = true
 
@@ -40,6 +44,7 @@ func Task(_args []string) (int, error) {
 	os.Args = _args
 	if todoFlagInit {
 		flags.FlagInit()
+		experiments.FlagInit()
 		todoFlagInit = false
 	}
 	if err := run(); err != nil {
@@ -77,7 +82,8 @@ sed -i -e '/mvdan.cc/g' go.mod
 go get github.com/sciabarracom/sh/v3@$SHVER
 go mod tidy
 git commit -m "patching sh for ops" -a
-go build
+go build 
+
 git tag $DTAG
 git push origin-auth openserverless -f --tags
 VER=$(git rev-parse HEAD)

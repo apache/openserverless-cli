@@ -170,11 +170,11 @@ func RunTool(name string, args []string) (int, error) {
 		return Rename()
 
 	case "remove":
-		os.Args = append([]string{"rename"}, args...)
+		os.Args = append([]string{"remove"}, args...)
 		return Remove()
 
 	case "extract":
-		os.Args = append([]string{"untar"}, args...)
+		os.Args = append([]string{"extract"}, args...)
 		return Extract()
 
 	case "empty":
@@ -188,9 +188,6 @@ func RunTool(name string, args []string) (int, error) {
 }
 
 func Help(mainTools []string) {
-	fmt.Println("Infos:")
-	fmt.Println("-v | --version")
-	fmt.Println("-h | --help")
 	fmt.Println("Tools (use -<tool> -h for help):")
 	availableTools := append(mainTools, ToolList...)
 	slices.Sort(availableTools)
