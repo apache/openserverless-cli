@@ -73,11 +73,20 @@ tasks:
       - dlv exec ./ops -- {{.CLI_ARGS}}
 
   install:
-    desc: install ops in usr/local/bin
+    desc: install ops in ~./local/bin
     deps:
       - build
     cmds:
-      - sudo cp ops /usr/local/bin
+      - cp ops $HOME/.local/bin
+      - |
+        if ! which ops | grep $HOME/.local/bin
+        then 
+          echo "$HOME/.local/bin is not in the path - adding it"
+          echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.bashrc
+          echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.zshrc
+          echo please restart your terminal to find ops in your path
+        fi
+
 
   tests:
     desc: all tests

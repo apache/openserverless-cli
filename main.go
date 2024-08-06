@@ -91,7 +91,7 @@ func setOpsRootPluginEnv() {
 }
 
 func info() {
-	fmt.Println("OPS_CMD:", os.Getenv("OPS_CMD"))
+	fmt.Println("OPS & OPS_CMD:", os.Getenv("OPS_CMD"))
 	fmt.Println("OPS_VERSION:", os.Getenv("OPS_VERSION"))
 	fmt.Println("OPS_BRANCH:", os.Getenv("OPS_BRANCH"))
 	fmt.Println("OPS_BIN:", os.Getenv("OPS_BIN"))
@@ -106,39 +106,56 @@ func info() {
 	//fmt.Println("OPS_COREUTILS:", os.Getenv("OPS_COREUTILS"))
 }
 
-// not available in taskfiles
 var mainTools = []string{
-	"task", "version", "info", "help", "serve", "update", "retry", "login", "config", "plugin", "reset",
+	"task", "info", "update", "login", "config",
+	"retry", "plugin", "reset", "serve",
 }
 
-func executeMainToolsAndExit(cmd string, args []string, opsHome string) int {
-	if cmd == "" || cmd == "-" || cmd == "task" {
+// simple tools provide info and exit
+func InfoAndExit(args []string) {
+	if len(args) < 2 {
+		fmt.Println("Welcome to ops, the all-mighty, extensibile apache OPenServerless CLI Tool.")
+		fmt.Println("Let's start with the basics:")
+		fmt.Println("-v | --version version       (mention this when you ask for help)")
+		fmt.Println("-h | --help    help          (the manuale is here)")
+		fmt.Println("-u | --update  update        (get the latest version of everything)")
+		fmt.Println("-i | --info    CLI infos     (let's check the CLI)")
+		fmt.Println("-c | --config  manage config (let's check the server configuration)")
+		fmt.Println("-l | --login   login         (you have to login first, you know)")
+		fmt.Println("--i-really-want-to-reset     (if you are desperate and nothing works)")
+		fmt.Println("But wait! There is more, much much more. Please RTFM.")
+		os.Exit(0)
+	}
+	// if we have at least one arg
+	switch args[1] {
+	case "-v", "--version":
+		fmt.Println(OpsVersion)
+		os.Exit(0)
+
+	case "-h", "--help":
+		tools.Help(mainTools)
+		os.Exit(0)
+	default:
+		return
+	}
+}
+
+// CLI: ops -<cmd> <args>...
+func executeTools(cmd string, args []string, opsHome string) int {
+
+	switch cmd {
+	case "", "task":
 		exitCode, err := Task(args[2:]...)
 		if err != nil {
 			log.Println(err)
 		}
 		return exitCode
-	}
 
-	switch cmd {
-	case "version":
-		fmt.Println(OpsVersion)
-	case "v":
-		fmt.Println(OpsVersion)
-
-	case "info":
+	case "i", "info":
 		info()
+		return 0
 
-	case "help":
-		tools.Help(mainTools)
-
-	case "serve":
-		opsRootDir := getRootDirOrExit()
-		if err := Serve(opsRootDir, args[1:]); err != nil {
-			log.Fatalf("error: %v", err)
-		}
-
-	case "update":
+	case "u", "update":
 		// ok no up, nor down, let's download it
 		dir, err := pullTasks(true, true)
 		if err != nil {
@@ -147,8 +164,41 @@ func executeMainToolsAndExit(cmd string, args []string, opsHome string) int {
 		if err := setOpsOlarisHash(dir); err != nil {
 			log.Fatal("unable to set OPS_OLARIS...", err.Error())
 		}
+		return 0
 
-	case "reset":
+	case "l", "login":
+		os.Args = args
+		loginResult, err := auth.LoginCmd()
+		if err != nil {
+			log.Fatalf("error: %s", err.Error())
+		}
+
+		if loginResult == nil {
+			return 1
+		}
+
+		fmt.Println("Successfully logged in as " + loginResult.Login + ".")
+		if err := wskPropertySet(loginResult.ApiHost, loginResult.Auth); err != nil {
+			log.Fatalf("error: %s", err.Error())
+		}
+		fmt.Println("OpenServerless host and auth set successfully. You are now ready to use ops!")
+		return 0
+
+	case "c", "config":
+		os.Args = args
+		opsRootPath := joinpath(getRootDirOrExit(), OPSROOT)
+		configPath := joinpath(opsHome, CONFIGFILE)
+		configMap, err := buildConfigMap(opsRootPath, configPath)
+		if err != nil {
+			log.Fatalf("error: %s", err.Error())
+		}
+
+		if err := config.ConfigTool(*configMap); err != nil {
+			log.Fatalf("error: %s", err.Error())
+		}
+		return 0
+
+	case "i-really-want-to-reset", "reset":
 		home := os.Getenv("OPS_HOME")
 		if home == "" {
 			log.Fatal("cannot determine the ops home dir")
@@ -179,47 +229,26 @@ func executeMainToolsAndExit(cmd string, args []string, opsHome string) int {
 		if err := tools.ExpBackoffRetry(args[1:]); err != nil {
 			log.Fatalf("error: %s", err.Error())
 		}
-
-	case "login":
-		os.Args = args[1:]
-		loginResult, err := auth.LoginCmd()
-		if err != nil {
-			log.Fatalf("error: %s", err.Error())
-		}
-
-		if loginResult == nil {
-			os.Exit(1)
-		}
-
-		fmt.Println("Successfully logged in as " + loginResult.Login + ".")
-		if err := wskPropertySet(loginResult.ApiHost, loginResult.Auth); err != nil {
-			log.Fatalf("error: %s", err.Error())
-		}
-		fmt.Println("OpenServerless host and auth set successfully. You are now ready to use ops!")
-
-	case "config":
-		os.Args = args[1:]
-		opsRootPath := joinpath(getRootDirOrExit(), OPSROOT)
-		configPath := joinpath(opsHome, CONFIGFILE)
-		configMap, err := buildConfigMap(opsRootPath, configPath)
-		if err != nil {
-			log.Fatalf("error: %s", err.Error())
-		}
-
-		if err := config.ConfigTool(*configMap); err != nil {
-			log.Fatalf("error: %s", err.Error())
-		}
+		return 0
 
 	case "plugin":
-		os.Args = args[1:]
+		os.Args = args
 		if err := pluginTool(); err != nil {
 			log.Fatalf("error: %s", err.Error())
 		}
+		return 0
+
+	case "serve":
+		opsRootDir := getRootDirOrExit()
+		if err := Serve(opsRootDir, args); err != nil {
+			log.Fatalf("error: %v", err)
+		}
+		return 0
 
 	default:
 		// check if it is an embedded to and invoke it
 		if tools.IsTool(cmd) {
-			code, err := tools.RunTool(cmd, args[2:])
+			code, err := tools.RunTool(cmd, args[1:])
 			if err != nil {
 				log.Print(err.Error())
 			}
@@ -227,16 +256,20 @@ func executeMainToolsAndExit(cmd string, args []string, opsHome string) int {
 		}
 		// no embeded tool found
 		warn("unknown tool", "-"+cmd)
+		return 1
 	}
-	return 0
+	return 0 // unreachable - or it should be!
 }
 
 func Main() {
 	var err error
-	args := os.Args
 
 	// disable log prefix
 	log.SetFlags(0)
+
+	// CLI: ops -v | --version | -h | --help
+	// provide infos without downloading anything
+	InfoAndExit(os.Args)
 
 	// set default runtime.json
 	if os.Getenv("WSK_RUNTIMES_JSON") == "" {
@@ -253,7 +286,8 @@ func Main() {
 	}
 
 	// setup OPS_CMD
-	me := args[0]
+	// CLI: ops ...
+	me := os.Args[0]
 	if strings.Contains("ops ops.exe", filepath.Base(me)) {
 		_, err = setupCmd(me)
 		if err != nil {
@@ -307,8 +341,8 @@ func Main() {
 			if err != nil {
 				log.Fatalf("cannot locate or download OPS_ROOT: %s", err.Error())
 			}
-			// just updated, do not repeat
-			if len(args) == 2 && args[1] == "-update" {
+			// if just updated, do not repeat
+			if len(os.Args) > 1 && os.Args[1] == "-update" {
 				os.Exit(0)
 			}
 		} else {
@@ -316,6 +350,7 @@ func Main() {
 			checkUpdated(opsHome, 24*time.Hour)
 		}
 	}
+
 	if err = setOpsOlarisHash(olarisDir); err != nil {
 		os.Setenv("OPS_OLARIS", "<local>")
 	}
@@ -334,19 +369,20 @@ func Main() {
 	}
 
 	// in case args[1] is a wsk wrapper command invoke it and exit
-	if len(args) > 1 {
-		if cmd, ok := IsWskWrapperCommand(args[1]); ok {
+	// CLI: ops action ... (wsk wrapper)
+	if len(os.Args) > 1 {
+		if expand, ok := IsWskWrapperCommand(os.Args[1]); ok {
 			trace("wsk wrapper command")
-			debug("extracted cmd", cmd)
-			rest := args[2:]
+			debug("extracted cmd", expand)
+			rest := os.Args[2:]
 			debug("extracted args", rest)
 
 			// if "invoke" is in the command, parse all a=b into -p a b
-			if (len(cmd) > 2 && cmd[2] == "invoke") || slices.Contains(rest, "invoke") {
+			if (len(expand) > 2 && expand[2] == "invoke") || slices.Contains(rest, "invoke") {
 				rest = parseInvokeArgs(rest)
 			}
 
-			if err := tools.Wsk(cmd, rest...); err != nil {
+			if err := tools.Wsk(expand, rest...); err != nil {
 				log.Fatalf("error: %s", err.Error())
 			}
 			os.Exit(0)
@@ -355,15 +391,19 @@ func Main() {
 
 	// first argument with prefix "-" is considered an embedded tool
 	// using "-" or "--" or "-task" invokes the embedded task
-	if len(args) > 1 && len(args[1]) > 0 && args[1][0] == '-' {
-		cmd := args[1][1:]
-		trace("executing embedded tool", cmd, args)
+	// CLI: ops -<tool> (embedded tool)
+	if len(os.Args) > 1 && len(os.Args[1]) > 0 && os.Args[1][0] == '-' {
+		cmd := os.Args[1]
+		// remove extra hyphen if any
+		if len(cmd) > 0 && cmd[0] == '-' {
+			cmd = cmd[1:]
+		}
 		// execute the embeded tool and exit
-		exitCode := executeMainToolsAndExit(cmd, args, opsHome)
+		exitCode := executeTools(cmd, os.Args[1:], opsHome)
 		os.Exit(exitCode)
 	}
 
-	if err := runOps(opsRootDir, args); err != nil {
+	if err := runOps(opsRootDir, os.Args[1:]); err != nil {
 		log.Fatalf("task execution error: %s", err.Error())
 	}
 }

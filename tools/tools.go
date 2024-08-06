@@ -188,7 +188,10 @@ func RunTool(name string, args []string) (int, error) {
 }
 
 func Help(mainTools []string) {
-	fmt.Println("Available tools:")
+	fmt.Println("Infos:")
+	fmt.Println("-v | --version")
+	fmt.Println("-h | --help")
+	fmt.Println("Tools (use -<tool> -h for help):")
 	availableTools := append(mainTools, ToolList...)
 	slices.Sort(availableTools)
 	for _, x := range availableTools {
