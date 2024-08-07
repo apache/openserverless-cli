@@ -28,6 +28,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/apache/openserverless-cli/config"
 	"github.com/zalando/go-keyring"
@@ -90,6 +91,14 @@ func LoginCmd() (*LoginResult, error) {
 		apihost = args[0]
 	}
 	url := apihost + whiskLoginPath
+
+	if !strings.HasPrefix(apihost, "http://") && !strings.HasPrefix(apihost, "https://") {
+		if apihost == "localhost" {
+			apihost = "http://" + apihost
+		} else {
+			apihost = "https://" + apihost
+		}
+	}
 
 	// try to get the user from the environment
 	user := os.Getenv("OPS_USER")

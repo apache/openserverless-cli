@@ -154,7 +154,10 @@ func Extract() (int, error) {
 		fmt.Println("Usage: file.(zip|tgz|tar[.gz|.bz2|.xz]) target")
 		return 0, nil
 	}
-	var err error
+	_, err := os.Stat(os.Args[1])
+	if os.IsNotExist(err) {
+		return 1, err
+	}
 	if strings.HasSuffix(os.Args[1], ".zip") {
 		err = ExtractFileFromZip(os.Args[1], os.Args[2])
 	} else {

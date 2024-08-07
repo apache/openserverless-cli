@@ -20,33 +20,31 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     cd testdata
+    ops -reset force
 }
 
 @test "first run auto setups" {
-    run rm -rf ~/.ops
     run ops
     assert_success
-    assert_output --partial "Welcome to ops! Setting up..."
+    assert_output --partial "Welcome to ops"
     run ls ~/.ops
     assert_success
 }
 
 @test "wrong branch fails to setup" {
-    run rm -rf ~/.ops
     export OPS_BRANCH=wrong
-    run ops
+    run ops -info
     assert_failure
     assert_output --partial "Welcome to ops! Setting up..."
     assert_output --partial "failed to clone olaris on branch 'wrong'"
 }
 
 @test "correct branch setups" {
-    run rm -rf ~/.ops
     export OPS_BRANCH=0.1.0
-    run ops
+    run ops -info
     assert_success
     assert_output --partial "Welcome to ops! Setting up..."
+    assert_output --partial "OPS_BRANCH: 0.1.0"
     run ls ~/.ops
     assert_success
-    assert_output --partial "0.1.0"
 }

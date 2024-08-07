@@ -224,8 +224,11 @@ func Ops(base string, args []string) error {
 
 	// parsed args
 	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS) {
-		trace("PREPARSE:", rest)
-		parsedArgs := parseArgs(readfile(DOCOPTS), rest)
+		debug("PREPARSE:", rest)
+		opts := readfile(DOCOPTS)
+		trace("DOCOPTS: size=", len(opts))
+		parsedArgs := parseArgs(opts, rest)
+		trace("DOCOPTS: parsedargs=", parsedArgs)
 		prefix := []string{"-t", OPSFILE}
 		if len(rest) > 0 && rest[0][0] != '-' {
 			prefix = append(prefix, rest[0])

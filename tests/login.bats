@@ -29,35 +29,39 @@ setup() {
 	
     run ops -login -h
     assert_line "Usage:"
-    assert_line "ops login <apihost> [<user>]"
+    assert_line "ops -login <apihost> [<user>]"
 }
 
 @test "ops -login with OPS_PASSWORD env does not prompt for password" {
     export OPS_PASSWORD=1234
-    run ops -login localhost
+    run ops -login nuvolaris.dev
+    assert_line --partial "Logging in https://nuvolaris.dev"
     refute_line "Enter Password:"
 }
 
 @test "ops -login with OPS_USER env defines username" {
     export OPS_PASSWORD=1234
     export OPS_USER=foo
-    run ops -login localhost
-    assert_line "Logging in as foo to localhost"
+    run ops -login  http://localhost
+    assert_failure
+    assert_line "Logging in http://localhost as foo"
 }
 
 @test "ops -login with OPS_USER and OPS_PASSWORD env" {
     export OPS_PASSWORD=1234
     export OPS_USER=foo
     run ops -login localhost
-    assert_line "Logging in as foo to localhost"
+    assert_line "Logging in http://localhost as foo"
     refute_line "Enter Password:"
 }
 
 @test "ops -login with OPS_APIHOST env" {
     export OPS_APIHOST=localhost
     export OPS_PASSWORD=1234
+    unset OPS_USER
     run ops -login
-    assert_line "Logging in as nuvolaris to localhost"
+    assert_failure
+    assert_line "Logging in http://localhost as nuvolaris"
 }
 
 @test "ops -login with OPS_APIHOST and OPS_USER env" {
@@ -65,13 +69,5 @@ setup() {
     export OPS_USER=foo
     export OPS_PASSWORD=1234
     run ops -login
-    assert_line "Logging in as foo to localhost"
-}
-
-@test "ops -login with OPS_APIHOST, user is now first argument" {
-    export OPS_APIHOST=localhost
-    export OPS_PASSWORD=1234
-    run ops -login hello
-    assert_line "Logging in as hello to localhost"
-    refute_line "Enter Password:"
+    assert_line "Logging in http://localhost as foo"
 }

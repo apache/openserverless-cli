@@ -22,7 +22,7 @@ setup() {
 }
 
 @test "welcome" {
-    run ops
+    run ops -t
     assert_line '* fail_then_succeed:       fail then success'
     assert_line '* failing:                 failing'
     assert_line '* sub:                     sub command'
