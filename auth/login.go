@@ -30,7 +30,6 @@ import (
 	"path/filepath"
 
 	"github.com/apache/openserverless-cli/config"
-	"github.com/mitchellh/go-homedir"
 	"github.com/zalando/go-keyring"
 )
 
@@ -41,7 +40,7 @@ type LoginResult struct {
 }
 
 const usage = `Usage:
-ops login <apihost> [<user>]
+ops -login <apihost> [<user>]
 
 Login to an OpenServerless instance. If no user is specified, the default user "nuvolaris" is used.
 You can set the environment variables OPS_APIHOST and OPS_USER to avoid specifying them on the command line.
@@ -50,12 +49,18 @@ You can set OPS_PASSWORD to avoid entering the password interactively.
 Options:
   -h, --help   Show usage`
 
-const whiskLoginPath = "/api/v1/web/whisk-system/ops/login"
+const whiskLoginPath = "/api/v1/web/whisk-system/nuv/login"
 const defaultUser = "nuvolaris"
 const opsSecretServiceName = "nuvolaris"
 
 func LoginCmd() (*LoginResult, error) {
-	flag := flag.NewFlagSet("login", flag.ExitOnError)
+
+	// enable log output if requested
+	if os.Getenv("DEBUG")+os.Getenv("TRACE") != "" {
+		log.SetOutput(os.Stdout)
+	}
+
+	flag := flag.NewFlagSet("-login", flag.ExitOnError)
 	flag.Usage = func() {
 		fmt.Println(usage)
 	}
@@ -78,17 +83,6 @@ func LoginCmd() (*LoginResult, error) {
 	if len(args) == 0 && os.Getenv("OPS_APIHOST") == "" {
 		flag.Usage()
 		return nil, errors.New("missing apihost")
-	}
-
-	password := os.Getenv("OPS_PASSWORD")
-	if password == "" {
-		fmt.Print("Enter Password: ")
-		pwd, err := AskPassword()
-		if err != nil {
-			return nil, err
-		}
-		password = pwd
-		fmt.Println()
 	}
 
 	apihost := os.Getenv("OPS_APIHOST")
@@ -116,11 +110,22 @@ func LoginCmd() (*LoginResult, error) {
 
 	// if still not set, use the default user
 	if user == "" {
-		log.Println("Using the default user:", defaultUser)
+		fmt.Println("Using the default user:", defaultUser)
 		user = defaultUser
 	}
 
-	log.Println("Logging in as", user, "to", apihost)
+	fmt.Println("Logging in", apihost, "as", user)
+
+	password := os.Getenv("OPS_PASSWORD")
+	if password == "" {
+		fmt.Print("Enter Password: ")
+		pwd, err := AskPassword()
+		if err != nil {
+			return nil, err
+		}
+		password = pwd
+		fmt.Println()
+	}
 
 	creds, err := doLogin(url, user, password)
 	if err != nil {
@@ -131,9 +136,9 @@ func LoginCmd() (*LoginResult, error) {
 		return nil, errors.New("missing AUTH token from login response")
 	}
 
-	opsHome, err := homedir.Expand("~/.ops")
-	if err != nil {
-		return nil, err
+	opsHome := os.Getenv("OPS_HOME")
+	if opsHome == "" {
+		return nil, fmt.Errorf("OPS_HOME not defined")
 	}
 
 	configMap, err := config.NewConfigMapBuilder().

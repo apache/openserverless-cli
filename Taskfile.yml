@@ -53,6 +53,7 @@ tasks:
     - task: build
 
   build:
+    aliases: [b]
     desc: build ops locally
     cmds:
       - echo building {{.VERSION}}
@@ -66,6 +67,7 @@ tasks:
       - ops
 
   debug:
+    aliases: [d]
     cmds:
       - task: build
         vars:
@@ -73,6 +75,7 @@ tasks:
       - dlv exec ./ops -- {{.CLI_ARGS}}
 
   install:
+    aliases: [i]
     desc: install ops in ~./local/bin
     deps:
       - build
@@ -96,6 +99,7 @@ tasks:
       - task: itest
 
   utest:
+    aliases: [ut]
     desc: unit test (use F=-v to verbose)
     cmds:
       - rm -Rf ~/.ops
@@ -116,6 +120,7 @@ tasks:
     - test -d bats
 
   itest:
+    aliases: [it]
     desc: integration tests for ops (T=<test-name> without .bats, empty run all, pass flags with F=)
     dir: tests
     cmds:
