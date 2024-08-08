@@ -121,7 +121,7 @@ func Example_ensurePrereq() {
 	dir := joinpath(joinpath(workDir, "tests"), "prereq")
 	fmt.Println(ensurePrereq(dir))
 	fmt.Println(ensurePrereq(joinpath(dir, "sub")))
-	// Output:
+	// Unordered output:
 	// downloading bun v1.11.20
 	// downloading coreutils 0.0.27
 	// <nil>

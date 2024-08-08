@@ -110,7 +110,7 @@ tasks:
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli/config
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli/tools  
-      - echo TODO go test github.com/apache/openserverless-cli/auth
+      - go test github.com/apache/openserverless-cli/auth
       
 
   bats:

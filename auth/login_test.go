@@ -56,6 +56,10 @@ func setupMockServer(t *testing.T, expectedLogin, expectedPass, expectedRes stri
 	return server
 }
 func TestLoginCmd(t *testing.T) {
+	homeDir, _ := homedir.Expand("~/.ops")
+	os.MkdirAll(homeDir, 0755)
+	os.Setenv("OPS_HOME", homeDir)
+
 	keyring.MockInit()
 
 	t.Run("error: returns error when empty password", func(t *testing.T) {
