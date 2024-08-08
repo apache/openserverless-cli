@@ -20,12 +20,12 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     export OPS_BRANCH="0.1.0-testing"
-    rm -Rvf ~/.ops/
+    ops -reset force
     cd prereq
 }
 
 @test "ops prereq" {
-    run ops
+    run ops -t
     assert_line --partial "ensuring prerequisite 7zz" 
     #assert_line --partial "ensuring prerequisite coreutils" 
     #assert_line --partial "ensuring prerequisite bun" 
@@ -33,7 +33,7 @@ setup() {
     #assert_line --partial "ensuring prerequisite kind" 
     #assert_line --partial "ensuring prerequisite k3sup" 
     assert_line --partial "info" 
-    run ops
+    run ops -t
     refute_line  "ensuring prerequisite 7zz" 
     #refute_line  "ensuring prerequisite coreutils" 
     #refute_line  "ensuring prerequisite bun" 
@@ -45,27 +45,27 @@ setup() {
 
 
 @test "windows" {
-    run env __OS=windows ops
+    run env __OS=windows ops -t
     assert_line --partial "ensuring prerequisite 7zz"
     assert test -e ~/.ops/windows-*/bin/7zz.exe
 }
 
 @test "linux" {
-    run env __OS=linux __ARCH=amd64 ops
+    run env __OS=linux __ARCH=amd64 ops -t
     assert_line --partial "ensuring prerequisite 7zz"
     assert test -e ~/.ops/linux-amd64/bin/7zz
 
-    run env __OS=linux __ARCH=arm64 ops
+    run env __OS=linux __ARCH=arm64 ops -t
     assert_line --partial "ensuring prerequisite 7zz"
     assert test -e ~/.ops/linux-arm64/bin/7zz
 }
 
 @test "darwin" {
-    run env __OS=darwin __ARCH=amd64 ops
+    run env __OS=darwin __ARCH=amd64 ops -t
     assert_line --partial "ensuring prerequisite 7zz"
     assert test -e ~/.ops/darwin-amd64/bin/7zz
 
-    run env __OS=darwin __ARCH=arm64 ops
+    run env __OS=darwin __ARCH=arm64 ops -t
     assert_line --partial "ensuring prerequisite 7zz"
     assert test -e ~/.ops/darwin-arm64/bin/7zz
 }

@@ -243,7 +243,7 @@ func executeTools(args []string, opsHome string) int {
 
 	case "retry":
 		args[0] = "-retry"
-		if err := tools.ExpBackoffRetry(args[1:]); err != nil {
+		if err := tools.ExpBackoffRetry(args); err != nil {
 			log.Fatalf("error: %s", err.Error())
 		}
 		return 0

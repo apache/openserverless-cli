@@ -24,14 +24,14 @@ setup() {
 }
 
 @test "ops prints 'Plugins:'" {
-    run ops
+    run ops -t
     assert_line 'Plugins:'
     assert_line "  plugin (local)"
 }
 
 @test "ops skips invalid plugin folders (without opsfile.yml)" {
     run mkdir olaris-test2
-    run ops
+    run ops -t
     refute_line "  test2 (local)"
     run rm -rf olaris-test2
 }
@@ -61,7 +61,7 @@ setup() {
 @test "other plugin without olaris is shown" {
     cd testdata
     run ops -update
-    run ops
+    run ops -t
     assert_line 'Plugins:'
     assert_line "  other (local)"
 }
@@ -104,7 +104,7 @@ setup() {
     run ops -plugin https://github.com/sciabarracom/olaris-test.git
     assert_success
 
-    run ops
+    run ops -t
     assert_line 'Plugins:'
     assert_line "  plugin (local)"
     assert_line "  test (ops)"

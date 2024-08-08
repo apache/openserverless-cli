@@ -41,7 +41,7 @@ setup() {
     assert_failure
 
     run ops -retry -t 0 -v ops failing
-    assert_line "Retry Parameters: max time=60 seconds, retries=0 times"
+    assert_line "Retry Parameters: max time=60 seconds, retries=0 times."
     assert_line "error: failure after 0 retries or 60 seconds."
     assert_failure
 

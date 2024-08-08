@@ -63,9 +63,18 @@ func ExpBackoffRetry(args []string) error {
 	}
 
 	if verboseFlag {
-		fmt.Printf("Retry Parameters: max time=%d seconds, retries=%d times\n", maxFlag, triesFlag)
+		fmt.Printf("Retry Parameters: max time=%d seconds, retries=%d times.\nCommand: %v\n", maxFlag, triesFlag, rest)
 	}
+
+	counter := 0
+	startTime := time.Now()
+
 	runCmd := func(args []string) error {
+		if verboseFlag {
+			counter += 1
+			elapsedTime := time.Since(startTime)
+			fmt.Printf("retry attempt %-3d elapsed %-3d seconds\n", counter, int(elapsedTime.Seconds()))
+		}
 		cmd := exec.Command(rest[0], rest[1:]...)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
