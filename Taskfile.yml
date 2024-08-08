@@ -80,14 +80,17 @@ tasks:
     deps:
       - build
     cmds:
-      - cp ops $HOME/.local/bin
+      - mkdir -p $HOME/.local/bin
+      - cp -v ops $HOME/.local/bin
       - |
         if ! which ops | grep $HOME/.local/bin
         then 
           echo "$HOME/.local/bin is not in the path - adding it"
           echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.bashrc
           echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.zshrc
-          echo please restart your terminal to find ops in your path
+          echo to find ops in the path, please either source your .bashrc or .zshrc or restart your terminal
+        else
+          echo installed ops v$(ops -version)
         fi
 
 
