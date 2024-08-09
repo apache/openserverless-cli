@@ -8,9 +8,11 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
 	github.com/go-git/go-git/v5 v5.12.0
+	github.com/gomarkdown/markdown v0.0.0-20240730141124-034f12af3bf6
 	github.com/google/uuid v1.6.0
 	github.com/h2non/filetype v1.1.3
 	github.com/itchyny/gojq v0.12.16
+	github.com/jaytaylor/html2text v0.0.0-20230321000545-74c2419ad056
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nicksnyder/go-i18n v1.10.1
 	github.com/nuvolaris/envsubst/cmd/envsubstmain v0.0.0-20230603163828-10ca029cdb58
@@ -76,6 +78,7 @@ require (
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/nwidger/jsoncolor v0.0.0-20170215171346-75a6de4340e5 // indirect
+	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -89,6 +92,7 @@ require (
 	github.com/skeema/knownhosts v1.2.2 // indirect
 	github.com/spf13/cobra v1.1.3 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/tidwall/gjson v1.14.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect

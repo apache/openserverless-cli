@@ -101,8 +101,7 @@ func RunTool(name string, args []string) (int, error) {
 		}
 
 	case "datefmt":
-		os.Args = append([]string{"datefmt"}, args...)
-		if err := DateFmtTool(); err != nil {
+		if err := DateFmtTool(append([]string{"datefmt"}, args...)); err != nil {
 			return 1, err
 		}
 

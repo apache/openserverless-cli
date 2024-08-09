@@ -18,31 +18,17 @@
 package tools
 
 import (
+	_ "embed"
 	"flag"
 	"fmt"
+	"os"
 	"time"
-
-	"golang.org/x/exp/maps"
 )
 
-func printDateFmtUsage() {
-	fmts := maps.Keys(dateFormats)
+//go:embed datefmt.md
+var datefmtUsage string
 
-	fmt.Printf(`Usage:
-ops -datefmt [options] [arguments]
-
-Print date with different formats. If no time stamp or date strings are given, uses current time.
-
--h, --help		print this help info
--t, --timestamp		unix timestamp to format (default: current time)
--s, --str 	  	date string to format
---if			input format to use with input date string (via --str)
--f, --of		output format to use (default: UnixDate)
-
-Possible formats: %v
-`, fmts)
-}
-
+// if you change this add it to the datefmt.md
 var dateFormats = map[string]string{
 	"Layout":      time.Layout,
 	"ANSIC":       time.ANSIC,
@@ -77,8 +63,8 @@ var (
 	oFmtFlag      string
 )
 
-func DateFmtTool() error {
-	flag.Usage = printDateFmtUsage
+func DateFmtTool(args []string) error {
+	os.Args = args
 
 	flag.BoolVar(&helpFlag, "h", false, "print this help info")
 	flag.BoolVar(&helpFlag, "help", false, "print this help info")
@@ -93,7 +79,7 @@ func DateFmtTool() error {
 	flag.Parse()
 
 	if helpFlag {
-		flag.Usage()
+		fmt.Println(MarkdownToText(datefmtUsage))
 		return nil
 	}
 

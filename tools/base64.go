@@ -18,10 +18,14 @@
 package tools
 
 import (
+	_ "embed"
 	"encoding/base64"
 	"flag"
 	"fmt"
 )
+
+//go:embed base64.md
+var base64usage string
 
 func base64Tool() error {
 
@@ -32,12 +36,7 @@ func base64Tool() error {
 	)
 
 	flag.Usage = func() {
-		fmt.Println(`Usage: ops -base64 [options] <string>
-
-Options:
-	-h, --help             Display this help message
-	-e, --encode <string>  Encode a string to base64
-	-d, --decode <string>  Decode a base64 string`)
+		fmt.Println(MarkdownToText(base64usage))
 	}
 
 	flag.BoolVar(&helpFlag, "h", false, "Display this help message")
