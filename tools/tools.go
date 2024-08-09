@@ -41,13 +41,31 @@ func trace(args ...any) {
 
 // available in taskfiles
 // note some of them are implemented in main.go (config, retry)
+// Note the comment in //DOC// is used to generate the list of tools in documentation
+// put one here if you add a markdown file for a tool
 var ToolList = []string{
-	"wsk", "awk", "jq", "sh",
-	"envsubst", "filetype", "random", "datefmt",
-	"die", "urlenc", "replace", "base64", "validate",
-	"echoif", "echoifempty", "echoifexists",
-	"needupdate", "gron", "jj",
-	"rename", "remove", "empty", "extract",
+	"wsk",
+	"awk",
+	"jq",
+	"sh",
+	"envsubst",
+	"filetype",
+	"random",
+	"datefmt", //DOC//
+	"die",
+	"urlenc",
+	"replace",
+	"base64", //DOC//
+	"validate",
+	"echoif",
+	"echoifempty",
+	"echoifexists",
+	"needupdate",
+	"gron", "jj",
+	"rename",
+	"remove",
+	"empty",
+	"extract",
 }
 
 func IsTool(name string) bool {
