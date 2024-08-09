@@ -12,6 +12,6 @@
       "titleBar.activeForeground": "#28075d",
       "statusBar.background": "#28075d"
     },
-    "go.goroot": "/nix/store/16g3awzjv3341s27hkkkv1vk5dw4206m-go-1.22.5/share/go"
+    "go.goroot": "/nix/store/0jjqri305gwmzg8j1zjpkjbgllfv209s-go-1.22.5/share/go"
   }
 }
