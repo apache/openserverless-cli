@@ -15,11 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
+$InWindows = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+
 $SUFFIX = "_windows_amd64"
 $EXT = ".zip"
 $CMD = "ops.exe"
 
-if (-not $IsWindows) {
+if (-not $InWindows) {
     $OS = (uname -s)
     $ARCH = (uname -m)
     $CMD = "ops"
@@ -77,7 +79,7 @@ if (-not (Test-Path "$BinPath/$CMD*")) {
 
 # Check if the bin path is in the user's PATH
 if (-not ($env:PATH -contains $BinPath)) {
-    if($IsWindows) {
+    if($InWindows) {
         $existingPath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
             $newPath = "$BinPath;$existingPath"
             [System.Environment]::SetEnvironmentVariable("Path", $newPath, [System.EnvironmentVariableTarget]::User)
