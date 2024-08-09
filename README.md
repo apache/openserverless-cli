@@ -38,7 +38,7 @@ Well, as you can guess it helps with operations: `ops` is the OpenServerless CLI
 
 It is a task executor on steroids. 
 
-- it embeds [`task`](https://taskfile.dev))
+- it embeds [`task`](https://taskfile.dev)
 - it embeds [`wsk`](https://github.com/apache/openwhisk-cli)
 - it embeds a lot of other utility commands (check with `ops -help`)
 - automatically download and updated commad line tools he neeeds as prerequisites

@@ -15,38 +15,37 @@
 # specific language governing permissions and limitations
 # under the License.
 
-$OS = (uname -s)
-$ARCH = (uname -m)
-$CMD = "ops"
-$WINDOWS = $false
+$SUFFIX = "_windows_amd64"
+$EXT = ".zip"
+$CMD = "ops.exe"
 
-switch ("$OS-$ARCH") {
-    "Linux-x86_64" {
-        $SUFFIX = "_linux_amd64"
-        $EXT = ".tar.gz"
+if (-not $IsWindows) {
+    $OS = (uname -s)
+    $ARCH = (uname -m)
+    $CMD = "ops"
+    switch ("$OS-$ARCH") {
+        "Linux-x86_64" {
+            $SUFFIX = "_linux_amd64"
+            $EXT = ".tar.gz"
+        }
+        "Linux-arm64" {
+            $SUFFIX = "_linux_arm64"
+            $EXT = ".tar.gz"
+        }
+        "Darwin-x86_64" {
+            $SUFFIX = "_darwin_amd64"
+            $EXT = ".tar.gz"
+        }
+        "Darwin-arm64" {
+            $SUFFIX = "_darwin_arm64"
+            $EXT = ".tar.gz"
+        }
+        default {
+            Write-Host "Unknown system - exiting"
+            exit 1
+        }
     }
-    "Linux-arm64" {
-        $SUFFIX = "_linux_arm64"
-        $EXT = ".tar.gz"
-    }
-    "Darwin-x86_64" {
-        $SUFFIX = "_darwin_amd64"
-        $EXT = ".tar.gz"
-    }
-    "Darwin-arm64" {
-        $SUFFIX = "_darwin_arm64"
-        $EXT = ".tar.gz"
-    }
-    { $_ -like "MINGW64_NT-*" } {
-        $SUFFIX = "_windows_amd64"
-        $EXT = ".zip"
-        $CMD = "ops.exe"
-    }
-    default {
-        Write-Host "Unknown system - exiting"
-        exit 1
-    }
-}
+} 
 
 $OPSROOT = "https://raw.githubusercontent.com/apache/openserverless-task/0.1.0/opsroot.json"
 $VERSION = (Invoke-RestMethod -Uri $OPSROOT).version
@@ -78,7 +77,7 @@ if (-not (Test-Path "$BinPath/$CMD*")) {
 
 # Check if the bin path is in the user's PATH
 if (-not ($env:PATH -contains $BinPath)) {
-    if($WINDOWS) {
+    if($IsWindows) {
         $existingPath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
             $newPath = "$BinPath;$existingPath"
             [System.Environment]::SetEnvironmentVariable("Path", $newPath, [System.EnvironmentVariableTarget]::User)
