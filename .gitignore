@@ -18,6 +18,7 @@
 .DS_Store
 .git-hooks/
 .vscode/
+.idea/
 .task/
 .latestcheck
 .test_fail_then_succeed
