@@ -1,5 +1,3 @@
-# Tool `-base64`
-
 ```text
 Usage:
   ops -base64 [options] <string>
