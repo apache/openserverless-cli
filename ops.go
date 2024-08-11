@@ -24,12 +24,12 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/a8m/envsubst/parse"
+	"github.com/apache/openserverless-cli/tools"
 	docopt "github.com/docopt/docopt-go"
 	"github.com/mitchellh/go-homedir"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
-
-	envsubst "github.com/nuvolaris/envsubst/cmd/envsubstmain"
 )
 
 type TaskNotFoundErr struct {
@@ -40,18 +40,19 @@ func (e *TaskNotFoundErr) Error() string {
 	return fmt.Sprintf("no command named %s found", e.input)
 }
 
-func help() error {
-	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS_TXT) {
-		os.Args = []string{"envsubst", "-no-unset", "-i", DOCOPTS_TXT}
-		return envsubst.EnvsubstMain()
+func help(helpMessage string) error {
+
+	if helpMessage != "" {
+		fmt.Println(helpMessage)
+		return nil
 	}
+
 	// In case of syntax error, Task will return an error
 	list := "-l"
 	if os.Getenv("OPS_NO_DOCOPTS") != "" {
 		list = "--list-all"
 	}
 	_, err := Task("-t", OPSFILE, list)
-
 	return err
 }
 
@@ -152,6 +153,55 @@ func loadSavedArgs() []string {
 	return res
 }
 
+// read docpts
+// return the doppts and the help text
+// expand the environment variables
+// if the file is markdown expand the markdown
+func readDocOpts() (string, string) {
+	if os.Getenv("OPS_NO_DOCOPTS") != "" {
+		if exists(".", DOCOPTS_TXT) {
+			fmt.Printf("Warning: ignoring %s - you have to provide all the options.\n", DOCOPTS_TXT)
+		}
+		if exists(".", DOCOPTS_MD) {
+			fmt.Printf("Warning: ignoring %s - you have to provide all the options.\n", DOCOPTS_MD)
+		}
+		return "", ""
+	}
+	if exists(".", DOCOPTS_MD) {
+		text := readfile(DOCOPTS_MD)
+
+		// parse embedded variables
+		restrictions := &parse.Restrictions{false, false, true}
+		result, err := (&parse.Parser{Name: "string", Env: os.Environ(), Restrict: restrictions, Mode: parse.AllErrors}).Parse(text)
+		if err != nil {
+			return "", err.Error()
+		}
+		// convert to markdown
+		help := tools.MarkdownToText(result)
+		// extract the embedded usage
+		opts := tools.ExtractUsage(result)
+
+		// warn if there is a docopts.txt
+		if exists(".", DOCOPTS_TXT) {
+			help = fmt.Sprintf("%s\nWarning: both %s and %s are present, %s ignored.",
+				help, DOCOPTS_TXT, DOCOPTS_MD, DOCOPTS_TXT)
+		}
+		return opts, help
+	}
+
+	if exists(".", DOCOPTS_TXT) {
+		text := readfile(DOCOPTS_TXT)
+		restrictions := &parse.Restrictions{false, false, true}
+		help, err := (&parse.Parser{Name: "string", Env: os.Environ(), Restrict: restrictions, Mode: parse.AllErrors}).Parse(text)
+		if err != nil {
+			help = err.Error()
+		}
+		return help, help
+	}
+
+	return "", ""
+}
+
 // Ops parses args moving into the folder corresponding to args
 // then parses them with docopts and invokes the task
 func Ops(base string, args []string) error {
@@ -209,9 +259,12 @@ func Ops(base string, args []string) error {
 		}
 	}
 
+	// read docopts and help text
+	opts, helpMessage := readDocOpts()
+
+	// print help
 	if len(rest) == 0 || rest[0] == "help" {
-		trace("print help")
-		err := help()
+		err := help(helpMessage)
 		if !isSubCmd {
 			fmt.Println()
 			return printPluginsHelp()
@@ -222,18 +275,22 @@ func Ops(base string, args []string) error {
 	// load saved args
 	savedArgs := loadSavedArgs()
 
-	// parsed args
-	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS_TXT) {
+	// parse options if an opts file is available
+	trace("DOCOPTS:", opts)
+	if opts != "" {
 		debug("PREPARSE:", rest)
-		opts := readfile(DOCOPTS_TXT)
-		trace("DOCOPTS: size=", len(opts))
+
+		// parse args
 		parsedArgs := parseArgs(opts, rest)
 		trace("DOCOPTS: parsedargs=", parsedArgs)
+
+		// append -t optfile.yml to the Task cli
 		prefix := []string{"-t", OPSFILE}
 		if len(rest) > 0 && rest[0][0] != '-' {
 			prefix = append(prefix, rest[0])
 		}
 
+		// parse args
 		parsedArgs = append(savedArgs, parsedArgs...)
 		parsedArgs = append(prefix, parsedArgs...)
 		extra := os.Getenv("EXTRA")

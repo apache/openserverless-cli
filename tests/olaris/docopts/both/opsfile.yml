@@ -14,27 +14,16 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+#
+version: "3"
 
-setup() {
-    load 'test_helper/bats-support/load'
-    load 'test_helper/bats-assert/load'
-    export NO_COLOR=1
-}
-
-@test "-base64 help message" {
-    run ops -base64
-    assert_line --partial "ops -base64 [options] <string>"
-
-    run ops -base64 -h
-    assert_line --partial "ops -base64 [options] <string>"
-}
-
-@test "-base64 --encode" {
-    run ops -base64 --encode "hello world"
-    assert_line "aGVsbG8gd29ybGQ="
-}
-
-@test "-base64 --decode" {
-    run ops -base64 --decode "aGVsbG8gd29ybGQ="
-    assert_line "hello world"
-}
+tasks:
+  simple:
+    silent: true
+    desc: simple task in other
+    cmds:
+      - |
+        if {{.__f__}}
+        then echo simple with flag
+        else echo simple without flag
+        fi

@@ -4,7 +4,7 @@ import "fmt"
 
 func Example_markdown2text() {
 	fmt.Println(len(MarkdownToText(base64usage)))
-	// Output: 251
+	// Output: 945
 }
 
 func Example_extractUsage() {

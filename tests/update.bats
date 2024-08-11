@@ -29,7 +29,7 @@ setup() {
     assert_line "Tasks downloaded successfully"
     assert_line --partial "ensuring prerequisite coreutils"
 
-    OPS_VERSION=0.0.0 OPS_SKIP_UPDATE_CLI=1 run ops -update
+    run env OPS_VERSION=0.0.0 OPS_SKIP_UPDATE_CLI=1 ops -update
     assert_line --partial "Your ops version (0.0.0) is older than the required version"
     assert_success
     assert_line "Trying to update ops..."
