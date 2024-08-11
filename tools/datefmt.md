@@ -1,5 +1,3 @@
-# Tool: datefmt
-
 Print date with different formats. If no time stamp or date strings are given, uses current time
 
 ```text

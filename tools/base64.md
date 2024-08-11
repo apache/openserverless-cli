@@ -1,3 +1,4 @@
+
 # Tool base64
 
 base64 utility acts as a base64 decoder when passed the --decode (or -d) flag and as a base64 encoder

@@ -41,7 +41,7 @@ func trace(args ...any) {
 
 // available in taskfiles
 // note some of them are implemented in main.go (config, retry)
-// Note the comment in //DOC// is used to generate the list of tools in documentation
+// Note the comment with @DOC which is used to generate the list of tools in documentation
 // put one here if you add a markdown file for a tool
 var ToolList = []string{
 	"wsk",
@@ -51,11 +51,11 @@ var ToolList = []string{
 	"envsubst",
 	"filetype",
 	"random",
-	"datefmt", //DOC//
+	"datefmt", //@DOC
 	"die",
 	"urlenc",
 	"replace",
-	"base64", //DOC//
+	"base64", //@DOC
 	"validate",
 	"echoif",
 	"echoifempty",
