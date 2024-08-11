@@ -5,7 +5,7 @@ Usage:
   ops -datefmt [options] [arguments]
 ```
 
-# Options
+## Options
 
 ```
     -h, --help		 print this help info
@@ -38,3 +38,10 @@ Possible formats (they follows the standard naming of go time formats, with the 
 - TimeOnly
 - Milliseconds
 - ms
+
+## Example
+
+```bash
+$ ops -datefmt -f DateTime
+2024-08-11 03:00:34
+```
