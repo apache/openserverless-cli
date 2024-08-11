@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 
 	gojq "github.com/itchyny/gojq/cli"
@@ -37,6 +38,23 @@ func trace(args ...any) {
 	if tracing {
 		log.Println(append([]any{"TRACE: "}, args...))
 	}
+}
+
+// shared with main
+func GetOS() string {
+	res := os.Getenv("__OS")
+	if res == "" {
+		res = runtime.GOOS
+	}
+	return res
+}
+
+func GetARCH() string {
+	res := os.Getenv("__ARCH")
+	if res == "" {
+		res = runtime.GOARCH
+	}
+	return res
 }
 
 // available in taskfiles
@@ -64,6 +82,7 @@ var ToolList = []string{
 	"gron", "jj",
 	"rename",
 	"remove",
+	"executable",
 	"empty",
 	"extract",
 }
@@ -189,6 +208,10 @@ func RunTool(name string, args []string) (int, error) {
 	case "remove":
 		os.Args = append([]string{"remove"}, args...)
 		return Remove()
+
+	case "executable":
+		os.Args = append([]string{"executable"}, args...)
+		return Executable()
 
 	case "extract":
 		os.Args = append([]string{"extract"}, args...)

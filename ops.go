@@ -41,8 +41,8 @@ func (e *TaskNotFoundErr) Error() string {
 }
 
 func help() error {
-	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS) {
-		os.Args = []string{"envsubst", "-no-unset", "-i", DOCOPTS}
+	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS_TXT) {
+		os.Args = []string{"envsubst", "-no-unset", "-i", DOCOPTS_TXT}
 		return envsubst.EnvsubstMain()
 	}
 	// In case of syntax error, Task will return an error
@@ -223,9 +223,9 @@ func Ops(base string, args []string) error {
 	savedArgs := loadSavedArgs()
 
 	// parsed args
-	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS) {
+	if os.Getenv("OPS_NO_DOCOPTS") == "" && exists(".", DOCOPTS_TXT) {
 		debug("PREPARSE:", rest)
-		opts := readfile(DOCOPTS)
+		opts := readfile(DOCOPTS_TXT)
 		trace("DOCOPTS: size=", len(opts))
 		parsedArgs := parseArgs(opts, rest)
 		trace("DOCOPTS: parsedargs=", parsedArgs)

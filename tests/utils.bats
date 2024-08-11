@@ -67,18 +67,21 @@ setup() {
 }
 
 @test "-executable"  {
-    skip
     touch _hello
-    run __OS=linux ops -executable _hello
+    chmod 0600 _hello
+    run env __OS=linux ops -executable _hello
     assert_success
+    assert_line "Successfully added execute permissions to _hello"
     assert test -x _hello
-    run __OS=windows ops -executable _hello
+    run env __OS=windows ops -executable _hello
     assert_success
     assert test -e _hello.exe
-    run __OS=windows ops -executable _hello.exe
+    assert_line "Successfully renamed _hello to _hello.exe"
+    run env __OS=windows ops -executable _hello.exe
     assert_success
     assert test -e _hello.exe
-    rm _hello
+    assert_line "Nothing to do"
+    rm _hello.exe
 }
 
 @test "-copy"  {

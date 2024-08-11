@@ -32,7 +32,9 @@ import (
 // default files
 const OPSFILE = "opsfile.yml"
 const OPSROOT = "opsroot.json"
-const DOCOPTS = "docopts.txt"
+const DOCOPTS_TXT = "docopts.txt"
+const DOCOPTS_MD = "docopts.txt"
+
 const PREREQ = "prereq.yml"
 const CONFIGFILE = "config.json"
 

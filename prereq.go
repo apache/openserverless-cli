@@ -22,9 +22,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 
+	"github.com/apache/openserverless-cli/tools"
 	"github.com/mitchellh/go-homedir"
 	"gopkg.in/yaml.v3"
 )
@@ -88,27 +88,11 @@ func loadPrereq(dir string) (Prereq, error) {
 	return prereq, err
 }
 
-func getOS() string {
-	res := os.Getenv("__OS")
-	if res == "" {
-		res = runtime.GOOS
-	}
-	return res
-}
-
-func getARCH() string {
-	res := os.Getenv("__ARCH")
-	if res == "" {
-		res = runtime.GOARCH
-	}
-	return res
-}
-
 func binDir() (string, error) {
 	var err error
 	bindir := os.Getenv("OPS_BIN")
 	if bindir == "" {
-		bindir, err = homedir.Expand(fmt.Sprintf("~/.ops/%s-%s/bin", getOS(), getARCH()))
+		bindir, err = homedir.Expand(fmt.Sprintf("~/.ops/%s-%s/bin", tools.GetOS(), tools.GetARCH()))
 		if err != nil {
 			return "", err
 		}
@@ -118,7 +102,7 @@ func binDir() (string, error) {
 }
 
 func addExeExt(name string) string {
-	if getOS() == "windows" {
+	if tools.GetOS() == "windows" {
 		return name + ".exe"
 	}
 	return name
