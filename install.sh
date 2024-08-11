@@ -50,7 +50,9 @@ case "$OS-$ARCH" in
 esac
 
 OPSROOT="https://raw.githubusercontent.com/apache/openserverless-task/0.1.0/opsroot.json"
-VERSION="$(curl -sL $OPSROOT | sed -n 's/^.*"version": "\([^"]*\)",/\1/p')"
+if test -z "$VERSION"
+then VERSION="$(curl -sL $OPSROOT | sed -n 's/^.*"version": "\([^"]*\)",/\1/p')"
+fi
 FILE="openserverless-cli_${VERSION}$SUFFIX$EXT"
 URL="https://github.com/apache/openserverless-cli/releases/download/v$VERSION/$FILE"
 
