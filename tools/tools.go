@@ -65,26 +65,26 @@ var ToolList = []string{
 	"wsk",
 	"awk",
 	"jq",
-	"sh",
+	"sh", //@DOC
 	"envsubst",
-	"filetype",
-	"random",
-	"datefmt", //@DOC
+	"filetype", //@DOC
+	"random",   //@DOC
+	"datefmt",  //@DOC
 	"die",
-	"urlenc",
+	"urlenc", //@DOC
 	"replace",
-	"base64", //@DOC
-	"validate",
-	"echoif",
-	"echoifempty",
-	"echoifexists",
-	"needupdate",
+	"base64",       //@DOC
+	"validate",     //@DOC
+	"echoif",       //@DOC
+	"echoifempty",  //@DOC
+	"echoifexists", //@DOC
+	"needupdate",   //@DOC
 	"gron", "jj",
-	"rename",
-	"remove",
-	"executable",
-	"empty",
-	"extract",
+	"rename",     //@DOC
+	"remove",     //@DOC
+	"executable", //@DOC
+	"empty",      //@DOC
+	"extract",    //@DOC
 }
 
 func IsTool(name string) bool {
