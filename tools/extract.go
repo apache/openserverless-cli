@@ -150,8 +150,7 @@ func ExtractFileFromZip(filename string, target string) error {
 
 func Extract() (int, error) {
 	if len(os.Args) < 3 {
-		fmt.Println("Extract one single file from a .zip .tar, .tgz, .tar.gz, tar.bz2, tar.gz")
-		fmt.Println("Usage: file.(zip|tgz|tar[.gz|.bz2|.xz]) target")
+		fmt.Println(MarkdownHelp("extract"))
 		return 0, nil
 	}
 	_, err := os.Stat(os.Args[1])

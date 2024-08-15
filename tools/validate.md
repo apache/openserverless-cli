@@ -6,7 +6,7 @@ Usage:
 ops -validate [-e] [-m | -n | -r <regex>] <value> [<message>]
 ```
 
-## Options:
+## Options
 
 ```
 -e    Retrieve value from the environment variable with the given name.
@@ -15,3 +15,20 @@ ops -validate [-e] [-m | -n | -r <regex>] <value> [<message>]
 -n    Check if the value is a number.
 -r string Check if the value matches the given regular expression.
 ```
+
+## Examples
+
+### Validate with regexp
+
+### Validate email
+
+```
+ops -validate -m example@gmail.com
+```
+
+```bash
+ops -validate -r '^[a-z]+$' abc
+```
+
+
+

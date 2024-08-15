@@ -1,14 +1,17 @@
 package tools
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func Example_markdown2text() {
-	fmt.Println(len(MarkdownToText(base64usage)))
-	// Output: 945
+	markdown, _ := GetMarkDown("base64")
+	fmt.Println(len(MarkdownToText(markdown)))
+	// Output: 737
 }
 
 func Example_extractUsage() {
-	fmt.Println(len(ExtractUsage(base64usage)))
+	markdown, _ := GetMarkDown("base64")
+	fmt.Println(len(ExtractUsage(markdown)))
 	// Output: 40
-
 }

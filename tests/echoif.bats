@@ -23,10 +23,12 @@ setup() {
 
 @test "-echoif help message" {
     run ops -echoif
-    assert_line "Usage: echoif <a> <b>"
+    assert_success
+    assert_line --partial "ops -echoif <a> <b>"
 
     run ops -echoif -h
-    assert_line "Usage: echoif <a> <b>"
+    assert_success
+    assert_line --partial "ops -echoif <a> <b>"
 }
 
 @test "-echoif echoes a with successful previous command" {
@@ -43,10 +45,12 @@ setup() {
 
 @test "-echoifempty help message" {
     run ops -echoifempty
-    assert_line "Usage: echoifempty <str> <a> <b>"
+    assert_success
+    assert_line --partial "ops -echoifempty <str> <a> <b>"
 
     run ops -echoifempty -h
-    assert_line "Usage: echoifempty <str> <a> <b>"
+    assert_success
+        assert_line --partial "ops -echoifempty <str> <a> <b>"
 }
 
 @test "-echoifempty echoes a if string is empty" {
@@ -61,10 +65,12 @@ setup() {
 
 @test "-echoifexists help message" {
     run ops -echoifexists
-    assert_line "Usage: echoifexists <file> <a> <b>"
+    assert_success
+    assert_line --partial "ops -echoifexists <file> <a> <b>"
 
     run ops -echoifexists -h
-    assert_line "Usage: echoifexists <file> <a> <b>"
+    assert_success
+    assert_line --partial "ops -echoifexists <file> <a> <b>"
 }
 
 @test "-echoifexists echoes a if file exists" {

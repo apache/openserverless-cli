@@ -29,16 +29,7 @@ import (
 func validateTool() error {
 	flag := flag.NewFlagSet("validate", flag.ContinueOnError)
 
-	flag.Usage = func() {
-		fmt.Println(`Usage:
-ops -validate [-e] [-m | -n | -r <regex>] <value> [<message>]
-
-Check if a value is valid according to the given constraints.
-If -e is specified, the value is retrieved from the environment variable with the given name.
-
-Options:`)
-		flag.PrintDefaults()
-	}
+	flag.Usage = printValidateHelp
 
 	helpFlag := flag.Bool("h", false, "Print this help message.")
 	envFlag := flag.Bool("e", false, "Retrieve value from the environment variable with the given name.")
@@ -128,4 +119,8 @@ func isValidByRegex(value string, regex string) (bool, error) {
 
 	// Use the regular expression to match the email string
 	return regExp.MatchString(value), nil
+}
+
+func printValidateHelp() {
+	fmt.Println(MarkdownHelp("validate"))
 }

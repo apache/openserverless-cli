@@ -80,16 +80,7 @@ func RandTool(args ...string) error {
 	flag := flag.NewFlagSet("random", flag.ExitOnError)
 
 	flag.Usage = func() {
-		fmt.Println(`Generate random numbers, strings and uuids
-		
-Usage:
-	ops -random [options]
-
-Options:
-	-h, --help  shows this help
-	-u, --uuid  generates a random uuid v4
-	--int  <max> [min] generates a random non-negative integer between min and max (default min=0)
-	--str  <len> [<characters>] generates an alphanumeric string of length <len> from the set of <characters> provided (default <characters>=a-zA-Z0-9)`)
+		fmt.Println(MarkdownHelp("random"))
 	}
 
 	var helpFlag bool

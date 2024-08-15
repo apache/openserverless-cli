@@ -23,10 +23,12 @@ setup() {
 
 @test "filetype usage print" {
     run ops -filetype
-    assert_line "Usage: filetype [-h] [-e] [-m] FILE"
+    assert_success
+    assert_line --partial "ops -filetype [-h] [-e] [-m] FILE"
 
     run ops -filetype -h
-    assert_line "Usage: filetype [-h] [-e] [-m] FILE"
+    assert_success
+    assert_line --partial "ops -filetype [-h] [-e] [-m] FILE"
 }
 
 @test "filetype -e" {

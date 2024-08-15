@@ -38,7 +38,7 @@ func Sh() (int, error) {
 	if len(os.Args) > 1 {
 		path = os.Args[1]
 		if path == "-h" || path == "--help" {
-			fmt.Println("Sh is the mvdan shell using the ops environment.\nUsage: [<script>|-h|--help]\nWithout args starts an interactive shell otherwise execute the script.")
+			fmt.Println(MarkdownHelp("sh"))
 			return 0, nil
 		}
 	}

@@ -24,9 +24,6 @@ import (
 	"fmt"
 )
 
-//go:embed base64.md
-var base64usage string
-
 func base64Tool() error {
 
 	var (
@@ -36,7 +33,7 @@ func base64Tool() error {
 	)
 
 	flag.Usage = func() {
-		fmt.Println(MarkdownToText(base64usage))
+		fmt.Println(MarkdownHelp("base64"))
 	}
 
 	flag.BoolVar(&helpFlag, "h", false, "Display this help message")

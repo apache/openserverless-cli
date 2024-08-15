@@ -58,7 +58,6 @@ func Example_download() {
 	// Updating tasks...
 	// Tasks are already up to date!
 	// 2 <nil> /home/.ops/0.1.0/olaris
-
 }
 
 func Example_locate_root() {

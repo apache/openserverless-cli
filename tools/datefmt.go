@@ -25,9 +25,6 @@ import (
 	"time"
 )
 
-//go:embed datefmt.md
-var datefmtUsage string
-
 // if you change this add it to the datefmt.md
 var dateFormats = map[string]string{
 	"Layout":      time.Layout,
@@ -66,6 +63,10 @@ var (
 func DateFmtTool(args []string) error {
 	os.Args = args
 
+	flag.Usage = func() {
+		fmt.Println(MarkdownHelp("datefmt"))
+	}
+
 	flag.BoolVar(&helpFlag, "h", false, "print this help info")
 	flag.BoolVar(&helpFlag, "help", false, "print this help info")
 	flag.Int64Var(&timestampFlag, "t", time.Now().Unix(), "unix timestamp to convert")
@@ -79,7 +80,7 @@ func DateFmtTool(args []string) error {
 	flag.Parse()
 
 	if helpFlag {
-		fmt.Println(MarkdownToText(datefmtUsage))
+		flag.Usage()
 		return nil
 	}
 

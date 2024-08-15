@@ -4,9 +4,3 @@
 Usage:
     ops -empty <filename>
 ```
-
-## Options
-
-```
--h, --help             Display this help message
-```

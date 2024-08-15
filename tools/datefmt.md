@@ -8,11 +8,11 @@ Usage:
 ## Options
 
 ```
-    -h, --help		 print this help info
-    -t, --timestamp	 unix timestamp to format (default: current time)
-    -s, --str 	  	 date string to format
-    --if			 input format to use with input date string (via --str)
-    -f, --of		 output format to use (default: UnixDate)
+-h, --help		 print this help info
+-t, --timestamp	 unix timestamp to format (default: current time)
+-s, --str 	  	 date string to format
+--if			 input format to use with input date string (via --str)
+-f, --of		 output format to use (default: UnixDate)
 ```
 
 Possible formats (they follows the standard naming of go time formats, with the addition of 'Millisecond' and 'ms'):

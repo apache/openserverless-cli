@@ -24,7 +24,7 @@ import (
 
 func Empty() (int, error) {
 	if len(os.Args) < 2 {
-		fmt.Println("Empty creates an empty file - returns error if it already exists\nUsage: filename")
+		fmt.Println(MarkdownHelp("empty"))
 		return 0, nil
 	}
 	filename := os.Args[1]

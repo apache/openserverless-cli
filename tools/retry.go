@@ -105,12 +105,5 @@ func retry(fn func([]string) error, args []string, maxTime int, maxRetries int) 
 }
 
 func printRetryHelp() {
-	fmt.Print(
-		`Usage:
-ops -retry [options] task [task options]
--h, --help	Print help message
--t, --tries=#	Set max retries: Default 10
--m, --max=secs	Maximum time to run (set to 0 to disable): Default 60 seconds
--v, --verbose	Verbose output
-`)
+	fmt.Println(MarkdownHelp("retry"))
 }

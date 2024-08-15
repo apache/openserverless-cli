@@ -26,12 +26,21 @@ import (
 )
 
 func URLEncTool() error {
+	var (
+		separator string
+		encodeEnv bool
+		helpFlag  bool
+	)
+
 	// Define command-line flags
 	fs := flag.NewFlagSet("urlenc", flag.ContinueOnError)
 
-	separator := fs.String("s", "&", "Separator for concatenating the parameters")
-	encodeEnv := fs.Bool("e", false, "Encode parameter values from environment variables")
-	help := fs.Bool("h", false, "Show help")
+	fs.Usage = printUrlEncHelp
+
+	fs.StringVar(&separator, "s", "&", "Separator for concatenating the parameters")
+	fs.BoolVar(&encodeEnv, "e", false, "Encode parameter values from environment variables")
+	fs.BoolVar(&helpFlag, "help", false, "Print help message")
+	fs.BoolVar(&helpFlag, "h", false, "Print help message")
 
 	// Parse command-line flags
 	err := fs.Parse(os.Args[1:])
@@ -39,7 +48,7 @@ func URLEncTool() error {
 		return err
 	}
 
-	if *help {
+	if helpFlag {
 		fs.Usage()
 		return nil
 	}
@@ -51,14 +60,18 @@ func URLEncTool() error {
 	params := make([]string, 0)
 
 	for _, arg := range args {
-		if *encodeEnv {
+		if encodeEnv {
 			arg = os.Getenv(arg)
 		}
 		encodedValue := url.QueryEscape(arg)
 		params = append(params, encodedValue)
 	}
 
-	result := strings.Join(params, *separator)
+	result := strings.Join(params, separator)
 	fmt.Println(result)
 	return nil
+}
+
+func printUrlEncHelp() {
+	fmt.Println(MarkdownHelp("urlenc"))
 }

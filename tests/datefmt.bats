@@ -21,15 +21,16 @@ setup() {
     export NO_COLOR=1
 }
 
-@test "datefmt print usage" {
+@test "-datefmt help message" {
     run ops -datefmt -h
     assert_success
-    assert_line "Usage:"
+    assert_line --partial "ops -datefmt [options] [arguments]"
 
     run ops -datefmt --help
     assert_success
-    assert_line "Usage:"
+    assert_line --partial "ops -datefmt [options] [arguments]"
 }
+
 
 @test "datefmt with input timestamp and output format" {
     run ops -datefmt -t 1577836800 -f DateOnly
