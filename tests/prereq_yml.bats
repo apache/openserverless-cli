@@ -28,7 +28,7 @@ setup() {
     OS=linux ARCH=amd64
     mkdir -p _bin/$OS-$ARCH
     run env __OS=$OS __ARCH=$ARCH task -t prereq/olaris/prereq.yml -d _bin/$OS-$ARCH all
-    find _bin/$OS-$ARCH -type f | xargs file | grep ELF | grep x86-64 | wc -l | tee _count
+    find _bin/$OS-$ARCH -type f | xargs file | grep ELF | grep x86-64 | wc -l | xargs | tee _count
     assert_equal "$(cat _count)" $COUNT
 }
 
@@ -36,7 +36,7 @@ setup() {
     OS=linux ARCH=arm64
     mkdir -p _bin/$OS-$ARCH
     run env __OS=$OS __ARCH=$ARCH task -t prereq/olaris/prereq.yml -d _bin/$OS-$ARCH  all
-    find _bin/$OS-$ARCH | xargs file | grep ELF | grep ARM | wc -l | tee _count
+    find _bin/$OS-$ARCH -type f | xargs file | grep ELF | grep ARM | wc -l | xargs | tee _count
     assert_equal "$(cat _count)" $COUNT
 }
 
@@ -44,7 +44,7 @@ setup() {
     OS=darwin ARCH=amd64
     mkdir -p _bin/$OS-$ARCH
     run env __OS=$OS __ARCH=$ARCH task -t prereq/olaris/prereq.yml -d _bin/$OS-$ARCH all
-    find _bin/$OS-$ARCH | xargs file | grep Mach-O | grep x86_64 | wc -l | tee _count
+    find _bin/$OS-$ARCH -type f | xargs file | head -n 1 | grep Mach-O | grep x86_64 | wc -l | xargs | tee _count
     assert_equal "$(cat _count)" $COUNT
 }
 
@@ -52,7 +52,7 @@ setup() {
     OS=darwin ARCH=arm64
     mkdir -p _bin/$OS-$ARCH
     run env __OS=$OS __ARCH=$ARCH task -t prereq/olaris/prereq.yml -d _bin/$OS-$ARCH all
-    find _bin/$OS-$ARCH | xargs file | grep Mach-O | grep arm64 | wc -l | tee _count
+    find _bin/$OS-$ARCH -type f | xargs file | head -n 1 | grep Mach-O | grep arm64 | wc -l | xargs | tee _count
     assert_equal "$(cat _count)" $COUNT
 }
 
@@ -60,6 +60,6 @@ setup() {
     OS=windows ARCH=amd64
     mkdir -p _bin/$OS-$ARCH
     run env __OS=$OS __ARCH=$ARCH task -t prereq/olaris/prereq.yml -d _bin/$OS-$ARCH __OS=$OS __ARCH=$ARCH all
-    find _bin/$OS-$ARCH | xargs file | grep PE32  | wc -l | tee _count
+    find _bin/$OS-$ARCH -type f | xargs file | grep PE32  | wc -l | xargs | tee _count
     assert_equal "$(cat _count)" $COUNT
 }
