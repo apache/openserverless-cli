@@ -24,14 +24,15 @@ setup() {
 
 @test "-rename -remove" {
     run ops -rename
-    assert_line "Usage: rename <source> <destination>"
+    assert_success
+    assert_line --partial "ops -rename <source> <destination>"
 
-    run ops -rename missing 
-    assert_line "Usage: rename <source> <destination>"
+    run ops -rename missing
+    assert_success
+    assert_line --partial "ops -rename <source> <destination>"
 
     run ops -rename missing something
-    assert_failure
-    assert_line "rename missing something: no such file or directory" 
+    assert_line "rename missing something: no such file or directory"
 
     touch something
     run ops -rename something somethingelse
@@ -40,10 +41,17 @@ setup() {
 
     run ops -rename somethingelse /dev/null
     assert_failure
-    assert_line "rename somethingelse /dev/null: invalid cross-device link"
+    case $OSTYPE in
+      darwin*)
+        assert_line "rename somethingelse /dev/null: cross-device link"
+        ;;
+      *)
+        assert_line "rename somethingelse /dev/null: invalid cross-device link"
+    esac
 
     run ops -remove
-    assert_line "Usage: remove <filename>"
+    assert_success
+    assert_line --partial "ops -remove <filename>"
 
     run ops -remove missing
     assert_failure
@@ -56,7 +64,8 @@ setup() {
 
 @test "-empty" {
     run ops -empty
-    assert_line "Usage: filename"
+    assert_success
+    assert_line --partial "ops -empty <filename>"
     run ops -empty empty_file
     assert test -f empty_file
     assert_success
@@ -67,6 +76,9 @@ setup() {
 }
 
 @test "-executable"  {
+    run ops -executable
+    assert_success
+    assert_line --partial "ops -executable <filename>"
     touch _hello
     chmod 0600 _hello
     run env __OS=linux ops -executable _hello

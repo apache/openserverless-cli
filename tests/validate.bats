@@ -23,11 +23,13 @@ setup() {
 
 @test "ops validate help" {
     run ops -validate
-    assert_line "Usage:"
+    assert_failure
+    assert_line --partial "ops -validate [-e] [-m | -n | -r <regex>] <value> [<message>]"
+    assert_line "invalid number of arguments"
 
     run ops -validate -h
-    assert_line "Usage:"
-    assert_line "ops -validate [-e] [-m | -n | -r <regex>] <value> [<message>]"
+    assert_success
+    assert_line --partial "ops -validate [-e] [-m | -n | -r <regex>] <value> [<message>]"
 }
 
 @test "ops validate email" {

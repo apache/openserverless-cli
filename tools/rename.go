@@ -24,7 +24,7 @@ import (
 
 func Rename() (int, error) {
 	if len(os.Args) != 3 {
-		fmt.Println("Rename a file\nUsage: rename <source> <destination>")
+		fmt.Println(MarkdownHelp("rename"))
 		return 0, nil
 	}
 

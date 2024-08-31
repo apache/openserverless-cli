@@ -24,15 +24,15 @@ setup() {
 @test "ops -retry help" {
     run ops -retry
     assert_success
-    assert_line "Usage:"
+    assert_line --partial "ops -retry [options] task [task options]"
 
     run ops -retry -h
     assert_success
-    assert_line "Usage:"
+    assert_line --partial "ops -retry [options] task [task options]"
 
     run ops -retry --help
     assert_success
-    assert_line "Usage:"
+    assert_line --partial "ops -retry [options] task [task options]"
 }
 
 @test "ops -retry fail" {

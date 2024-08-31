@@ -28,14 +28,7 @@ func needUpdateTool(args []string) error {
 
 	flag := flag.NewFlagSet("needupdate", flag.ExitOnError)
 	flag.Usage = func() {
-		fmt.Println(`Check if a semver version A > semver version B.
-Exits with 0 if greater, 1 otherwise.
-
-Usage:
-  ops -needupdate <versionA> <versionB>
-  
-Options:`)
-		flag.PrintDefaults()
+		fmt.Println(MarkdownHelp("needupdate"))
 	}
 
 	helpFlag := flag.Bool("help", false, "Print this help")

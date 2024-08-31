@@ -24,7 +24,8 @@ setup() {
 
 @test "extract" {
     run ops -extract
-    assert_line "Usage: file.(zip|tgz|tar[.gz|.bz2|.xz]) target"
+    assert_success
+    assert_line --partial "ops -extract file.(zip|tgz|tar[.gz|.bz2|.xz]) target"
     curl -sL -o7zip.tar.xz https://www.7-zip.org/a/7z2407-linux-x64.tar.xz 
 
     run ops -extract 7zip.tar.xz missing
@@ -54,17 +55,4 @@ setup() {
     run ops -extract coreutils.zip coreutils.exe
     assert_success
     assert test -e coreutils.exe
-}    
-
-@test "-empty" {
-    run ops -empty
-    assert_line "Usage: filename"
-    run ops -empty empty_file
-    assert test -f empty_file
-    assert_success
-    run ops -empty empty_file
-    assert_failure
-    assert_line "file already exists"
-    rm empty_file
-
 }

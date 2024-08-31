@@ -23,10 +23,12 @@ setup() {
 
 @test "needupdate message" {
     run ops -needupdate
-    assert_line "Usage:"
+    assert_failure
+    assert_line --partial "ops -needupdate <versionA> <versionB>"
 
     run ops -needupdate -h
-    assert_line "Usage:"
+    assert_success
+    assert_line --partial "ops -needupdate <versionA> <versionB>"
 }
 
 @test "needupdate returns 0 if a > b" {

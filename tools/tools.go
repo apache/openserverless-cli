@@ -17,6 +17,7 @@
 package tools
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"os"
@@ -31,6 +32,9 @@ import (
 	"github.com/nuvolaris/jj"
 	"golang.org/x/exp/slices"
 )
+
+//go:embed *.md
+var markDownHelp embed.FS
 
 var tracing = os.Getenv("TRACE") != ""
 
@@ -57,39 +61,45 @@ func GetARCH() string {
 	return res
 }
 
+type Tool struct {
+	Name   string
+	HasDoc bool
+}
+
 // available in taskfiles
 // note some of them are implemented in main.go (config, retry)
 // Note the comment with @DOC which is used to generate the list of tools in documentation
 // put one here if you add a markdown file for a tool
-var ToolList = []string{
-	"wsk",
-	"awk",
-	"jq",
-	"sh",
-	"envsubst",
-	"filetype",
-	"random",
-	"datefmt", //@DOC
-	"die",
-	"urlenc",
-	"replace",
-	"base64", //@DOC
-	"validate",
-	"echoif",
-	"echoifempty",
-	"echoifexists",
-	"needupdate",
-	"gron", "jj",
-	"rename",
-	"remove",
-	"executable",
-	"empty",
-	"extract",
+var ToolList = []Tool{
+	{"wsk", false},
+	{"awk", false},
+	{"jq", false},
+	{"sh", true}, // @DOC
+	{"envsubst", false},
+	{"filetype", true}, // @DOC
+	{"random", true},   // @DOC
+	{"datefmt", true},  // @DOC
+	{"die", false},
+	{"urlenc", true}, // @DOC
+	{"replace", false},
+	{"base64", true},       // @DOC
+	{"validate", true},     // @DOC
+	{"echoif", true},       // @DOC
+	{"echoifempty", true},  // @DOC
+	{"echoifexists", true}, // @DOC
+	{"needupdate", true},   // @DOC
+	{"gron", false},
+	{"jj", false},
+	{"rename", true},     // @DOC
+	{"remove", true},     // @DOC
+	{"executable", true}, // @DOC
+	{"empty", true},      // @DOC
+	{"extract", true},    // @DOC
 }
 
 func IsTool(name string) bool {
 	for _, s := range ToolList {
-		if s == name {
+		if s.Name == name {
 			return true
 		}
 	}
@@ -227,11 +237,43 @@ func RunTool(name string, args []string) (int, error) {
 	return 0, nil
 }
 
+func MergeToolsList(mainTools []string) []string {
+	availableTools := append(mainTools)
+	for _, tool := range ToolList {
+		availableTools = append(availableTools, tool.Name)
+	}
+	return availableTools
+}
+
 func Help(mainTools []string) {
 	fmt.Println("Tools (use -<tool> -h for help):")
-	availableTools := append(mainTools, ToolList...)
+	availableTools := MergeToolsList(mainTools)
 	slices.Sort(availableTools)
 	for _, x := range availableTools {
 		fmt.Printf("-%s\n", x)
 	}
+}
+
+func GetMarkDown(toolName string) (string, error) {
+	// extract markdown from embedded resource
+	markDownFile := fmt.Sprintf("%s.md", toolName)
+	fileData, err := markDownHelp.ReadFile(markDownFile)
+	if err != nil {
+		return "", err
+	}
+	return string(fileData), nil
+}
+
+func MarkdownHelp(toolName string) string {
+	// extract markdown from embedded resource
+	fileData, err := GetMarkDown(toolName)
+	if err != nil {
+		return ""
+	}
+	result := string(fileData)
+	// convert to markdown
+	help := MarkdownToText(result)
+
+	// return opts and help markdown
+	return help
 }

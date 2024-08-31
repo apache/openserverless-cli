@@ -128,20 +128,13 @@ func echoIfExistsTool() error {
 }
 
 func printEchoIfUsage() {
-	fmt.Println(`Usage: echoif <a> <b>
-
-echoif is a utility that echoes the value of <a> if the exit code of the previous command is 0, 
-echoes the value of <b> otherwise`)
+	fmt.Println(MarkdownHelp("echoif"))
 }
 
 func printEchoIfEmptyUsage() {
-	fmt.Println(`Usage: echoifempty <str> <a> <b>
-
-echoifempty is a utility that echoes the value of <a> if <str> is empty, echoes the value of <b> otherwise`)
+	fmt.Println(MarkdownHelp("echoifempty"))
 }
 
 func printEchoIfExistsUsage() {
-	fmt.Println(`Usage: echoifexists <file> <a> <b>
-
-echoifexists is a utility that echoes the value of <a> if <file> exists, echoes the value of <b> otherwise`)
+	fmt.Println(MarkdownHelp("echoifexists"))
 }

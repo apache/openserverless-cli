@@ -341,7 +341,7 @@ func Main() {
 	}
 
 	// setup the envvar for the embedded tools
-	os.Setenv("OPS_TOOLS", strings.Join(append(mainTools, tools.ToolList...), " "))
+	os.Setenv("OPS_TOOLS", strings.Join(tools.MergeToolsList(mainTools), " "))
 
 	// CLI: ops -v | --version | -h | --help | -reset
 	// preliminanre processing not requiring to  downloading anything

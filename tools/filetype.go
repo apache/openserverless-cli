@@ -90,9 +90,5 @@ func Filetype() error {
 }
 
 func printFiletypeHelp() {
-	fmt.Println("Usage: filetype [-h] [-e] [-m] FILE")
-	fmt.Println("Show extensione and MIME type of a file.")
-	fmt.Println(" -h  shows this help")
-	fmt.Println(" -e  show file standard extension")
-	fmt.Println(" -m  show file mime type")
+	fmt.Println(MarkdownHelp("filetype"))
 }

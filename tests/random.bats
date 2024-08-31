@@ -24,11 +24,11 @@ setup() {
 @test "ops -random help" {
     run ops -random -h
     assert_success
-    assert_line "Usage:"
+    assert_line --partial "ops -random [options]"
 
     run ops -random --help
     assert_success
-    assert_line "Usage:"
+    assert_line --partial "ops -random [options]"
 }
 
 @test "ops -random" {

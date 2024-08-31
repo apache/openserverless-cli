@@ -24,7 +24,7 @@ import (
 
 func Remove() (int, error) {
 	if len(os.Args) != 2 {
-		fmt.Println("Remove a file\nUsage: remove <filename>")
+		fmt.Println(MarkdownHelp("remove"))
 		return 0, nil
 	}
 

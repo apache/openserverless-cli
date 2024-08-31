@@ -9,9 +9,7 @@ import (
 func Executable() (int, error) {
 	args := os.Args[1:]
 	if len(args) != 1 {
-		fmt.Println("Make a file executable:")
-		fmt.Println(" chmod +x in Unix, rename to .exe in Windows")
-		fmt.Println("Usage: executable <file>")
+		fmt.Println(MarkdownHelp("executable"))
 		return 0, nil
 	}
 
