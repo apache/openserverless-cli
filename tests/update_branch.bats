@@ -20,6 +20,9 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     export OPS_BRANCH="$(cat ../branch.txt)"
+    export LANG=en_US.UTF-8
+    export LANGUAGE=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
     rm -rf ~/.ops
     ops -update
     cd ~/.ops/$OPS_BRANCH/olaris
