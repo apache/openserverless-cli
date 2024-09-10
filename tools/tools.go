@@ -95,6 +95,7 @@ var ToolList = []Tool{
 	{"executable", true}, // @DOC
 	{"empty", true},      // @DOC
 	{"extract", true},    // @DOC
+	{"opspath", true},    // @DOC
 }
 
 func IsTool(name string) bool {
@@ -230,6 +231,9 @@ func RunTool(name string, args []string) (int, error) {
 	case "empty":
 		os.Args = append([]string{"empty"}, args...)
 		return Empty()
+	case "opspath":
+		os.Args = append([]string{"opspath"}, args...)
+		return OpsPath()
 
 	default:
 		return 1, fmt.Errorf("unknown tool")
@@ -238,7 +242,7 @@ func RunTool(name string, args []string) (int, error) {
 }
 
 func MergeToolsList(mainTools []string) []string {
-	availableTools := append(mainTools)
+	availableTools := mainTools
 	for _, tool := range ToolList {
 		availableTools = append(availableTools, tool.Name)
 	}
