@@ -7,7 +7,7 @@ import (
 func Example_markdown2text() {
 	markdown, _ := GetMarkDown("base64")
 	fmt.Println(len(MarkdownToText(markdown)))
-	// Output: 737
+	// Output: 697
 }
 
 func Example_extractUsage() {

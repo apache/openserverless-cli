@@ -2,8 +2,9 @@ package tools
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestMarkdownHelp(t *testing.T) {
@@ -32,5 +33,5 @@ func TestGetMarkDownError(t *testing.T) {
 func ExampleMergeToolsList() {
 	mergedList := MergeToolsList([]string{})
 	fmt.Println(len(mergedList))
-	//Output: 24
+	//Output: 25
 }
