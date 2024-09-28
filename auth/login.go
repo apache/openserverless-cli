@@ -92,13 +92,7 @@ func LoginCmd() (*LoginResult, error) {
 	}
 	url := apihost + whiskLoginPath
 
-	if !strings.HasPrefix(apihost, "http://") && !strings.HasPrefix(apihost, "https://") {
-		if apihost == "localhost" {
-			apihost = "http://" + apihost
-		} else {
-			apihost = "https://" + apihost
-		}
-	}
+	apihost = ensureSchema(apihost)
 
 	// try to get the user from the environment
 	user := os.Getenv("OPS_USER")
@@ -164,6 +158,10 @@ func LoginCmd() (*LoginResult, error) {
 		}
 	}
 
+	if err := configMap.Insert("STATUS_LOGGED_USER", user); err != nil {
+		log.Println("[Warning] Failed to insert STATUS_LOGGED_USER")
+	}
+
 	err = configMap.SaveConfig()
 	if err != nil {
 		return nil, err
@@ -183,6 +181,17 @@ func LoginCmd() (*LoginResult, error) {
 		Auth:    creds["AUTH"],
 		ApiHost: apihost,
 	}, nil
+}
+
+func ensureSchema(apihost string) string {
+	if !strings.HasPrefix(apihost, "http://") && !strings.HasPrefix(apihost, "https://") {
+		if apihost == "localhost" {
+			apihost = "http://" + apihost
+		} else {
+			apihost = "https://" + apihost
+		}
+	}
+	return apihost
 }
 
 func doLogin(url, user, password string) (map[string]string, error) {
