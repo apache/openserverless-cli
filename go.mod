@@ -4,6 +4,7 @@ go 1.22.5
 
 require (
 	github.com/Masterminds/semver v1.5.0
+	github.com/a8m/envsubst v1.4.2
 	github.com/apache/openwhisk-client-go v0.0.0-20210311185314-87edc2364717
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
@@ -40,7 +41,6 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/ProtonMail/go-crypto v1.0.0 // indirect
-	github.com/a8m/envsubst v1.4.2 // indirect
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
