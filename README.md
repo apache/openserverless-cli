@@ -162,6 +162,7 @@ Available tools:
 -jq
 -login
 -needupdate
+-opspath
 -plugin
 -random
 -remove
