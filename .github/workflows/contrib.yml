@@ -21,37 +21,31 @@ on:
   pull_request:
     branches:
       - "main"
-    types: [closed]
-
-permissions:
-  contents: write
+    types: 
+      - "closed"
 
 jobs:
-  goreleaser:
-    if: ${{ github.event.pull_request.merged }}
+  if: ${{ github.event.pull_request.merged }}
+  share_version:
     runs-on: ubuntu-latest
+      outputs:
+        version: "${{ steps.get_version.outputs.version }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Check Dependencies' License
-        uses: apache/skywalking-eyes/dependency@main      # always prefer to use a revision instead of `main`.
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '>=1.22.5'
-      - name: Run Tests
+      - name: Get Version
+        id: get_version
         run: |
-             ls -l
-             sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
-             task install
-             source ~/.bashrc
-             ops -version
-             task tests
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+          version="v$(cat version.txt)"
+          echo "Version: $version"
+          # Set the version as an output
+          echo "::set-output name=version::$version"
+  push_tag:
+    runs-on: ubuntu-latest
+    needs: read_version
+    steps:
+      - name: Tag commit
+        uses: tvdias/github-tagger@v0.0.1
         with:
-          distribution: goreleaser
-          version: '~> v2'
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "${{ needs.share_version.outputs.version }}"        
