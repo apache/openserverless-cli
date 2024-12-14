@@ -43,6 +43,7 @@ func Example_locate() {
 func Example_download() {
 	_ = os.Chdir(workDir)
 	OpsBranch = "0.1.0"
+	os.Setenv("OPS_BRANCH", OpsBranch)
 	opsdir, _ := homedir.Expand("~/.ops")
 	_ = RemoveAll(opsdir)
 	_, _ = downloadTasksFromGitHub(true, true)
