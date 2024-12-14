@@ -61,10 +61,10 @@ setup() {
 
     run ops -t
     assert_success
-    assert_line --partial "OpenServerless Tasks:" 
+    assert_line --partial "OpenServerless Administration Tasks"
     refute_line "Usage of experiments:" 
     run ops -tasks
-    assert_line --partial "OpenWhisk Tasks:" 
+    assert_line --partial "OpenWhisk Tasks"
     refute_line "Usage of experiments:" 
 
     run ops -i

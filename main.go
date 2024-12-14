@@ -54,7 +54,7 @@ func setupCmd(me string) (string, error) {
 		return "", err
 	}
 	if fileInfo.Mode()&os.ModeSymlink != 0 {
-		me, err = os.Readlink(me)
+		me, err = filepath.EvalSymlinks(me)
 		if err != nil {
 			return "", err
 		}
