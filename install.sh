@@ -22,8 +22,12 @@ ARCH="$(uname -m)"
 CMD="ops"
 
 case "$OS-$ARCH" in 
-(Linux-x86_64)  
+(Linux-x86_64)
    SUFFIX="_linux_amd64"
+   EXT=".tar.gz"
+;;
+(Linux-aarch64)
+   SUFFIX="_linux_arm64"
    EXT=".tar.gz"
 ;;
 (Linux-arm64)   
@@ -66,11 +70,14 @@ else
    tar xzvf "/tmp/$FILE" -C ~/.local/bin "$CMD"
 fi
 
+
 if ! test -e  ~/.local/bin/ops*
 then echo "cannot install ops - download and unpack it in a folder in the path from here:"
      echo "$URL"
      exit 1
 fi
+
+ln -sf ~/.local/bin/ops ~/.local/bin/nuv
 
 if ! which ops | grep $HOME/.local/bin
 then 
