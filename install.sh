@@ -77,8 +77,6 @@ then echo "cannot install ops - download and unpack it in a folder in the path f
      exit 1
 fi
 
-ln -sf ~/.local/bin/ops ~/.local/bin/nuv
-
 if ! which ops | grep $HOME/.local/bin
 then 
   echo "$HOME/.local/bin is not in the path - adding it"
