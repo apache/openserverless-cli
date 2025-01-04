@@ -24,7 +24,7 @@ setup() {
     export COUNT=1
 }
 
-@test "OS=linux ARCH=amd64"  {
+@test "OS=linux ARCH=amd64" {
     OS=linux ARCH=amd64
     mkdir -p _bin/$OS-$ARCH
     run env __OS=$OS __ARCH=$ARCH task -t prereq/olaris/prereq.yml -d _bin/$OS-$ARCH all
@@ -32,7 +32,7 @@ setup() {
     assert_equal "$(cat _count)" $COUNT
 }
 
-@test "OS=linux ARCH=arm64"  {
+@test "OS=linux ARCH=arm64" {
     OS=linux ARCH=arm64
     mkdir -p _bin/$OS-$ARCH
     run env __OS=$OS __ARCH=$ARCH task -t prereq/olaris/prereq.yml -d _bin/$OS-$ARCH  all

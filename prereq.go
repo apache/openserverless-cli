@@ -31,17 +31,6 @@ import (
 
 var PrereqSeenMap = map[string]string{}
 
-// Define the Go structs
-type Prereq struct {
-	Version int                   `yaml:"version"`
-	Tasks   map[string]PrereqTask `yaml:"tasks"`
-}
-
-type PrereqTask struct {
-	Description *string           `yaml:"description,omitempty"` // Make description optional
-	Vars        map[string]string `yaml:"vars,omitempty"`
-}
-
 // execute prereq task
 func execPrereqTask(bindir string, name string) error {
 	me, err := os.Executable()
@@ -67,25 +56,65 @@ func execPrereqTask(bindir string, name string) error {
 }
 
 // load prerequisites in current dir
-func loadPrereq(dir string) (Prereq, error) {
-	var prereq Prereq = Prereq{}
+func loadPrereq(dir string) (tasks []string, versions []string, err error) {
+	err = nil
+	tasks = []string{}
+	versions = []string{}
 
 	if !exists(dir, PREREQ) {
-		return prereq, fmt.Errorf("not found %s", dir)
+		return
 	}
 	trace("found prereq.yml in ", dir)
 
-	dat, err := os.ReadFile(joinpath(dir, PREREQ))
+	data, err := os.ReadFile(joinpath(dir, PREREQ))
 	if err != nil {
-		return prereq, err
+		return
 	}
 
-	err = yaml.Unmarshal(dat, &prereq)
-	if err != nil {
-		return prereq, err
+	/*
+			You have tasks = []strings and versions = []strings
+			and dat a string with a YAML  in format:
+			```yaml
+			something:
+			tasks:
+			   task:
+			      vars:
+				     VERSION: "123"
+			   anothertask:
+		    ```
+			I want to parse the file, find the entries under `tasks` vith a var with  VERSION
+			and append, in order, to tasks the name of the task
+			and to version the version found
+			I have to skip the entries without a version and everyhing not in tasks
+			I wnato just the plain code no procedures
+	*/
+	var root yaml.Node
+	if err = yaml.Unmarshal([]byte(data), &root); err != nil {
+		return
 	}
 
-	return prereq, err
+	for i := 0; i < len(root.Content[0].Content); i += 2 {
+		if root.Content[0].Content[i].Value == "tasks" {
+			tasksNode := root.Content[0].Content[i+1]
+			for j := 0; j < len(tasksNode.Content); j += 2 {
+				taskName := tasksNode.Content[j].Value
+				taskVars := tasksNode.Content[j+1]
+				for k := 0; k < len(taskVars.Content); k += 2 {
+					if taskVars.Content[k].Value == "vars" {
+						varsNode := taskVars.Content[k+1]
+						for l := 0; l < len(varsNode.Content); l += 2 {
+							if varsNode.Content[l].Value == "VERSION" {
+								version := varsNode.Content[l+1].Value
+								tasks = append(tasks, taskName)
+								versions = append(versions, version)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return
 }
 
 func binDir() (string, error) {
@@ -158,16 +187,11 @@ func touchAndClean(dir string, name string, version string) error {
 }
 
 // download a prerequisite
-func downloadPrereq(name string, task PrereqTask) error {
+func downloadPrereq(name string, version string) error {
 
 	// names and version
 	// xname = executeable name
 	// vname = versioned executable name
-	version, ok := task.Vars["VERSION"]
-	if !ok {
-		trace("return because no version for ", name)
-		return nil
-	}
 	xname := addExeExt(name)
 	vname := xname + "-" + version
 
@@ -233,10 +257,15 @@ func ensurePrereq(root string) error {
 		return err
 	}
 	trace("ensurePrereq in", root)
-	prereq, err := loadPrereq(root)
-	for task := range prereq.Tasks {
-		trace("prereq", task)
-		err = downloadPrereq(task, prereq.Tasks[task])
+	tasks, versions, err := loadPrereq(root)
+	if err != nil {
+		return err
+	}
+	trace(tasks, versions, err)
+	for i, task := range tasks {
+		version := versions[i]
+		trace("prereq", task, version)
+		err = downloadPrereq(task, version)
 		if err != nil {
 			fmt.Printf("error in prereq %s: %v\n", task, err)
 		}

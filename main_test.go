@@ -73,8 +73,8 @@ func RemoveAll(dir string) error {
 }
 
 func TestMain(m *testing.M) {
-	//debugging = true
-	//tracing = true
+	debugging = true
+	tracing = true
 	wd, _ := os.Getwd()
 	workDir, _ = filepath.Abs(wd)
 	homeDir, _ = homedir.Dir()

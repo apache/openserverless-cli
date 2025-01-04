@@ -27,6 +27,35 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+func Example_opsArg1() {
+	// test
+	_ = os.Chdir(workDir)
+	olaris, _ := filepath.Abs(joinpath("tests", "olaris"))
+	err := Ops(olaris, split("testcmd"))
+	fmt.Println(err)
+	// Output:
+	// -
+
+	/*
+		pr(2, err)
+		err = Ops(olaris, split("testcmd arg"))
+		pr(3, err)
+		err = Ops(olaris, split("testcmd arg VAR=1"))
+		pr(4, err)
+		err = Ops(olaris, split("testcmd VAR=1 arg"))
+		pr(5, err)
+		// Output:
+		// (olaris) task [-t opsfile.yml testcmd --]
+		// 2 <nil>
+		// (olaris) task [-t opsfile.yml testcmd -- arg]
+		// 3 <nil>
+		// (olaris) task [-t opsfile.yml testcmd VAR=1 -- arg]
+		// 4 <nil>
+		// (olaris) task [-t opsfile.yml testcmd VAR=1 -- arg]
+		//5 <nil>
+	*/
+}
+
 func Example_opsArg() {
 	// test
 	_ = os.Chdir(workDir)

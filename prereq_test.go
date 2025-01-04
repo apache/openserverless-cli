@@ -32,14 +32,18 @@ func Example_execPrereqTask() {
 func Example_loadPrereq() {
 	//downloadPrereq("")
 	dir := joinpath(workDir, "tests")
-	_, err := loadPrereq(dir)
-	fmt.Println(npath(err.Error()))
-	prq, err := loadPrereq(joinpath(dir, "prereq"))
+	t, v, err := loadPrereq(dir)
+	fmt.Println(err, len(t), len(v))
+	dir = joinpath(dir, "prereq")
+	//dir = "/home/msciab/.ops/0.1.0/olaris/"
+	tasks, versions, err := loadPrereq(dir)
 	//fmt.Println(prq)
-	fmt.Println(err, *prq.Tasks["bun"].Description, prq.Tasks["bun"].Vars["VERSION"])
+	fmt.Println(err, tasks)
+	fmt.Println(versions)
 	// Output:
-	// not found /work/tests
-	// <nil> bun v1.11.20
+	// <nil> 0 0
+	// <nil> [bun coreutils]
+	// [v1.11.20 0.0.27]
 }
 
 func Example_ensureBindir() {
@@ -74,7 +78,6 @@ func Example_touchAndClean() {
 	if err != nil {
 		RemoveAll(bindir)
 	}
-
 	bindir, _ = EnsureBindir()
 	touch(bindir, "hello")
 	err = touchAndClean(bindir, "hello", "1.2.3")
@@ -94,14 +97,14 @@ func Example_downloadPrereq() {
 	PrereqSeenMap = map[string]string{}
 
 	prqdir := joinpath(joinpath(workDir, "tests"), "prereq")
-	prq, _ := loadPrereq(prqdir)
-	fmt.Println("1", downloadPrereq("bun", prq.Tasks["bun"]))
-	fmt.Println("2", downloadPrereq("bun", prq.Tasks["bun"]))
+	tasks, versions, _ := loadPrereq(prqdir)
+	fmt.Println("1", downloadPrereq(tasks[0], versions[0]))
+	fmt.Println("2", downloadPrereq(tasks[0], versions[0]))
 
-	prq, _ = loadPrereq(joinpath(prqdir, "sub"))
-	//fmt.Println(prq)
+	tasks, versions, _ = loadPrereq(joinpath(prqdir, "sub"))
+	//fmt.Println(tasks, versions)
 	//fmt.Println(PrereqSeenMap)
-	fmt.Println("3", downloadPrereq("bun", prq.Tasks["bun"]))
+	fmt.Println("3", downloadPrereq("bun", versions[0]))
 	// Output:
 	// downloading bun v1.11.20
 	// 1 <nil>

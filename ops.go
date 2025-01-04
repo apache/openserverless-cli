@@ -209,7 +209,6 @@ func Ops(base string, args []string) error {
 	// go down using args as subcommands
 	err := os.Chdir(base)
 	debug("Ops chdir", base)
-
 	if err != nil {
 		return err
 	}
@@ -218,6 +217,7 @@ func Ops(base string, args []string) error {
 	isSubCmd := false
 
 	err = ensurePrereq(base)
+	debug("Ops ensurePrereq", err)
 	if err != nil {
 		fmt.Println("ERROR: cannot ensure prerequisites: " + err.Error())
 		os.Exit(1)
