@@ -32,20 +32,28 @@ import (
 )
 
 func pluginTool() error {
-	flag := flag.NewFlagSet("plugin", flag.ExitOnError)
-	flag.Usage = printPluginUsage
-
-	err := flag.Parse(os.Args[1:])
+	flagSet := flag.NewFlagSet("plugin", flag.ExitOnError)
+	flagSet.Usage = printPluginUsage
+	err := flagSet.Parse(os.Args[1:])
 	if err != nil {
 		return err
 	}
 
-	if flag.NArg() != 1 {
-		flag.Usage()
+	if flagSet.NArg() > 1 {
+		flagSet.Usage()
 		return errors.New("invalid number of arguments. Expected 1")
 	}
 
-	return downloadPluginTasksFromRepo(flag.Arg(0))
+	switch flagSet.Arg(0) {
+	case "", "list":
+		err := printPluginsHelp()
+		if err != nil {
+			return err
+		}
+		return nil
+	default:
+		return downloadPluginTasksFromRepo(flagSet.Arg(0))
+	}
 }
 
 func printPluginUsage() {
@@ -249,7 +257,7 @@ func newPlugins() (*plugins, error) {
 func (p *plugins) print() {
 	if len(p.local) == 0 && len(p.ops) == 0 {
 		debug("No plugins installed")
-		// fmt.Println("No plugins installed. Use 'ops -plugin' to add new ones.")
+		fmt.Println("No plugins installed. Use 'ops -plugin' to add new ones.")
 		return
 	}
 
