@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -162,8 +163,25 @@ func flatten(prefix string, inputMap map[string]interface{}, outputMap map[strin
 		case map[string]interface{}:
 			flatten(key, child, outputMap)
 		default:
-			outputMap[key] = fmt.Sprintf("%v", v)
+			outputMap[key] = formatValue(v)
 		}
+	}
+}
+
+func formatValue(v interface{}) string {
+	switch val := v.(type) {
+	case int, int8, int16, int32, int64:
+		return fmt.Sprintf("%d", val)
+	case uint, uint8, uint16, uint32, uint64:
+		return fmt.Sprintf("%d", val)
+	case float32, float64:
+		return strconv.FormatFloat(reflect.ValueOf(val).Float(), 'f', -1, 64)
+	case bool:
+		return strconv.FormatBool(val)
+	case string:
+		return val
+	default:
+		return fmt.Sprintf("%v", val)
 	}
 }
 
