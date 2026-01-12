@@ -191,6 +191,13 @@ func locateOpsRoot(cur string) (string, error) {
 		return olaris, nil
 	}
 
+	// is there an embedded olaris folder in ~/.ops/.olaris ?
+	embeddedOlarisDir, err := homedir.Expand("~/.ops/.olaris")
+	if err == nil && exists(embeddedOlarisDir, OPSFILE) && exists(embeddedOlarisDir, OPSROOT) {
+		trace("found embedded", embeddedOlarisDir, ":", olaris)
+		return embeddedOlarisDir, nil
+	}
+
 	return "", fmt.Errorf("cannot find opsfiles, download them with ops -update")
 }
 
