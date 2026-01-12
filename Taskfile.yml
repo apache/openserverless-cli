@@ -38,7 +38,6 @@ tasks:
     - git add version.txt branch.txt
     - git commit -m "$(cat version.txt)" || true
     - git tag -f "v$(cat version.txt)"
- 
 
   trigger:
     desc: create tag and push triggering a build
@@ -52,9 +51,18 @@ tasks:
     - rm -f ops
     - task: build
 
+  clone-embedded-tasks:
+    desc: Clone tasks into embedded-tasks for embedding
+    cmds:
+      - rm -rf embedded-tasks
+      - git clone https://github.com/apache/openserverless-task.git embedded-tasks
+      - cd embedded-tasks && git checkout $(cat ../branch.txt)
+
   build:
     aliases: [b]
     desc: build ops locally
+    deps:
+      - clone-embedded-tasks
     cmds:
       - echo building {{.VERSION}}
       - go build  {{.DEBUG}} ./cmd/ops/
@@ -63,6 +71,7 @@ tasks:
       - "*/*.go"
       - version.txt
       - branch.txt
+      - embedded-tasks/**
     generates:
       - ops
 
@@ -84,7 +93,7 @@ tasks:
       - cp -v ops $HOME/.local/bin
       - |
         if ! which ops | grep $HOME/.local/bin
-        then 
+        then
           echo "$HOME/.local/bin is not in the path - adding it"
           echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.bashrc
           echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.zshrc
@@ -109,9 +118,8 @@ tasks:
       - go clean -testcache -cache
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli/config
-      - go test -count=1 {{.F}} github.com/apache/openserverless-cli/tools  
+      - go test -count=1 {{.F}} github.com/apache/openserverless-cli/tools
       - go test github.com/apache/openserverless-cli/auth
-      
 
   bats:
     dir: tests
