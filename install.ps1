@@ -92,4 +92,3 @@ if (-not ($env:PATH -contains $BinPath)) {
     }
 }
 
-exit 0
