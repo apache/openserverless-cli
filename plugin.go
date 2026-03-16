@@ -257,7 +257,7 @@ func newPlugins() (*plugins, error) {
 func (p *plugins) print() {
 	if len(p.local) == 0 && len(p.ops) == 0 {
 		debug("No plugins installed")
-		fmt.Println("No plugins installed. Use 'ops -plugin' to add new ones.")
+		fmt.Println("No plugins installed. Use ops -plugin <repo_url> to install one.")
 		return
 	}
 

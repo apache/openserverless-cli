@@ -223,6 +223,18 @@ func autoCLIUpdate() error {
 
 func checkOperatorVersion(opsRootConfig map[string]interface{}) error {
 	trace("checkOperatorVersion")
+	// --- NEW: Check for active operator installation ---
+	// Execute "ops debug operator:version" to see if an operator is currently deployed.
+	debugCmd := exec.Command(os.Getenv("OPS_CMD"), "debug", "operator:version")
+	output, err := debugCmd.Output()
+	if err != nil || strings.TrimSpace(string(output)) == "" {
+		// No operator installed or command failed, so suppress the update suggestion.
+		debug("No active operator installation detected or command failed:", err, "output:", strings.TrimSpace(string(output)))
+		return fmt.Errorf("no active operator installation detected") // Return an error to prevent printing the update message
+	}
+	debug("Active operator version detected:", strings.TrimSpace(string(output)))
+	// --- END NEW ---
+
 	images := opsRootConfig["images"].(map[string]interface{})
 	operator := images["operator"].(string)
 	opVer := strings.Split(operator, ":")[1]
