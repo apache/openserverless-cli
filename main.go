@@ -373,20 +373,32 @@ func Main() {
 	// Check if olaris exists. If not, download tasks
 	olarisDir, err := getOpsRoot()
 	if err != nil {
-		olarisDir := joinpath(joinpath(opsHome, getOpsBranch()), "olaris")
-		if !isDir(olarisDir) {
-			log.Println("Welcome to ops! Setting up...")
-			olarisDir, err = pullTasks(true, true)
-			if err != nil {
-				log.Fatalf("cannot locate or download OPS_ROOT: %s", err.Error())
+		// Try to extract embedded tasks if available
+		trace("Tasks not found, attempting to extract embedded tasks...")
+		embeddedDir, extractErr := ExtractEmbeddedTasks()
+		if extractErr == nil {
+			trace("Embedded tasks extracted to", embeddedDir)
+			// Retry finding ops root, it should now find ~/.ops/.olaris
+			olarisDir, err = getOpsRoot()
+		}
+
+		// If still not found or extraction failed, try downloading
+		if err != nil {
+			olarisDir = joinpath(joinpath(opsHome, getOpsBranch()), "olaris")
+			if !isDir(olarisDir) {
+				log.Println("Welcome to ops! Setting up...")
+				olarisDir, err = pullTasks(true, true)
+				if err != nil {
+					log.Fatalf("cannot locate or download OPS_ROOT: %s", err.Error())
+				}
+				// if just updated, do not repeat
+				if len(os.Args) > 1 && os.Args[1] == "-update" {
+					os.Exit(0)
+				}
+			} else {
+				// check if olaris was recently updated
+				checkUpdated(opsHome, 24*time.Hour)
 			}
-			// if just updated, do not repeat
-			if len(os.Args) > 1 && os.Args[1] == "-update" {
-				os.Exit(0)
-			}
-		} else {
-			// check if olaris was recently updated
-			checkUpdated(opsHome, 24*time.Hour)
 		}
 	}
 	if err = setOpsOlarisHash(olarisDir); err != nil {
