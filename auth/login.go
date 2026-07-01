@@ -82,7 +82,6 @@ const whiskLoginPath = "/api/v1/web/whisk-system/nuv/login"
 const oidcLoginPath = "/system/api/v1/auth/oidc"
 const defaultUser = "nuvolaris"
 const opsSecretServiceName = "nuvolaris"
-const oidcTokenEnvOptIn = "OPS_DEV_ALLOW_OIDC_TOKEN_ENV"
 
 func LoginCmd() (*LoginResult, error) {
 
@@ -143,11 +142,8 @@ func LoginCmd() (*LoginResult, error) {
 
 	var creds map[string]string
 	ssoEnabled := isTruthy(os.Getenv("SSO_ENABLED"))
-	oidcToken, err := oidcAccessToken()
-	if err != nil {
-		return nil, err
-	}
-	if oidcToken == "" && ssoEnabled {
+	var oidcToken string
+	if ssoEnabled {
 		oidcToken, err = oidcDeviceAccessToken()
 		if err != nil {
 			return nil, err
@@ -235,33 +231,6 @@ func LoginCmd() (*LoginResult, error) {
 		Auth:    creds["AUTH"],
 		ApiHost: apihost,
 	}, nil
-}
-
-func oidcAccessToken() (string, error) {
-	allowTokenEnv := isTruthy(os.Getenv(oidcTokenEnvOptIn))
-	for _, name := range []string{"KEYCLOAK_ACCESS_TOKEN", "OPS_OIDC_ACCESS_TOKEN", "OIDC_ACCESS_TOKEN"} {
-		if value := strings.TrimSpace(os.Getenv(name)); value != "" {
-			if !allowTokenEnv {
-				return "", fmt.Errorf("OIDC token login via environment is disabled; use browser/device SSO login or set %s=true only for local tests", oidcTokenEnvOptIn)
-			}
-			return value, nil
-		}
-	}
-
-	stat, err := os.Stdin.Stat()
-	if err != nil || stat.Mode()&os.ModeCharDevice != 0 {
-		return "", nil
-	}
-
-	token, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		return "", nil
-	}
-	tokenText := strings.TrimSpace(string(token))
-	if tokenText != "" && !allowTokenEnv {
-		return "", fmt.Errorf("OIDC token login via stdin is disabled; use browser/device SSO login or set %s=true only for local tests", oidcTokenEnvOptIn)
-	}
-	return tokenText, nil
 }
 
 func oidcDeviceAccessToken() (string, error) {
