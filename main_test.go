@@ -165,7 +165,7 @@ func TestConfigValueForDebugRedactsSensitiveValues(t *testing.T) {
 	require.Equal(t, "<redacted>", configValueForDebug("AUTH", "uuid:key"))
 	require.Equal(t, "<redacted>", configValueForDebug("POSTGRES_PASSWORD", "secret"))
 	require.Equal(t, "<redacted>", configValueForDebug("S3_ACCESS_KEY", "access"))
-	require.Equal(t, "<redacted>", configValueForDebug("OIDC_ACCESS_TOKEN", "token"))
+	require.Equal(t, "<redacted>", configValueForDebug("SERVICE_TOKEN", "token"))
 	require.Equal(t, "http://localhost:8080", configValueForDebug("OIDC_ISSUER_URL", "http://localhost:8080"))
 	require.Equal(t, "", configValueForDebug("AUTH", ""))
 }
