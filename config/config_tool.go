@@ -81,6 +81,10 @@ func ConfigTool(configMap ConfigMap) error {
 		return nil
 	}
 
+	if input[0] == "sso" {
+		return ConfigSSOTool(configMap, input[1:])
+	}
+
 	var cErr error
 	noAssigns := inputWithoutAssigns(input)
 

@@ -19,6 +19,7 @@ package auth
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -183,6 +184,134 @@ func TestLoginCmd(t *testing.T) {
 		require.Equal(t, "missing AUTH token from login response", err.Error())
 		require.Nil(t, loginResult)
 	})
+
+	t.Run("with OIDC access token calls admin-api bridge", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("OPS_HOME", tmpDir)
+		t.Setenv("KEYCLOAK_ACCESS_TOKEN", "oidc-token")
+		t.Setenv("OPS_DEV_ALLOW_OIDC_TOKEN_ENV", "true")
+		t.Setenv("OPS_PASSWORD", "")
+		t.Setenv("OPS_USER", "")
+		t.Setenv("OPS_APIHOST", "")
+
+		mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			require.Equal(t, "/system/api/v1/auth/oidc", r.URL.Path)
+			require.Equal(t, "Bearer oidc-token", r.Header.Get("Authorization"))
+
+			var requestBody map[string]string
+			require.NoError(t, json.NewDecoder(r.Body).Decode(&requestBody))
+			require.Equal(t, "oidc-token", requestBody["access_token"])
+
+			_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"developerlab8e8a9915"}`))
+		}))
+		defer mockServer.Close()
+
+		os.Args = []string{"login", mockServer.URL}
+		loginResult, err := LoginCmd()
+		require.NoError(t, err)
+		require.NotNil(t, loginResult)
+		require.Equal(t, "developerlab8e8a9915", loginResult.Login)
+		require.Equal(t, "oidc-auth", loginResult.Auth)
+
+		configMap, err := config.NewConfigMapBuilder().
+			WithConfigJson(filepath.Join(tmpDir, "config.json")).
+			Build()
+		require.NoError(t, err)
+
+		v, err := configMap.Get("STATUS_LOGGED_USER")
+		require.NoError(t, err)
+		require.Equal(t, "developerlab8e8a9915", v)
+	})
+
+	t.Run("rejects OIDC access token from env without explicit dev opt-in", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("OPS_HOME", tmpDir)
+		t.Setenv("KEYCLOAK_ACCESS_TOKEN", "oidc-token")
+		t.Setenv("OPS_DEV_ALLOW_OIDC_TOKEN_ENV", "")
+		t.Setenv("OPS_PASSWORD", "")
+		t.Setenv("OPS_USER", "")
+		t.Setenv("OPS_APIHOST", "")
+
+		os.Args = []string{"login", "http://localhost:5000"}
+		loginResult, err := LoginCmd()
+		require.Error(t, err)
+		require.Nil(t, loginResult)
+		require.Contains(t, err.Error(), "OIDC token login via environment is disabled")
+	})
+
+	t.Run("SSO enabled starts OIDC device flow", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("OPS_HOME", tmpDir)
+		t.Setenv("SSO_ENABLED", "true")
+		t.Setenv("SSO_OIDC_AUDIENCE", "openserverless-admin-api")
+		t.Setenv("OPS_SSO_DISABLE_BROWSER", "true")
+		t.Setenv("OPS_PASSWORD", "")
+		t.Setenv("OPS_USER", "")
+		t.Setenv("OPS_APIHOST", "")
+
+		var mockServer *httptest.Server
+		mockServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case "/realms/lab/.well-known/openid-configuration":
+				_, _ = w.Write([]byte(fmt.Sprintf(`{
+					"device_authorization_endpoint": "%s/realms/lab/protocol/openid-connect/auth/device",
+					"token_endpoint": "%s/realms/lab/protocol/openid-connect/token"
+				}`, mockServer.URL, mockServer.URL)))
+			case "/realms/lab/protocol/openid-connect/auth/device":
+				require.NoError(t, r.ParseForm())
+				require.Equal(t, "openserverless-admin-api", r.Form.Get("client_id"))
+				require.Equal(t, "S256", r.Form.Get("code_challenge_method"))
+				require.NotEmpty(t, r.Form.Get("code_challenge"))
+				_, _ = w.Write([]byte(`{
+					"device_code": "device-code",
+					"user_code": "ABCD-EFGH",
+					"verification_uri": "http://localhost/device",
+					"verification_uri_complete": "http://localhost/device?user_code=ABCD-EFGH",
+					"expires_in": 10,
+					"interval": 1
+				}`))
+			case "/realms/lab/protocol/openid-connect/token":
+				require.NoError(t, r.ParseForm())
+				require.Equal(t, "urn:ietf:params:oauth:grant-type:device_code", r.Form.Get("grant_type"))
+				require.Equal(t, "openserverless-admin-api", r.Form.Get("client_id"))
+				require.Equal(t, "device-code", r.Form.Get("device_code"))
+				require.NotEmpty(t, r.Form.Get("code_verifier"))
+				_, _ = w.Write([]byte(`{"access_token":"device-access-token"}`))
+			case "/system/api/v1/auth/oidc":
+				require.Equal(t, "Bearer device-access-token", r.Header.Get("Authorization"))
+				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"michelem"}`))
+			default:
+				http.NotFound(w, r)
+			}
+		}))
+		defer mockServer.Close()
+
+		t.Setenv("SSO_OIDC_ISSUER_URL", mockServer.URL+"/realms/lab")
+
+		os.Args = []string{"login", mockServer.URL}
+		loginResult, err := LoginCmd()
+		require.NoError(t, err)
+		require.NotNil(t, loginResult)
+		require.Equal(t, "michelem", loginResult.Login)
+		require.Equal(t, "oidc-auth", loginResult.Auth)
+	})
+
+	t.Run("SSO enabled fails without issuer", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("OPS_HOME", tmpDir)
+		t.Setenv("SSO_ENABLED", "true")
+		t.Setenv("SSO_OIDC_ISSUER_URL", "")
+		t.Setenv("SSO_OIDC_AUDIENCE", "openserverless-admin-api")
+		t.Setenv("OPS_PASSWORD", "")
+		t.Setenv("OPS_USER", "")
+		t.Setenv("OPS_APIHOST", "")
+
+		os.Args = []string{"login", "http://localhost:5000"}
+		loginResult, err := LoginCmd()
+		require.Error(t, err)
+		require.Nil(t, loginResult)
+		require.Contains(t, err.Error(), "SSO_OIDC_ISSUER_URL")
+	})
 }
 
 func Test_doLogin(t *testing.T) {
@@ -193,6 +322,26 @@ func Test_doLogin(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, cred)
 	require.Equal(t, "test", cred["fakeCred"])
+}
+
+func Test_doOIDCLogin(t *testing.T) {
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/system/api/v1/auth/oidc", r.URL.Path)
+		require.Equal(t, "Bearer test-token", r.Header.Get("Authorization"))
+
+		var requestBody map[string]string
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&requestBody))
+		require.Equal(t, "test-token", requestBody["access_token"])
+
+		_, _ = w.Write([]byte(`{"AUTH":"test-auth","NAMESPACE":"devel"}`))
+	}))
+	defer mockServer.Close()
+
+	cred, err := doOIDCLogin(mockServer.URL+"/system/api/v1/auth/oidc", "test-token")
+	require.NoError(t, err)
+	require.NotNil(t, cred)
+	require.Equal(t, "test-auth", cred["AUTH"])
+	require.Equal(t, "devel", cred["NAMESPACE"])
 }
 
 func Test_storeCredentials(t *testing.T) {

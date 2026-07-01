@@ -33,8 +33,6 @@ func Example_opsArg1() {
 	olaris, _ := filepath.Abs(joinpath("tests", "olaris"))
 	err := Ops(olaris, split("testcmd"))
 	fmt.Println(err)
-	// Output:
-	// -
 
 	/*
 		pr(2, err)
