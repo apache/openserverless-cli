@@ -44,6 +44,9 @@ header:
     - '**/*.txt'
     - '*.code-workspace'
     - 'empty_file'
+    - DISCLAIMER
+    - LICENSE
+    - NOTICE
 
 dependency:
   files:
