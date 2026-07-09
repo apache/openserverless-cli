@@ -18,7 +18,7 @@
 version: "3"
 
 vars:
-  BASEVER: "0.1.0"
+  BASEVER: "0.9.1"
   VARIANT: "dev"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
