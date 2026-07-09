@@ -84,19 +84,25 @@ type backendDevicePollResponse struct {
 }
 
 const usage = `Usage:
-ops -login <apihost> [<user>]
+ops -login [options] <apihost> [<user>]
 
 Login to an OpenServerless instance. If no user is specified, the default user "nuvolaris" is used.
 You can set the environment variables OPS_APIHOST and OPS_USER to avoid specifying them on the command line.
 You can set OPS_PASSWORD to avoid entering the password interactively.
+When SSO is enabled, set OPS_SSO_LOGIN_FLOW=password or pass --sso-flow password to use
+OIDC password grant instead of the browser/device flow. OPS_SSO_USERNAME can override the
+identity-provider username when it differs from the OpenServerless namespace.
 
 Options:
+  --sso-flow FLOW       SSO login flow: device or password. Default: device
+  --sso-username USER   Identity-provider username for SSO password flow
   -h, --help   Show usage`
 
 const whiskLoginPath = "/api/v1/web/whisk-system/nuv/login"
 const oidcLoginPath = "/system/api/v1/auth/oidc"
 const oidcDeviceStartPath = "/system/api/v1/auth/oidc/device/start"
 const oidcDevicePollPath = "/system/api/v1/auth/oidc/device/poll"
+const oidcPasswordPath = "/system/api/v1/auth/oidc/password"
 const defaultUser = "nuvolaris"
 const opsSecretServiceName = "nuvolaris"
 
@@ -113,8 +119,12 @@ func LoginCmd() (*LoginResult, error) {
 	}
 
 	var helpFlag bool
+	var ssoFlowFlag string
+	var ssoUsernameFlag string
 	flag.BoolVar(&helpFlag, "h", false, "Show usage")
 	flag.BoolVar(&helpFlag, "help", false, "Show usage")
+	flag.StringVar(&ssoFlowFlag, "sso-flow", "", "SSO login flow: device or password")
+	flag.StringVar(&ssoUsernameFlag, "sso-username", "", "Identity-provider username for SSO password flow")
 	err := flag.Parse(os.Args[1:])
 	if err != nil {
 		return nil, err
@@ -156,12 +166,22 @@ func LoginCmd() (*LoginResult, error) {
 			}
 		}
 	}
+	if user == "" {
+		user = os.Getenv("OPSDEV_USERNAME")
+	}
 
 	var creds map[string]string
 	ssoEnabled := isTruthy(os.Getenv("SSO_ENABLED"))
 	var oidcToken string
 	if ssoEnabled {
-		if useBackendManagedOIDCDeviceFlow() {
+		if useBackendManagedOIDCPasswordFlow(ssoFlowFlag) {
+			fmt.Println("Logging in", apihost, "with backend-managed OIDC password grant")
+			creds, err = backendManagedOIDCPasswordLogin(apihost, user, firstNonEmpty(ssoUsernameFlag, os.Getenv("OPS_SSO_USERNAME")))
+			if err != nil {
+				return nil, err
+			}
+			user = loginFromCredentials(creds, user)
+		} else if useBackendManagedOIDCDeviceFlow() {
 			fmt.Println("Logging in", apihost, "with backend-managed OIDC")
 			creds, err = backendManagedOIDCDeviceLogin(apihost, user)
 			if err != nil {
@@ -315,6 +335,10 @@ func useBackendManagedOIDCDeviceFlow() bool {
 		isTruthy(firstNonEmpty(os.Getenv("SSO_OIDC_CLIENT_SECRET_CONFIGURED"), os.Getenv("OIDC_CLIENT_SECRET_CONFIGURED")))
 }
 
+func useBackendManagedOIDCPasswordFlow(flagValue string) bool {
+	return strings.EqualFold(firstNonEmpty(flagValue, os.Getenv("OPS_SSO_LOGIN_FLOW")), "password")
+}
+
 func backendManagedOIDCDeviceLogin(apihost, requestedNamespace string) (map[string]string, error) {
 	startURL := strings.TrimRight(apihost, "/") + oidcDeviceStartPath
 	pollURL := strings.TrimRight(apihost, "/") + oidcDevicePollPath
@@ -351,6 +375,65 @@ func backendManagedOIDCDeviceLogin(apihost, requestedNamespace string) (map[stri
 	}
 
 	return pollBackendManagedOIDCDeviceFlow(pollURL, start, requestedNamespace)
+}
+
+func backendManagedOIDCPasswordLogin(apihost, requestedNamespace, idpUsername string) (map[string]string, error) {
+	username := firstNonEmpty(idpUsername, requestedNamespace)
+	if username == "" {
+		return nil, errors.New("SSO password login requires a username")
+	}
+
+	password := os.Getenv("OPS_PASSWORD")
+	if password == "" {
+		fmt.Print("Enter SSO Password: ")
+		pwd, err := AskPassword()
+		if err != nil {
+			return nil, err
+		}
+		password = pwd
+		fmt.Println()
+	}
+
+	return doOIDCPasswordLogin(
+		strings.TrimRight(apihost, "/")+oidcPasswordPath,
+		username,
+		password,
+		requestedNamespace,
+	)
+}
+
+func doOIDCPasswordLogin(url, username, password, requestedNamespace string) (map[string]string, error) {
+	payload := map[string]string{
+		"username": username,
+		"password": password,
+	}
+	if strings.TrimSpace(requestedNamespace) != "" {
+		payload["namespace"] = strings.TrimSpace(requestedNamespace)
+	}
+	loginJSON, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(loginJSON))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("OIDC password login failed with status code %d", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("OIDC password login failed (%d): %s", resp.StatusCode, string(body))
+	}
+
+	var creds map[string]string
+	if err := json.NewDecoder(resp.Body).Decode(&creds); err != nil {
+		return nil, errors.New("failed to decode response from OIDC password login request")
+	}
+	return creds, nil
 }
 
 func startBackendManagedOIDCDeviceFlow(url, requestedNamespace string) (*backendDeviceStartResponse, error) {

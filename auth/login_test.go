@@ -289,6 +289,102 @@ func TestLoginCmd(t *testing.T) {
 		require.Equal(t, 1, pollCount)
 	})
 
+	t.Run("SSO password flow uses backend managed password grant", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("OPS_HOME", tmpDir)
+		t.Setenv("SSO_ENABLED", "true")
+		t.Setenv("OPS_PASSWORD", "sso-password")
+		t.Setenv("OPS_USER", "")
+		t.Setenv("OPS_APIHOST", "")
+
+		mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case "/system/api/v1/auth/oidc/password":
+				require.Equal(t, http.MethodPost, r.Method)
+				var payload map[string]string
+				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
+				require.Equal(t, "michelem", payload["username"])
+				require.Equal(t, "sso-password", payload["password"])
+				require.Equal(t, "michelem", payload["namespace"])
+				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"michelem"}`))
+			default:
+				http.NotFound(w, r)
+			}
+		}))
+		defer mockServer.Close()
+
+		os.Args = []string{"login", "--sso-flow", "password", mockServer.URL, "michelem"}
+		loginResult, err := LoginCmd()
+		require.NoError(t, err)
+		require.NotNil(t, loginResult)
+		require.Equal(t, "michelem", loginResult.Login)
+		require.Equal(t, "oidc-auth", loginResult.Auth)
+	})
+
+	t.Run("SSO password flow supports IdP username override", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("OPS_HOME", tmpDir)
+		t.Setenv("SSO_ENABLED", "true")
+		t.Setenv("OPS_SSO_LOGIN_FLOW", "password")
+		t.Setenv("OPS_SSO_USERNAME", "michele@example.test")
+		t.Setenv("OPS_PASSWORD", "sso-password")
+		t.Setenv("OPS_USER", "")
+		t.Setenv("OPS_APIHOST", "")
+
+		mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case "/system/api/v1/auth/oidc/password":
+				var payload map[string]string
+				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
+				require.Equal(t, "michele@example.test", payload["username"])
+				require.Equal(t, "michelem", payload["namespace"])
+				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"michelem"}`))
+			default:
+				http.NotFound(w, r)
+			}
+		}))
+		defer mockServer.Close()
+
+		os.Args = []string{"login", mockServer.URL, "michelem"}
+		loginResult, err := LoginCmd()
+		require.NoError(t, err)
+		require.NotNil(t, loginResult)
+		require.Equal(t, "michelem", loginResult.Login)
+		require.Equal(t, "oidc-auth", loginResult.Auth)
+	})
+
+	t.Run("SSO password flow uses OPSDEV username from ops ide login", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("OPS_HOME", tmpDir)
+		t.Setenv("SSO_ENABLED", "true")
+		t.Setenv("OPS_SSO_LOGIN_FLOW", "password")
+		t.Setenv("OPS_PASSWORD", "sso-password")
+		t.Setenv("OPSDEV_USERNAME", "michelem")
+		t.Setenv("OPS_USER", "")
+		t.Setenv("OPS_APIHOST", "")
+
+		mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case "/system/api/v1/auth/oidc/password":
+				var payload map[string]string
+				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
+				require.Equal(t, "michelem", payload["username"])
+				require.Equal(t, "michelem", payload["namespace"])
+				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"michelem"}`))
+			default:
+				http.NotFound(w, r)
+			}
+		}))
+		defer mockServer.Close()
+
+		os.Args = []string{"login", mockServer.URL}
+		loginResult, err := LoginCmd()
+		require.NoError(t, err)
+		require.NotNil(t, loginResult)
+		require.Equal(t, "michelem", loginResult.Login)
+		require.Equal(t, "oidc-auth", loginResult.Auth)
+	})
+
 	t.Run("SSO enabled fails without issuer", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		t.Setenv("OPS_HOME", tmpDir)
