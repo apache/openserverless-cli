@@ -220,7 +220,7 @@ func executeTools(args []string, opsHome string) int {
 		}
 
 		fmt.Println("Successfully logged in as " + loginResult.Login + ".")
-		if err := wskPropertySet(loginResult.ApiHost, loginResult.Auth); err != nil {
+		if err := wskPropertySet(loginResult.ApiHost, loginResult.Auth, loginResult.Login); err != nil {
 			log.Fatalf("error: %s", err.Error())
 		}
 		fmt.Println("OpenServerless host and auth set successfully. You are now ready to use ops!")
@@ -406,10 +406,24 @@ func Main() {
 		log.Fatalf("failed preflight check: %s", err.Error())
 	}
 
+	args := os.Args
+
+	// Keep the historical `ops config` task surface intact; only the new SSO
+	// subtree is handled by the embedded config tool.
+	if isPlainConfigSSOCommand(args) {
+		fullargs := append([]string{"config"}, args[2:]...)
+		exitCode := executeTools(fullargs, opsHome)
+		os.Exit(exitCode)
+	}
+
 	// first argument with prefix "-" is considered an embedded tool
 	// using "-" or "--" or "-task" invokes the embedded task
 	// CLI: ops -<tool> (embedded tool)
-	args := os.Args
+	if len(args) > 1 && isPlainEmbeddedToolAlias(args[1]) {
+		fullargs := append([]string{args[1]}, args[2:]...)
+		exitCode := executeTools(fullargs, opsHome)
+		os.Exit(exitCode)
+	}
 	if len(args) > 1 && len(args[1]) > 0 && args[1][0] == '-' {
 		cmd := args[1][1:]
 		if cmd == "t" || cmd == "tasks" {
@@ -470,19 +484,78 @@ func setAllConfigEnvVars(opsRootDir string, configDir string) error {
 		if err := os.Setenv(k, v); err != nil {
 			return err
 		}
-		debug("env var set", k, v)
+		debug("env var set", k, configValueForDebug(k, v))
 	}
 
 	return nil
 }
 
-func wskPropertySet(apihost, auth string) error {
+func configValueForDebug(key, value string) string {
+	if value == "" {
+		return ""
+	}
+	normalizedKey := strings.ToLower(key)
+	for _, marker := range []string{"auth", "password", "secret", "token", "credential", "access_key", "secret_key", "redis_url", "mongodb_url", "postgres_url"} {
+		if strings.Contains(normalizedKey, marker) {
+			return "<redacted>"
+		}
+	}
+	return value
+}
+
+func wskPropertySet(apihost, auth, namespace string) error {
 	args := []string{"property", "set", "--apihost", apihost, "--auth", auth}
 	cmd := append([]string{"wsk"}, args...)
 	if err := tools.Wsk(cmd); err != nil {
 		return err
 	}
+	if namespace != "" {
+		return wskNamespaceSet(namespace)
+	}
 	return nil
+}
+
+func wskNamespaceSet(namespace string) error {
+	wskProps := os.Getenv("WSK_CONFIG_FILE")
+	if wskProps == "" {
+		home, err := homedir.Expand("~")
+		if err != nil {
+			return err
+		}
+		wskProps = filepath.Join(home, ".wskprops")
+	}
+
+	content, err := os.ReadFile(wskProps)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	lines := []string{}
+	found := false
+	for _, line := range strings.Split(string(content), "\n") {
+		if line == "" {
+			continue
+		}
+		if strings.HasPrefix(line, "NAMESPACE=") {
+			lines = append(lines, "NAMESPACE="+namespace)
+			found = true
+		} else {
+			lines = append(lines, line)
+		}
+	}
+	if !found {
+		lines = append(lines, "NAMESPACE="+namespace)
+	}
+
+	return os.WriteFile(wskProps, []byte(strings.Join(lines, "\n")+"\n"), 0600)
+}
+
+func isPlainEmbeddedToolAlias(name string) bool {
+	return false
+}
+
+func isPlainConfigSSOCommand(args []string) bool {
+	return len(args) > 2 && args[1] == "config" && args[2] == "sso"
 }
 
 func runOps(baseDir string, args []string) error {

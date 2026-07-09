@@ -129,3 +129,43 @@ func TestParseInvokeArgs(t *testing.T) {
 		require.Equal(t, expected4, output4)
 	})
 }
+
+func TestWskNamespaceSet(t *testing.T) {
+	wskProps := filepath.Join(t.TempDir(), ".wskprops")
+	require.NoError(t, os.WriteFile(wskProps, []byte("AUTH=uuid:key\nAPIHOST=http://localhost:5000\n"), 0600))
+	t.Setenv("WSK_CONFIG_FILE", wskProps)
+
+	require.NoError(t, wskNamespaceSet("developerlab8e8a9915"))
+	content, err := os.ReadFile(wskProps)
+	require.NoError(t, err)
+	require.Equal(t, "AUTH=uuid:key\nAPIHOST=http://localhost:5000\nNAMESPACE=developerlab8e8a9915\n", string(content))
+
+	require.NoError(t, wskNamespaceSet("devel"))
+	content, err = os.ReadFile(wskProps)
+	require.NoError(t, err)
+	require.Equal(t, "AUTH=uuid:key\nAPIHOST=http://localhost:5000\nNAMESPACE=devel\n", string(content))
+}
+
+func TestPlainEmbeddedToolAlias(t *testing.T) {
+	require.False(t, isPlainEmbeddedToolAlias("config"))
+	require.False(t, isPlainEmbeddedToolAlias("admin"))
+	require.False(t, isPlainEmbeddedToolAlias("ide"))
+	require.False(t, isPlainEmbeddedToolAlias("login"))
+}
+
+func TestIsPlainConfigSSOCommand(t *testing.T) {
+	require.True(t, isPlainConfigSSOCommand([]string{"ops", "config", "sso"}))
+	require.True(t, isPlainConfigSSOCommand([]string{"ops", "config", "sso", "show"}))
+	require.False(t, isPlainConfigSSOCommand([]string{"ops", "config"}))
+	require.False(t, isPlainConfigSSOCommand([]string{"ops", "config", "--help"}))
+	require.False(t, isPlainConfigSSOCommand([]string{"ops", "-config", "sso"}))
+}
+
+func TestConfigValueForDebugRedactsSensitiveValues(t *testing.T) {
+	require.Equal(t, "<redacted>", configValueForDebug("AUTH", "uuid:key"))
+	require.Equal(t, "<redacted>", configValueForDebug("POSTGRES_PASSWORD", "secret"))
+	require.Equal(t, "<redacted>", configValueForDebug("S3_ACCESS_KEY", "access"))
+	require.Equal(t, "<redacted>", configValueForDebug("SERVICE_TOKEN", "token"))
+	require.Equal(t, "http://localhost:8080", configValueForDebug("OIDC_ISSUER_URL", "http://localhost:8080"))
+	require.Equal(t, "", configValueForDebug("AUTH", ""))
+}
