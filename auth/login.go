@@ -68,6 +68,21 @@ type oidcTokenResponse struct {
 	ErrorDescription string `json:"error_description"`
 }
 
+type backendDeviceStartResponse struct {
+	FlowID                  string `json:"flow_id"`
+	UserCode                string `json:"user_code"`
+	VerificationURI         string `json:"verification_uri"`
+	VerificationURIComplete string `json:"verification_uri_complete"`
+	ExpiresIn               int    `json:"expires_in"`
+	Interval                int    `json:"interval"`
+}
+
+type backendDevicePollResponse struct {
+	Status   string `json:"status"`
+	Message  string `json:"message"`
+	Interval int    `json:"interval"`
+}
+
 const usage = `Usage:
 ops -login <apihost> [<user>]
 
@@ -80,6 +95,8 @@ Options:
 
 const whiskLoginPath = "/api/v1/web/whisk-system/nuv/login"
 const oidcLoginPath = "/system/api/v1/auth/oidc"
+const oidcDeviceStartPath = "/system/api/v1/auth/oidc/device/start"
+const oidcDevicePollPath = "/system/api/v1/auth/oidc/device/poll"
 const defaultUser = "nuvolaris"
 const opsSecretServiceName = "nuvolaris"
 
@@ -144,19 +161,28 @@ func LoginCmd() (*LoginResult, error) {
 	ssoEnabled := isTruthy(os.Getenv("SSO_ENABLED"))
 	var oidcToken string
 	if ssoEnabled {
-		oidcToken, err = oidcDeviceAccessToken()
-		if err != nil {
-			return nil, err
+		if useBackendManagedOIDCDeviceFlow() {
+			fmt.Println("Logging in", apihost, "with backend-managed OIDC")
+			creds, err = backendManagedOIDCDeviceLogin(apihost, user)
+			if err != nil {
+				return nil, err
+			}
+			user = loginFromCredentials(creds, user)
+		} else {
+			oidcToken, err = oidcDeviceAccessToken()
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
-	if oidcToken != "" {
+	if creds == nil && oidcToken != "" {
 		fmt.Println("Logging in", apihost, "with OIDC")
 		creds, err = doOIDCLogin(oidcLoginURL, oidcToken)
 		if err != nil {
 			return nil, err
 		}
 		user = loginFromCredentials(creds, user)
-	} else {
+	} else if creds == nil {
 		if ssoEnabled {
 			return nil, errors.New("SSO is enabled but OIDC login did not return an access token")
 		}
@@ -282,6 +308,129 @@ func oidcDeviceAccessToken() (string, error) {
 	}
 
 	return pollOIDCDeviceToken(discovery.TokenEndpoint, clientID, device, codeVerifier)
+}
+
+func useBackendManagedOIDCDeviceFlow() bool {
+	return strings.EqualFold(strings.TrimSpace(os.Getenv("SSO_CLIENT_MODE")), "confidential") ||
+		isTruthy(firstNonEmpty(os.Getenv("SSO_OIDC_CLIENT_SECRET_CONFIGURED"), os.Getenv("OIDC_CLIENT_SECRET_CONFIGURED")))
+}
+
+func backendManagedOIDCDeviceLogin(apihost, requestedNamespace string) (map[string]string, error) {
+	startURL := strings.TrimRight(apihost, "/") + oidcDeviceStartPath
+	pollURL := strings.TrimRight(apihost, "/") + oidcDevicePollPath
+
+	start, err := startBackendManagedOIDCDeviceFlow(startURL, requestedNamespace)
+	if err != nil {
+		return nil, err
+	}
+	if start.FlowID == "" {
+		return nil, errors.New("SSO device login response missing flow_id")
+	}
+	if start.Interval <= 0 {
+		start.Interval = 5
+	}
+	if start.ExpiresIn <= 0 {
+		start.ExpiresIn = 600
+	}
+
+	verificationURL := start.VerificationURIComplete
+	if verificationURL == "" {
+		verificationURL = start.VerificationURI
+	}
+	fmt.Println()
+	fmt.Println("SSO is enabled for this cluster.")
+	fmt.Println("Open this URL in your browser to login:")
+	fmt.Println(verificationURL)
+	if start.UserCode != "" {
+		fmt.Println("Code:", start.UserCode)
+	}
+	fmt.Println("Waiting for authentication...")
+
+	if verificationURL != "" && !isTruthy(os.Getenv("OPS_SSO_DISABLE_BROWSER")) {
+		_ = browser.OpenURL(verificationURL)
+	}
+
+	return pollBackendManagedOIDCDeviceFlow(pollURL, start, requestedNamespace)
+}
+
+func startBackendManagedOIDCDeviceFlow(url, requestedNamespace string) (*backendDeviceStartResponse, error) {
+	payload := map[string]string{}
+	if strings.TrimSpace(requestedNamespace) != "" {
+		payload["namespace"] = strings.TrimSpace(requestedNamespace)
+	}
+	startJSON, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(startJSON))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("OIDC device authorization failed (%d): %s", resp.StatusCode, string(body))
+	}
+
+	var start backendDeviceStartResponse
+	if err := json.Unmarshal(body, &start); err != nil {
+		return nil, errors.New("failed to decode OIDC device authorization response")
+	}
+	return &start, nil
+}
+
+func pollBackendManagedOIDCDeviceFlow(url string, start *backendDeviceStartResponse, requestedNamespace string) (map[string]string, error) {
+	deadline := time.Now().Add(time.Duration(start.ExpiresIn) * time.Second)
+	interval := time.Duration(start.Interval) * time.Second
+
+	for {
+		if time.Now().After(deadline) {
+			return nil, errors.New("OIDC device login expired")
+		}
+		time.Sleep(interval)
+
+		payload := map[string]string{"flow_id": start.FlowID}
+		if strings.TrimSpace(requestedNamespace) != "" {
+			payload["namespace"] = strings.TrimSpace(requestedNamespace)
+		}
+		loginJSON, err := json.Marshal(payload)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := http.Post(url, "application/json", bytes.NewBuffer(loginJSON))
+		if err != nil {
+			return nil, err
+		}
+
+		body, readErr := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if readErr != nil {
+			return nil, readErr
+		}
+
+		if resp.StatusCode == http.StatusAccepted {
+			var pending backendDevicePollResponse
+			if err := json.Unmarshal(body, &pending); err == nil && pending.Interval > 0 {
+				interval = time.Duration(pending.Interval) * time.Second
+			}
+			continue
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("OIDC token polling failed (%d): %s", resp.StatusCode, string(body))
+		}
+
+		var creds map[string]string
+		if err := json.Unmarshal(body, &creds); err != nil {
+			return nil, errors.New("failed to decode response from OIDC device login request")
+		}
+		return creds, nil
+	}
 }
 
 func fetchOIDCDiscovery(issuer string) (*oidcDiscovery, error) {
