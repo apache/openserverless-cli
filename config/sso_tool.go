@@ -31,6 +31,7 @@ import (
 const (
 	defaultSSONamespace = "nuvolaris"
 	defaultSSOConfigMap = "openserverless-sso-config"
+	defaultSSOSecret    = "openserverless-sso-secret"
 	defaultSSOWorkload  = "nuvolaris-system-api"
 	defaultSSOContainer = "nuvolaris-system-api"
 )
@@ -43,6 +44,8 @@ type ssoOptions struct {
 	IssuerURL              string
 	JWKSURL                string
 	Audience               string
+	ClientID               string
+	ClientSecret           string
 	RequiredGroup          string
 	UsernameClaim          string
 	GroupsClaim            string
@@ -55,6 +58,7 @@ type ssoOptions struct {
 	NamespaceMaxLength     string
 	Namespace              string
 	ConfigMapName          string
+	SecretName             string
 	WorkloadName           string
 	ContainerName          string
 	NoRollout              bool
@@ -62,12 +66,12 @@ type ssoOptions struct {
 
 func printSSOUsage() {
 	fmt.Print(`Usage:
-ops config sso keycloak --enable --issuer-url URL --jwks-url URL --audience AUDIENCE --required-group GROUP [options]
+ops config sso keycloak --enable --issuer-url URL --jwks-url URL (--audience AUDIENCE|--client-id CLIENT_ID) --required-group GROUP [options]
 ops config sso show
 ops config sso disable [options]
 
 Legacy embedded form:
-ops -config sso keycloak --enable --issuer-url URL --jwks-url URL --audience AUDIENCE --required-group GROUP [options]
+ops -config sso keycloak --enable --issuer-url URL --jwks-url URL (--audience AUDIENCE|--client-id CLIENT_ID) --required-group GROUP [options]
 ops -config sso show
 ops -config sso disable [options]
 
@@ -76,8 +80,11 @@ Configure OpenServerless SSO/OIDC integration for admin-api.
 Options:
   --username-claim CLAIM   OIDC username claim. Default: preferred_username
   --groups-claim CLAIM     OIDC groups claim. Default: groups
+  --client-id CLIENT_ID    OIDC client id. Defaults to --audience when omitted
+  --client-secret SECRET   OIDC confidential client secret stored only in Kubernetes Secret
   --namespace NS           Kubernetes namespace. Default: nuvolaris
   --configmap NAME         Kubernetes ConfigMap name. Default: openserverless-sso-config
+  --secret NAME            Kubernetes Secret name. Default: openserverless-sso-secret
   --statefulset NAME       admin-api StatefulSet name. Default: nuvolaris-system-api
   --container NAME         admin-api container name. Default: nuvolaris-system-api
   --no-rollout             Do not restart or wait for admin-api rollout
@@ -120,6 +127,12 @@ func configureKeycloakSSO(configMap ConfigMap, args []string) error {
 		return err
 	}
 
+	if opts.ClientSecret != "" {
+		if err := applySSOSecret(opts); err != nil {
+			return err
+		}
+	}
+
 	if err := patchSSOEnvFrom(opts); err != nil {
 		return err
 	}
@@ -132,6 +145,9 @@ func configureKeycloakSSO(configMap ConfigMap, args []string) error {
 
 	fmt.Println("SSO configuration applied to admin-api.")
 	fmt.Printf("ConfigMap: %s/%s\n", opts.Namespace, opts.ConfigMapName)
+	if opts.ClientSecret != "" {
+		fmt.Printf("Secret: %s/%s\n", opts.Namespace, opts.SecretName)
+	}
 	return nil
 }
 
@@ -148,6 +164,7 @@ func parseKeycloakSSOArgs(args []string) (ssoOptions, error) {
 		NamespaceMaxLength:     "61",
 		Namespace:              defaultSSONamespace,
 		ConfigMapName:          defaultSSOConfigMap,
+		SecretName:             defaultSSOSecret,
 		WorkloadName:           defaultSSOWorkload,
 		ContainerName:          defaultSSOContainer,
 	}
@@ -158,11 +175,14 @@ func parseKeycloakSSOArgs(args []string) (ssoOptions, error) {
 	flags.StringVar(&opts.IssuerURL, "issuer-url", "", "OIDC issuer URL")
 	flags.StringVar(&opts.JWKSURL, "jwks-url", "", "OIDC JWKS URL")
 	flags.StringVar(&opts.Audience, "audience", "", "OIDC audience")
+	flags.StringVar(&opts.ClientID, "client-id", "", "OIDC client id")
+	flags.StringVar(&opts.ClientSecret, "client-secret", "", "OIDC confidential client secret")
 	flags.StringVar(&opts.RequiredGroup, "required-group", "", "required OIDC group")
 	flags.StringVar(&opts.UsernameClaim, "username-claim", opts.UsernameClaim, "OIDC username claim")
 	flags.StringVar(&opts.GroupsClaim, "groups-claim", opts.GroupsClaim, "OIDC groups claim")
 	flags.StringVar(&opts.Namespace, "namespace", opts.Namespace, "Kubernetes namespace")
 	flags.StringVar(&opts.ConfigMapName, "configmap", opts.ConfigMapName, "Kubernetes ConfigMap name")
+	flags.StringVar(&opts.SecretName, "secret", opts.SecretName, "Kubernetes Secret name")
 	flags.StringVar(&opts.WorkloadName, "statefulset", opts.WorkloadName, "admin-api StatefulSet name")
 	flags.StringVar(&opts.ContainerName, "container", opts.ContainerName, "admin-api container name")
 	flags.BoolVar(&opts.NoRollout, "no-rollout", false, "skip rollout restart/status")
@@ -182,8 +202,14 @@ func parseKeycloakSSOArgs(args []string) (ssoOptions, error) {
 	if opts.JWKSURL == "" {
 		return opts, fmt.Errorf("missing --jwks-url")
 	}
+	if opts.ClientID == "" {
+		opts.ClientID = opts.Audience
+	}
 	if opts.Audience == "" {
-		return opts, fmt.Errorf("missing --audience")
+		opts.Audience = opts.ClientID
+	}
+	if opts.Audience == "" {
+		return opts, fmt.Errorf("missing --audience or --client-id")
 	}
 	if opts.RequiredGroup == "" {
 		return opts, fmt.Errorf("missing --required-group")
@@ -194,6 +220,9 @@ func parseKeycloakSSOArgs(args []string) (ssoOptions, error) {
 	if opts.GroupsClaim == "" {
 		return opts, fmt.Errorf("missing --groups-claim")
 	}
+	if opts.SecretName == "" {
+		return opts, fmt.Errorf("missing --secret")
+	}
 	return opts, nil
 }
 
@@ -201,6 +230,7 @@ func parseDisableSSOArgs(args []string) (ssoOptions, error) {
 	opts := ssoOptions{
 		Namespace:     defaultSSONamespace,
 		ConfigMapName: defaultSSOConfigMap,
+		SecretName:    defaultSSOSecret,
 		WorkloadName:  defaultSSOWorkload,
 		ContainerName: defaultSSOContainer,
 	}
@@ -209,6 +239,7 @@ func parseDisableSSOArgs(args []string) (ssoOptions, error) {
 	flags.SetOutput(os.Stderr)
 	flags.StringVar(&opts.Namespace, "namespace", opts.Namespace, "Kubernetes namespace")
 	flags.StringVar(&opts.ConfigMapName, "configmap", opts.ConfigMapName, "Kubernetes ConfigMap name")
+	flags.StringVar(&opts.SecretName, "secret", opts.SecretName, "Kubernetes Secret name")
 	flags.StringVar(&opts.WorkloadName, "statefulset", opts.WorkloadName, "admin-api StatefulSet name")
 	flags.StringVar(&opts.ContainerName, "container", opts.ContainerName, "admin-api container name")
 	flags.BoolVar(&opts.NoRollout, "no-rollout", false, "skip rollout restart/status")
@@ -229,9 +260,12 @@ func saveSSOConfig(configMap ConfigMap, opts ssoOptions) error {
 		"SSO_OIDC_ISSUER_URL":                opts.IssuerURL,
 		"SSO_OIDC_JWKS_URL":                  opts.JWKSURL,
 		"SSO_OIDC_AUDIENCE":                  opts.Audience,
+		"SSO_OIDC_CLIENT_ID":                 opts.ClientID,
 		"SSO_OIDC_REQUIRED_GROUP":            opts.RequiredGroup,
 		"SSO_OIDC_USERNAME_CLAIM":            opts.UsernameClaim,
 		"SSO_OIDC_GROUPS_CLAIM":              opts.GroupsClaim,
+		"SSO_OIDC_CLIENT_SECRET_CONFIGURED":  fmt.Sprintf("%t", opts.ClientSecret != ""),
+		"SSO_CLIENT_MODE":                    ssoClientMode(opts),
 		"SSO_AUTOPROVISION_ON_LOGIN":         fmt.Sprintf("%t", opts.AutoProvision),
 		"SSO_AUTOPROVISION_TIMEOUT_SECONDS":  opts.AutoProvisionTimeout,
 		"SSO_AUTOPROVISION_POLL_SECONDS":     opts.AutoProvisionPoll,
@@ -241,6 +275,7 @@ func saveSSOConfig(configMap ConfigMap, opts ssoOptions) error {
 		"SSO_NAMESPACE_MAX_LENGTH":           opts.NamespaceMaxLength,
 		"SSO_KUBE_NAMESPACE":                 opts.Namespace,
 		"SSO_KUBE_CONFIGMAP":                 opts.ConfigMapName,
+		"SSO_KUBE_SECRET":                    opts.SecretName,
 		"SSO_KUBE_STATEFULSET":               opts.WorkloadName,
 		"SSO_KUBE_CONTAINER":                 opts.ContainerName,
 	}
@@ -262,7 +297,7 @@ func printSSOConfig(configMap ConfigMap) {
 	}
 	sort.Strings(keys)
 	for _, key := range keys {
-		fmt.Printf("%s=%s\n", key, values[key])
+		fmt.Printf("%s=%s\n", key, printableSSOValue(key, values[key]))
 	}
 }
 
@@ -279,6 +314,9 @@ func disableSSO(configMap ConfigMap, args []string) error {
 		return err
 	}
 	if err := deleteSSOConfigMap(opts); err != nil {
+		return err
+	}
+	if err := deleteSSOSecret(opts); err != nil {
 		return err
 	}
 	if !opts.NoRollout {
@@ -308,6 +346,7 @@ func applySSOConfigMap(opts ssoOptions) error {
 		"OIDC_ISSUER_URL":                    opts.IssuerURL,
 		"OIDC_JWKS_URL":                      opts.JWKSURL,
 		"OIDC_AUDIENCE":                      opts.Audience,
+		"OIDC_CLIENT_ID":                     opts.ClientID,
 		"OIDC_REQUIRED_GROUP":                opts.RequiredGroup,
 		"OIDC_USERNAME_CLAIM":                opts.UsernameClaim,
 		"OIDC_GROUPS_CLAIM":                  opts.GroupsClaim,
@@ -336,21 +375,50 @@ func applySSOConfigMap(opts ssoOptions) error {
 	return err
 }
 
+func applySSOSecret(opts ssoOptions) error {
+	obj := map[string]interface{}{
+		"apiVersion": "v1",
+		"kind":       "Secret",
+		"metadata": map[string]string{
+			"name":      opts.SecretName,
+			"namespace": opts.Namespace,
+		},
+		"type": "Opaque",
+		"stringData": map[string]string{
+			"OIDC_CLIENT_SECRET": opts.ClientSecret,
+		},
+	}
+	payload, err := json.Marshal(obj)
+	if err != nil {
+		return err
+	}
+	_, err = runSSOCommand("kubectl", []string{"apply", "-f", "-"}, payload)
+	return err
+}
+
 func patchSSOEnvFrom(opts ssoOptions) error {
+	envFrom := []map[string]interface{}{
+		{
+			"configMapRef": map[string]string{
+				"name": opts.ConfigMapName,
+			},
+		},
+	}
+	if opts.ClientSecret != "" {
+		envFrom = append(envFrom, map[string]interface{}{
+			"secretRef": map[string]string{
+				"name": opts.SecretName,
+			},
+		})
+	}
 	patch := map[string]interface{}{
 		"spec": map[string]interface{}{
 			"template": map[string]interface{}{
 				"spec": map[string]interface{}{
 					"containers": []map[string]interface{}{
 						{
-							"name": opts.ContainerName,
-							"envFrom": []map[string]interface{}{
-								{
-									"configMapRef": map[string]string{
-										"name": opts.ConfigMapName,
-									},
-								},
-							},
+							"name":    opts.ContainerName,
+							"envFrom": envFrom,
 						},
 					},
 				},
@@ -393,12 +461,41 @@ func deleteSSOConfigMap(opts ssoOptions) error {
 	return err
 }
 
+func deleteSSOSecret(opts ssoOptions) error {
+	_, err := runSSOCommand("kubectl", []string{"-n", opts.Namespace, "delete", "secret", opts.SecretName, "--ignore-not-found"}, nil)
+	return err
+}
+
 func rolloutSSOWorkload(opts ssoOptions) error {
 	if _, err := runSSOCommand("kubectl", []string{"-n", opts.Namespace, "rollout", "restart", "statefulset/" + opts.WorkloadName}, nil); err != nil {
 		return err
 	}
 	_, err := runSSOCommand("kubectl", []string{"-n", opts.Namespace, "rollout", "status", "statefulset/" + opts.WorkloadName, "--timeout=180s"}, nil)
 	return err
+}
+
+func ssoClientMode(opts ssoOptions) string {
+	if opts.ClientSecret != "" {
+		return "confidential"
+	}
+	return "public"
+}
+
+func printableSSOValue(key string, value interface{}) interface{} {
+	if isSecretLikeKey(key) {
+		return "<redacted>"
+	}
+	return value
+}
+
+func isSecretLikeKey(key string) bool {
+	lower := strings.ToLower(key)
+	for _, marker := range []string{"secret", "token", "credential", "password"} {
+		if strings.Contains(lower, marker) && !strings.HasSuffix(lower, "_configured") {
+			return true
+		}
+	}
+	return false
 }
 
 func realCommandRunner(name string, args []string, stdin []byte) ([]byte, error) {
