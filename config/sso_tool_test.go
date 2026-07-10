@@ -86,6 +86,37 @@ func TestConfigSSOToolKeycloak(t *testing.T) {
 	require.Equal(t, "61", data["SSO_NAMESPACE_MAX_LENGTH"])
 }
 
+func TestConfigSSOToolKeycloakRollsOutAdminAPIByDefault(t *testing.T) {
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.json")
+	cm, err := NewConfigMapBuilder().WithConfigJson(configPath).Build()
+	require.NoError(t, err)
+
+	var commands []recordedCommand
+	oldRunner := runSSOCommand
+	runSSOCommand = func(name string, args []string, stdin []byte) ([]byte, error) {
+		commands = append(commands, recordedCommand{name: name, args: args, stdin: string(stdin)})
+		return []byte("ok"), nil
+	}
+	defer func() { runSSOCommand = oldRunner }()
+
+	err = ConfigSSOTool(cm, []string{
+		"keycloak",
+		"--enable",
+		"--issuer-url", "http://localhost:8080/realms/openserverless-lab",
+		"--jwks-url", "http://localhost:8080/realms/openserverless-lab/protocol/openid-connect/certs",
+		"--client-id", "openserverless-admin-api",
+		"--required-group", "openserverless-users",
+	})
+	require.NoError(t, err)
+
+	require.Len(t, commands, 4)
+	require.Equal(t, []string{"apply", "-f", "-"}, commands[0].args)
+	require.Equal(t, []string{"-n", "nuvolaris", "patch", "statefulset", "nuvolaris-system-api", "--type=strategic", "-p", commands[1].args[7]}, commands[1].args)
+	require.Equal(t, []string{"-n", "nuvolaris", "rollout", "restart", "statefulset/nuvolaris-system-api"}, commands[2].args)
+	require.Equal(t, []string{"-n", "nuvolaris", "rollout", "status", "statefulset/nuvolaris-system-api", "--timeout=180s"}, commands[3].args)
+}
+
 func TestConfigSSOToolKeycloakWithClientSecret(t *testing.T) {
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "config.json")
@@ -189,4 +220,29 @@ func TestConfigSSOToolDisable(t *testing.T) {
 	require.Len(t, commands, 3)
 	require.Equal(t, []string{"-n", "nuvolaris", "delete", "configmap", "openserverless-sso-config", "--ignore-not-found"}, commands[1].args)
 	require.Equal(t, []string{"-n", "nuvolaris", "delete", "secret", "openserverless-sso-secret", "--ignore-not-found"}, commands[2].args)
+}
+
+func TestConfigSSOToolDisableRollsOutAdminAPIByDefault(t *testing.T) {
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.json")
+	cm, err := NewConfigMapBuilder().WithConfigJson(configPath).Build()
+	require.NoError(t, err)
+
+	var commands []recordedCommand
+	oldRunner := runSSOCommand
+	runSSOCommand = func(name string, args []string, stdin []byte) ([]byte, error) {
+		commands = append(commands, recordedCommand{name: name, args: args, stdin: string(stdin)})
+		return []byte("ok"), nil
+	}
+	defer func() { runSSOCommand = oldRunner }()
+
+	err = ConfigSSOTool(cm, []string{"disable"})
+	require.NoError(t, err)
+
+	require.Len(t, commands, 5)
+	require.Equal(t, []string{"-n", "nuvolaris", "patch", "statefulset", "nuvolaris-system-api", "--type=strategic", "-p", commands[0].args[7]}, commands[0].args)
+	require.Equal(t, []string{"-n", "nuvolaris", "delete", "configmap", "openserverless-sso-config", "--ignore-not-found"}, commands[1].args)
+	require.Equal(t, []string{"-n", "nuvolaris", "delete", "secret", "openserverless-sso-secret", "--ignore-not-found"}, commands[2].args)
+	require.Equal(t, []string{"-n", "nuvolaris", "rollout", "restart", "statefulset/nuvolaris-system-api"}, commands[3].args)
+	require.Equal(t, []string{"-n", "nuvolaris", "rollout", "status", "statefulset/nuvolaris-system-api", "--timeout=180s"}, commands[4].args)
 }
