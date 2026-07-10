@@ -102,15 +102,3 @@ setup() {
     assert_line 'V1=b V2=c'
     run ops sub vars clean
 }
-
-
-
-
-
-ops sub vars save2 V1=a
-
-V1= V2=
-ops sub vars v1v2
-
-
-
