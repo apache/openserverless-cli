@@ -51,5 +51,16 @@ header:
 dependency:
   files:
     - go.mod
-    - package.json 
-
+  licenses:
+    - name: github.com/xi2/xz
+      version: v0.0.0-20171230120015-48954b6210f8
+      license: Unlicense
+    - name: github.com/fatih/color
+      version: v1.17.0
+      license: MIT
+    - name: github.com/go-task/template
+      version: v0.0.0-20240602015157-960e6f576656
+      license: BSD-3-Clause
+    - name: github.com/olekukonko/tablewriter
+      version: v0.0.5
+      license: MIT
