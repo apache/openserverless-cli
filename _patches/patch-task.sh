@@ -21,15 +21,19 @@ cd "$(dirname $0)"
 HERE=$PWD
 SHVER=$(git ls-remote https://github.com/sciabarracom/sh | awk '/refs\/heads\/openserverless/{print $1}')
 STAG="v3.38.0"
-DTAG="v3.38.11"
+DTAG="v3.38.12"
 cd task
 git reset --hard
+git clean -f -d
 go clean -cache -modcache
 git checkout "$STAG" -B openserverless
 mkdir -p cmd/taskmain
 
-sed -i -e 's/func init/func FlagInit/' internal/flags/flags.go
-sed -i -e 's/func init/func FlagInit/' internal/experiments/experiments.go
+echo "*.bak" >>.gitignore
+
+sed -i.bak -e 's/func init/func FlagInit/' internal/flags/flags.go
+sed -i.bak -e 's/func init/func FlagInit/' internal/experiments/experiments.go
+sed -i.bak -e "s/version = .*/version = \"$DTAG\"/" internal/version/version.go
 
 cat cmd/task/task.go \
 | sed -e 's/package main/package taskmain/' \
@@ -70,24 +74,25 @@ func Task(_args []string) (int, error) {
 EOF
 #cp $HERE/task.go cmd/taskmain/task.go
 git add cmd/taskmain/task.go
-find . -name \*.go  | while read file 
-do echo $file 
-   sed -i "s!go-task/task!sciabarracom/task!" $file
-   sed -i 's!mvdan.cc/sh!github.com/sciabarracom/sh!' $file
-   sed -i 's!"Taskfile.!"opsfile.!' $file
-   sed -i 's!task: !ops: !' $file
+find . -name \*.go  | while read file
+do echo $file
+   sed -i.bak "s!go-task/task!sciabarracom/task!" $file
+   sed -i.bak 's!mvdan.cc/sh!github.com/sciabarracom/sh!' $file
+   sed -i.bak 's!"Taskfile.!"opsfile.!' $file
+   sed -i.bak 's!task: !ops: !' $file
 done
-sed -i -e 's/go-task\/task/sciabarracom\/task/' go.mod
-sed -i -e '/mvdan.cc/g' go.mod
+sed -i.bak -e 's/go-task\/task/sciabarracom\/task/' go.mod
+sed -i.bak -e '/mvdan.cc/g' go.mod
+
 go get github.com/sciabarracom/sh/v3@$SHVER
 go mod tidy
-git commit -m "patching sh for ops" -a
-go build 
+go build
 
+git commit -m "patching sh for ops" -a
 git tag $DTAG
-git push origin-auth openserverless -f --tags
+git push origin openserverless -f --tags
 VER=$(git rev-parse HEAD)
 cd ..
 mkdir -p bin
-GOBIN=$HERE/bin go install github.com/sciabarracom/task/v3/cmd/task@$VER 
+GOBIN=$HERE/bin go install github.com/sciabarracom/task/v3/cmd/task@$VER
 
