@@ -26,7 +26,7 @@ setup() {
     run ops -extract
     assert_success
     assert_line --partial "ops -extract file.(zip|tgz|tar[.gz|.bz2|.xz]) target"
-    curl -sL -o7zip.tar.xz https://www.7-zip.org/a/7z2407-linux-x64.tar.xz 
+    curl -fsSL --retry 3 -o 7zip.tar.xz https://www.7-zip.org/a/7z2301-linux-x64.tar.xz
 
     run ops -extract 7zip.tar.xz missing
     assert_failure
