@@ -130,6 +130,8 @@ tasks:
       - task: bats
       - rm -Rf ~/.ops/olaris
       - |
+        unset DEBUG
+        unset TRACE
         unset OPS_BRANCH
         unset OPS_REPO
         unset OPS_ROOT
@@ -150,4 +152,3 @@ tasks:
               python3 difftest.py
         else  python3 difftest.py {{.N}}
         fi
-
