@@ -38,7 +38,7 @@ tasks:
     - git add version.txt branch.txt
     - git commit -m "$(cat version.txt)" || true
     - git tag -f "v$(cat version.txt)"
- 
+
 
   trigger:
     desc: create tag and push triggering a build
@@ -84,7 +84,7 @@ tasks:
       - cp -v ops $HOME/.local/bin
       - |
         if ! which ops | grep $HOME/.local/bin
-        then 
+        then
           echo "$HOME/.local/bin is not in the path - adding it"
           echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.bashrc
           echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.zshrc
@@ -109,9 +109,9 @@ tasks:
       - go clean -testcache -cache
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli
       - go test -count=1 {{.F}} github.com/apache/openserverless-cli/config
-      - go test -count=1 {{.F}} github.com/apache/openserverless-cli/tools  
+      - go test -count=1 {{.F}} github.com/apache/openserverless-cli/tools
       - go test github.com/apache/openserverless-cli/auth
-      
+
 
   bats:
     dir: tests
@@ -130,6 +130,9 @@ tasks:
       - task: bats
       - rm -Rf ~/.ops/olaris
       - |
+        unset OPS_BRANCH
+        unset OPS_REPO
+        unset OPS_ROOT
         if test -z "{{.T}}"
         then bats/bin/bats {{.F}} .
         else bats/bin/bats {{.F}} {{.T}}.bats

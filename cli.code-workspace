@@ -10,7 +10,9 @@
       "activityBar.background": "#28075d",
       "titleBar.activeBackground": "#28075d",
       "titleBar.activeForeground": "#28075d",
-      "statusBar.background": "#28075d"
+      "statusBar.background": "#28075d",
+      "titleBar.inactiveBackground": "#310971",
+      "titleBar.inactiveForeground": "#FDFBFF"
     },
     "go.goroot": "/nix/store/16g3awzjv3341s27hkkkv1vk5dw4206m-go-1.22.5/share/go"
   }

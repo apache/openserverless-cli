@@ -79,6 +79,9 @@ func TestMain(m *testing.M) {
 	workDir, _ = filepath.Abs(wd)
 	homeDir, _ = homedir.Dir()
 	taskDryRun = true
+	os.Unsetenv("OPS_REPO")
+	os.Unsetenv("OPS_BRANCH")
+	os.Unsetenv("OPS_ROOT")
 	os.Exit(m.Run())
 }
 
