@@ -83,10 +83,10 @@ setup() {
 
     run ops -l
     assert_failure
-    assert_line "ops -login <apihost> [<user>]"
+    assert_line "ops -login [options] <apihost> [<user>]"
     run ops -login 
     assert_failure
-    assert_line "ops -login <apihost> [<user>]"
+    assert_line "ops -login [options] <apihost> [<user>]"
 
     run ops -c
     assert_success
@@ -96,4 +96,3 @@ setup() {
     assert_line "ops -config [options] [KEY | KEY=VALUE [KEY=VALUE ...]]"
 
 }
-

@@ -24,12 +24,12 @@ setup() {
 @test "ops -login help" {
     run ops -login
     assert_line "Usage:"
-	assert_line "ops -login <apihost> [<user>]"
+	assert_line "ops -login [options] <apihost> [<user>]"
     assert_line "error: missing apihost"
 	
     run ops -login -h
     assert_line "Usage:"
-    assert_line "ops -login <apihost> [<user>]"
+    assert_line "ops -login [options] <apihost> [<user>]"
 }
 
 @test "ops -login with OPS_PASSWORD env does not prompt for password" {
