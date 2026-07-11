@@ -115,12 +115,19 @@ tasks:
 
   bats:
     dir: tests
+    vars:
+      BATS_CORE_VERSION: v1.13.0
+      BATS_SUPPORT_VERSION: v0.3.0
+      BATS_ASSERT_VERSION: v2.2.4
     cmds:
-    - git clone https://github.com/bats-core/bats-core bats
-    - git clone https://github.com/bats-core/bats-support test_helper/bats-support
-    - git clone https://github.com/bats-core/bats-assert test_helper/bats-assert
+    - rm -Rf bats test_helper/bats-support test_helper/bats-assert
+    - git clone --branch {{.BATS_CORE_VERSION}} --depth 1 https://github.com/bats-core/bats-core bats
+    - git clone --branch {{.BATS_SUPPORT_VERSION}} --depth 1 https://github.com/bats-core/bats-support test_helper/bats-support
+    - git clone --branch {{.BATS_ASSERT_VERSION}} --depth 1 https://github.com/bats-core/bats-assert test_helper/bats-assert
     status:
-    - test -d bats
+    - test "$(git -C bats describe --tags --exact-match 2>/dev/null)" = "{{.BATS_CORE_VERSION}}"
+    - test "$(git -C test_helper/bats-support describe --tags --exact-match 2>/dev/null)" = "{{.BATS_SUPPORT_VERSION}}"
+    - test "$(git -C test_helper/bats-assert describe --tags --exact-match 2>/dev/null)" = "{{.BATS_ASSERT_VERSION}}"
 
   itest:
     aliases: [it]
@@ -150,4 +157,3 @@ tasks:
               python3 difftest.py
         else  python3 difftest.py {{.N}}
         fi
-
