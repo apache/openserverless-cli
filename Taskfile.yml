@@ -59,8 +59,9 @@ tasks:
       - echo building {{.VERSION}}
       - go build  {{.DEBUG}} ./cmd/ops/
     sources:
-      - "*.go"
-      - "*/*.go"
+      - "**/*.go"
+      - go.mod
+      - go.sum
       - version.txt
       - branch.txt
     generates:
@@ -150,4 +151,3 @@ tasks:
               python3 difftest.py
         else  python3 difftest.py {{.N}}
         fi
-
