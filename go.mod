@@ -2,6 +2,8 @@ module github.com/apache/openserverless-cli
 
 go 1.22.5
 
+replace github.com/sciabarracom/task/v3 => github.com/miki3421/task/v3 v3.38.12-0.20260711082633-d9ef04e0a047
+
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/a8m/envsubst v1.4.2
