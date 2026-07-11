@@ -19,6 +19,8 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
+    EXPECTED_VERSION="$(tr -d '\r\n' < ../version.txt)"
+    EXPECTED_BRANCH="$(tr -d '\r\n' < ../branch.txt)"
     ops -reset force
     cd ..
 }
@@ -36,10 +38,10 @@ setup() {
     run ops -help
     assert_line "Tools (use -<tool> -h for help):"
 
-    run ops -v 
-    assert_line --partial "0.1.0" 
-    run ops -version 
-    assert_line --partial "0.1.0"
+    run ops -v
+    assert_line "$EXPECTED_VERSION"
+    run ops -version
+    assert_line "$EXPECTED_VERSION"
  
     run ops action --help
     assert_line  --partial "ops action [command]"
@@ -69,10 +71,10 @@ setup() {
 
     run ops -i
     assert_success
-    assert_line --partial OPS_VERSION: 0.1.0 
-    assert_line "OPS_BRANCH: 0.1.0"
+    assert_line "OPS_VERSION: $EXPECTED_VERSION"
+    assert_line "OPS_BRANCH: $EXPECTED_BRANCH"
     run ops -info
-    assert_line --partial OPS_VERSION: 0.1.0
+    assert_line "OPS_VERSION: $EXPECTED_VERSION"
 
     run ops -u
     assert_success
@@ -96,4 +98,3 @@ setup() {
     assert_line "ops -config [options] [KEY | KEY=VALUE [KEY=VALUE ...]]"
 
 }
-
