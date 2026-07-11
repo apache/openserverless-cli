@@ -107,10 +107,7 @@ tasks:
     cmds:
       - rm -Rf ~/.ops
       - go clean -testcache -cache
-      - go test -count=1 {{.F}} github.com/apache/openserverless-cli
-      - go test -count=1 {{.F}} github.com/apache/openserverless-cli/config
-      - go test -count=1 {{.F}} github.com/apache/openserverless-cli/tools
-      - go test github.com/apache/openserverless-cli/auth
+      - go test -count=1 {{.F}} ./...
 
 
   bats:
@@ -150,4 +147,3 @@ tasks:
               python3 difftest.py
         else  python3 difftest.py {{.N}}
         fi
-
