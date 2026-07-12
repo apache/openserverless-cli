@@ -156,14 +156,6 @@ func TestPlainEmbeddedToolAlias(t *testing.T) {
 	require.False(t, isPlainEmbeddedToolAlias("login"))
 }
 
-func TestIsPlainConfigSSOCommand(t *testing.T) {
-	require.True(t, isPlainConfigSSOCommand([]string{"ops", "config", "sso"}))
-	require.True(t, isPlainConfigSSOCommand([]string{"ops", "config", "sso", "show"}))
-	require.False(t, isPlainConfigSSOCommand([]string{"ops", "config"}))
-	require.False(t, isPlainConfigSSOCommand([]string{"ops", "config", "--help"}))
-	require.False(t, isPlainConfigSSOCommand([]string{"ops", "-config", "sso"}))
-}
-
 func TestConfigValueForDebugRedactsSensitiveValues(t *testing.T) {
 	require.Equal(t, "<redacted>", configValueForDebug("AUTH", "uuid:key"))
 	require.Equal(t, "<redacted>", configValueForDebug("POSTGRES_PASSWORD", "secret"))

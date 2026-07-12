@@ -408,14 +408,6 @@ func Main() {
 
 	args := os.Args
 
-	// Keep the historical `ops config` task surface intact; only the new SSO
-	// subtree is handled by the embedded config tool.
-	if isPlainConfigSSOCommand(args) {
-		fullargs := append([]string{"config"}, args[2:]...)
-		exitCode := executeTools(fullargs, opsHome)
-		os.Exit(exitCode)
-	}
-
 	// first argument with prefix "-" is considered an embedded tool
 	// using "-" or "--" or "-task" invokes the embedded task
 	// CLI: ops -<tool> (embedded tool)
@@ -552,10 +544,6 @@ func wskNamespaceSet(namespace string) error {
 
 func isPlainEmbeddedToolAlias(name string) bool {
 	return false
-}
-
-func isPlainConfigSSOCommand(args []string) bool {
-	return len(args) > 2 && args[1] == "config" && args[2] == "sso"
 }
 
 func runOps(baseDir string, args []string) error {
