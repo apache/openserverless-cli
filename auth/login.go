@@ -92,6 +92,8 @@ You can set OPS_PASSWORD to avoid entering the password interactively.
 When SSO is enabled, set OPS_SSO_LOGIN_FLOW=password or pass --sso-flow password to use
 OIDC password grant instead of the browser/device flow. OPS_SSO_USERNAME can override the
 identity-provider username when it differs from the OpenServerless namespace.
+For backend-managed device flow, [<user>] explicitly requests workspace binding; omit it
+to use the namespace resolved from the authenticated identity.
 
 Options:
   --sso-flow FLOW       SSO login flow: device or password. Default: device
@@ -150,21 +152,26 @@ func LoginCmd() (*LoginResult, error) {
 	passwordLoginURL := apihost + whiskLoginPath
 	oidcLoginURL := apihost + oidcLoginPath
 
-	// try to get the user from the environment
-	user := os.Getenv("OPS_USER")
-	if user == "" {
-		// if env var not set, try to get it from the command line
-		if os.Getenv("OPS_APIHOST") != "" {
-			// if apihost env var was set, treat the first arg as the user
-			if len(args) > 0 {
-				user = args[0]
-			}
-		} else {
-			// if apihost env var was not set, treat the second arg as the user
-			if len(args) > 1 {
-				user = args[1]
-			}
+	// Command-line input is explicit and must take precedence over values that
+	// may have been reloaded into the environment from config.json.
+	user := ""
+	if os.Getenv("OPS_APIHOST") != "" {
+		// if apihost env var was set, treat the first arg as the user
+		if len(args) > 0 {
+			user = args[0]
 		}
+	} else {
+		// if apihost env var was not set, treat the second arg as the user
+		if len(args) > 1 {
+			user = args[1]
+		}
+	}
+	// Only a positional user is an explicit workspace binding for the device
+	// flow. Environment values may have been reloaded from config.json by the
+	// parent CLI process and therefore cannot prove user intent for this login.
+	requestedNamespace := user
+	if user == "" {
+		user = os.Getenv("OPS_USER")
 	}
 	if user == "" {
 		user = os.Getenv("OPSDEV_USERNAME")
@@ -183,7 +190,7 @@ func LoginCmd() (*LoginResult, error) {
 			user = loginFromCredentials(creds, user)
 		} else if useBackendManagedOIDCDeviceFlow() {
 			fmt.Println("Logging in", apihost, "with backend-managed OIDC")
-			creds, err = backendManagedOIDCDeviceLogin(apihost, user)
+			creds, err = backendManagedOIDCDeviceLogin(apihost, requestedNamespace)
 			if err != nil {
 				return nil, err
 			}

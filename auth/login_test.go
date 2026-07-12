@@ -249,8 +249,9 @@ func TestLoginCmd(t *testing.T) {
 		t.Setenv("SSO_CLIENT_MODE", "confidential")
 		t.Setenv("OPS_SSO_DISABLE_BROWSER", "true")
 		t.Setenv("OPS_PASSWORD", "")
-		t.Setenv("OPS_USER", "")
+		t.Setenv("OPS_USER", "stale-workspace")
 		t.Setenv("OPS_APIHOST", "")
+		t.Setenv("OPSDEV_USERNAME", "nuvolaris")
 
 		pollCount := 0
 		mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -272,6 +273,7 @@ func TestLoginCmd(t *testing.T) {
 				var payload map[string]string
 				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
 				require.Equal(t, "flow-1", payload["flow_id"])
+				require.Equal(t, "michelem", payload["namespace"])
 				pollCount++
 				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"michelem"}`))
 			default:
@@ -287,6 +289,49 @@ func TestLoginCmd(t *testing.T) {
 		require.Equal(t, "michelem", loginResult.Login)
 		require.Equal(t, "oidc-auth", loginResult.Auth)
 		require.Equal(t, 1, pollCount)
+	})
+
+	t.Run("SSO confidential client ignores persisted OPSDEV workspace", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("OPS_HOME", tmpDir)
+		t.Setenv("SSO_ENABLED", "true")
+		t.Setenv("SSO_CLIENT_MODE", "confidential")
+		t.Setenv("OPS_SSO_DISABLE_BROWSER", "true")
+		t.Setenv("OPS_PASSWORD", "")
+		t.Setenv("OPS_USER", "stale-ops-user")
+		t.Setenv("OPS_APIHOST", "")
+		t.Setenv("OPSDEV_USERNAME", "nuvolaris")
+
+		mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case "/system/api/v1/auth/oidc/device/start":
+				var payload map[string]string
+				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
+				require.NotContains(t, payload, "namespace")
+				_, _ = w.Write([]byte(`{
+					"flow_id": "flow-1",
+					"verification_uri_complete": "http://localhost/device",
+					"expires_in": 10,
+					"interval": 1
+				}`))
+			case "/system/api/v1/auth/oidc/device/poll":
+				var payload map[string]string
+				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
+				require.Equal(t, "flow-1", payload["flow_id"])
+				require.NotContains(t, payload, "namespace")
+				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"michelem"}`))
+			default:
+				http.NotFound(w, r)
+			}
+		}))
+		defer mockServer.Close()
+
+		os.Args = []string{"login", mockServer.URL}
+		loginResult, err := LoginCmd()
+		require.NoError(t, err)
+		require.NotNil(t, loginResult)
+		require.Equal(t, "michelem", loginResult.Login)
+		require.Equal(t, "oidc-auth", loginResult.Auth)
 	})
 
 	t.Run("SSO password flow uses backend managed password grant", func(t *testing.T) {
