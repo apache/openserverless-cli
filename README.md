@@ -23,14 +23,17 @@
 Quick install in Linux, MacOS and Windows with WSL or GitBash:
 
 ```
-curl -sL bit.ly/get-ops | bash
+curl -sL n7s.co/get-ops | bash
 ````
 
-**To be implemented**: quick install in Windows with PowerShell
+Quick install in Windows with PowerShell
 
 ```
-irm bit.ly/get-ops-exe | iex
+irm n7s.co/get-ops-exe | iex
 ````
+
+**NOTE** in windows there are some features like the ide that requires you use a devcontainer 
+with `ops ide devcontainer`
 
 # What is `ops`?
 
