@@ -179,7 +179,7 @@ func TestConfigTool(t *testing.T) {
 		err := ConfigTool(cm)
 		require.NoError(t, err)
 
-		os.Args = []string{"config", "FOO_BAR=\"\""}
+		os.Args = []string{"config", "FOO_BAR="}
 		err = ConfigTool(cm)
 		require.NoError(t, err)
 
@@ -304,10 +304,10 @@ func Test_buildKeyValueMap(t *testing.T) {
 			err:   fmt.Errorf("invalid key-value pair: %q", "foo"),
 		},
 		{
-			name:  "Invalid key-value pair",
+			name:  "Empty value",
 			input: []string{"foo="},
-			want:  nil,
-			err:   fmt.Errorf("invalid key-value pair: %q", "foo="),
+			want:  keyValues{"foo": ""},
+			err:   nil,
 		},
 	}
 

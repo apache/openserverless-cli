@@ -136,6 +136,19 @@ setup() {
     assert_line 'ANOTHER=123'
 }
 
+@test "set an empty config value" {
+    run rm -f ~/.ops/config.json
+    run ops -config OPSDEV_USERNAME=previous-workspace
+    assert_success
+
+    run ops -config OPSDEV_USERNAME=
+    assert_success
+
+    run ops -config OPSDEV_USERNAME
+    assert_success
+    assert_output ""
+}
+
 @test "remove config values" {
     run rm -f ~/.ops/config.json
     run ops -config KEY=VALUE ANOTHER=123

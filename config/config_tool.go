@@ -162,7 +162,7 @@ func (kv *keyValues) Set(value string) error {
 	key := parts[0]
 	val := parts[1]
 
-	if key == "" || val == "" {
+	if key == "" {
 		return fmt.Errorf("invalid key-value pair: %q", value)
 	}
 
