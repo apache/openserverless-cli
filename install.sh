@@ -57,32 +57,50 @@ OPSROOT="https://raw.githubusercontent.com/apache/openserverless-task/0.1.0/opsr
 if test -z "$VERSION"
 then VERSION="$(curl -sL $OPSROOT | sed -n 's/^.*"version": "\([^"]*\)",/\1/p')"
 fi
+if test -z "$VERSION"
+then echo "cannot determine version from $OPSROOT - exiting"
+     exit 1
+fi
 FILE="openserverless-cli_${VERSION}$SUFFIX$EXT"
 URL="https://github.com/apache/openserverless-cli/releases/download/v$VERSION/$FILE"
 
 mkdir -p ~/.local/bin
-curl -sL "$URL" -o "/tmp/$FILE"
-
-if test "$EXT" == ".zip"
-then 
-   unzip -o -d ~/.local/bin "/tmp/$FILE" "$CMD"
-else 
-   tar xzvf "/tmp/$FILE" -C ~/.local/bin "$CMD"
+if ! curl -fsSL "$URL" -o "/tmp/$FILE"
+then echo "cannot download ops from:"
+     echo "$URL"
+     exit 1
 fi
 
+if test "$EXT" = ".zip"
+then
+   unzip -o -d ~/.local/bin "/tmp/$FILE" "$CMD"
+else
+   tar xzvf "/tmp/$FILE" -C ~/.local/bin "$CMD"
+fi
+rm -f "/tmp/$FILE"
 
-if ! test -e  ~/.local/bin/ops*
+
+if ! test -e  ~/.local/bin/"$CMD"
 then echo "cannot install ops - download and unpack it in a folder in the path from here:"
      echo "$URL"
      exit 1
 fi
 
-if ! which ops | grep $HOME/.local/bin
-then 
-  echo "$HOME/.local/bin is not in the path - adding it"
-  echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.bashrc
-  echo 'export PATH="$HOME/.local/bin:$PATH"' >>$HOME/.zshrc
-  echo please restart your terminal to find ops in your path
-fi
+case ":$PATH:" in
+*":$HOME/.local/bin:"*)
+   : # already in PATH
+;;
+*)
+   echo "$HOME/.local/bin is not in the path - adding it"
+   LINE='export PATH="$HOME/.local/bin:$PATH"'
+   for RC in "$HOME/.bashrc" "$HOME/.zshrc"
+   do
+      if ! test -e "$RC" || ! grep -qF "$LINE" "$RC"
+      then echo "$LINE" >>"$RC"
+      fi
+   done
+   echo please restart your terminal to find ops in your path
+;;
+esac
 
 exit 0
