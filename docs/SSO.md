@@ -17,11 +17,13 @@
   ~ under the License.
   -->
 
-# SSO configuration ownership
+# Legacy embedded SSO configuration ownership
 
-`ops config sso keycloak --enable` manages the following configuration. The
-resource names can be changed with `--configmap`, `--secret`, `--statefulset`,
-and `--container`.
+The public `ops config sso` command is supplied by the task repository. The
+embedded `ops -config sso` form remains temporarily available for compatibility
+with already published scripts and installations. It manages the following
+configuration. Resource names can be changed with `--configmap`, `--secret`,
+`--statefulset`, and `--container`.
 
 ## Kubernetes resources
 

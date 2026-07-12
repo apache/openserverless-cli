@@ -122,16 +122,12 @@ type ssoOptions struct {
 
 func printSSOUsage() {
 	fmt.Print(`Usage:
-ops config sso keycloak --enable --issuer-url URL --jwks-url URL (--audience AUDIENCE|--client-id CLIENT_ID) --required-group GROUP [options]
-ops config sso show
-ops config sso disable [options]
-
-Legacy embedded form:
 ops -config sso keycloak --enable --issuer-url URL --jwks-url URL (--audience AUDIENCE|--client-id CLIENT_ID) --required-group GROUP [options]
 ops -config sso show
 ops -config sso disable [options]
 
-Configure OpenServerless SSO/OIDC integration for admin-api.
+Legacy compatibility tool for OpenServerless SSO/OIDC integration.
+The public command surface is provided by the ops config sso task.
 
 Managed Kubernetes resources:
   ConfigMap NAME            OIDC_* and SSO_* values created by this command
