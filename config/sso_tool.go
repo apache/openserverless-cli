@@ -40,6 +40,62 @@ type commandRunner func(name string, args []string, stdin []byte) ([]byte, error
 
 var runSSOCommand commandRunner = realCommandRunner
 
+type ssoEnvFromSource struct {
+	Prefix       string                   `json:"prefix,omitempty"`
+	ConfigMapRef *ssoLocalObjectReference `json:"configMapRef,omitempty"`
+	SecretRef    *ssoLocalObjectReference `json:"secretRef,omitempty"`
+}
+
+type ssoLocalObjectReference struct {
+	Name     string `json:"name"`
+	Optional *bool  `json:"optional,omitempty"`
+}
+
+type ssoWorkload struct {
+	Spec struct {
+		Template struct {
+			Spec struct {
+				Containers []struct {
+					Name    string             `json:"name"`
+					EnvFrom []ssoEnvFromSource `json:"envFrom,omitempty"`
+				} `json:"containers"`
+			} `json:"spec"`
+		} `json:"template"`
+	} `json:"spec"`
+}
+
+type jsonPatchOperation struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value,omitempty"`
+}
+
+var managedLocalSSOKeys = []string{
+	"SSO_ENABLED",
+	"SSO_PROVIDER",
+	"SSO_OIDC_ISSUER_URL",
+	"SSO_OIDC_JWKS_URL",
+	"SSO_OIDC_AUDIENCE",
+	"SSO_OIDC_CLIENT_ID",
+	"SSO_OIDC_REQUIRED_GROUP",
+	"SSO_OIDC_USERNAME_CLAIM",
+	"SSO_OIDC_GROUPS_CLAIM",
+	"SSO_OIDC_CLIENT_SECRET_CONFIGURED",
+	"SSO_CLIENT_MODE",
+	"SSO_AUTOPROVISION_ON_LOGIN",
+	"SSO_AUTOPROVISION_TIMEOUT_SECONDS",
+	"SSO_AUTOPROVISION_POLL_SECONDS",
+	"SSO_AUTOPROVISION_DEFAULT_SERVICES",
+	"SSO_NAMESPACE_PRESERVE_VALID",
+	"SSO_NAMESPACE_HASH_LENGTH",
+	"SSO_NAMESPACE_MAX_LENGTH",
+	"SSO_KUBE_NAMESPACE",
+	"SSO_KUBE_CONFIGMAP",
+	"SSO_KUBE_SECRET",
+	"SSO_KUBE_STATEFULSET",
+	"SSO_KUBE_CONTAINER",
+}
+
 type ssoOptions struct {
 	IssuerURL              string
 	JWKSURL                string
@@ -76,6 +132,14 @@ ops -config sso show
 ops -config sso disable [options]
 
 Configure OpenServerless SSO/OIDC integration for admin-api.
+
+Managed Kubernetes resources:
+  ConfigMap NAME            OIDC_* and SSO_* values created by this command
+  Secret NAME               OIDC_CLIENT_SECRET, when --client-secret is used
+  admin-api container       Exact envFrom references to those two resources
+
+The command does not manage direct env entries, other envFrom references,
+volumes, volumeMounts, or workload annotations. Disable leaves them unchanged.
 
 Options:
   --username-claim CLAIM   OIDC username claim. Default: preferred_username
@@ -133,7 +197,7 @@ func configureKeycloakSSO(configMap ConfigMap, args []string) error {
 		}
 	}
 
-	if err := patchSSOEnvFrom(opts); err != nil {
+	if _, err := reconcileSSOEnvFrom(opts, true); err != nil {
 		return err
 	}
 
@@ -310,7 +374,8 @@ func disableSSO(configMap ConfigMap, args []string) error {
 	if err := removeLocalSSOConfig(configMap); err != nil {
 		return err
 	}
-	if err := removeSSOEnvFrom(opts); err != nil {
+	workloadChanged, err := reconcileSSOEnvFrom(opts, false)
+	if err != nil {
 		return err
 	}
 	if err := deleteSSOConfigMap(opts); err != nil {
@@ -319,8 +384,8 @@ func disableSSO(configMap ConfigMap, args []string) error {
 	if err := deleteSSOSecret(opts); err != nil {
 		return err
 	}
-	if !opts.NoRollout {
-		if err := rolloutSSOWorkload(opts); err != nil {
+	if !opts.NoRollout && workloadChanged {
+		if err := waitForSSOWorkloadRollout(opts); err != nil {
 			return err
 		}
 	}
@@ -330,8 +395,9 @@ func disableSSO(configMap ConfigMap, args []string) error {
 }
 
 func removeLocalSSOConfig(configMap ConfigMap) error {
-	for key := range configMap.Flatten() {
-		if !strings.HasPrefix(key, "SSO_") {
+	values := configMap.Flatten()
+	for _, key := range managedLocalSSOKeys {
+		if _, exists := values[key]; !exists {
 			continue
 		}
 		if err := configMap.Delete(key); err != nil && !strings.Contains(err.Error(), "does not exist in config.json") {
@@ -396,64 +462,138 @@ func applySSOSecret(opts ssoOptions) error {
 	return err
 }
 
-func patchSSOEnvFrom(opts ssoOptions) error {
-	envFrom := []map[string]interface{}{
-		{
-			"configMapRef": map[string]string{
-				"name": opts.ConfigMapName,
-			},
-		},
+func reconcileSSOEnvFrom(opts ssoOptions, enabled bool) (bool, error) {
+	output, err := runSSOCommand("kubectl", []string{
+		"-n", opts.Namespace,
+		"get", "statefulset", opts.WorkloadName,
+		"-o", "json",
+	}, nil)
+	if err != nil {
+		return false, err
 	}
-	if opts.ClientSecret != "" {
-		envFrom = append(envFrom, map[string]interface{}{
-			"secretRef": map[string]string{
-				"name": opts.SecretName,
-			},
+
+	var workload ssoWorkload
+	if err := json.Unmarshal(output, &workload); err != nil {
+		return false, fmt.Errorf("decode statefulset %s/%s: %w", opts.Namespace, opts.WorkloadName, err)
+	}
+
+	containerIndex := -1
+	var current []ssoEnvFromSource
+	for index, container := range workload.Spec.Template.Spec.Containers {
+		if container.Name == opts.ContainerName {
+			containerIndex = index
+			current = container.EnvFrom
+			break
+		}
+	}
+	if containerIndex < 0 {
+		return false, fmt.Errorf("container %s not found in statefulset %s/%s", opts.ContainerName, opts.Namespace, opts.WorkloadName)
+	}
+
+	desired := make([]ssoEnvFromSource, 0, 2)
+	if enabled {
+		desired = append(desired, ssoEnvFromSource{
+			ConfigMapRef: &ssoLocalObjectReference{Name: opts.ConfigMapName},
+		})
+		if opts.ClientSecret != "" {
+			desired = append(desired, ssoEnvFromSource{
+				SecretRef: &ssoLocalObjectReference{Name: opts.SecretName},
+			})
+		}
+	}
+
+	seenDesired := make(map[string]bool)
+	removeIndexes := make([]int, 0)
+	for index, source := range current {
+		key, managed := managedSSOEnvFromKey(source, opts)
+		if !managed {
+			continue
+		}
+		if enabled && desiredSSOEnvFromKey(key, desired) && !seenDesired[key] {
+			seenDesired[key] = true
+			continue
+		}
+		removeIndexes = append(removeIndexes, index)
+	}
+
+	missing := make([]ssoEnvFromSource, 0, len(desired))
+	for _, source := range desired {
+		key, _ := managedSSOEnvFromKey(source, opts)
+		if !seenDesired[key] {
+			missing = append(missing, source)
+		}
+	}
+	if len(removeIndexes) == 0 && len(missing) == 0 {
+		return false, nil
+	}
+
+	basePath := fmt.Sprintf("/spec/template/spec/containers/%d/envFrom", containerIndex)
+	operations := make([]jsonPatchOperation, 0, len(removeIndexes)+len(missing))
+	for index := len(removeIndexes) - 1; index >= 0; index-- {
+		removeIndex := removeIndexes[index]
+		operations = append(operations, jsonPatchOperation{
+			Op:    "test",
+			Path:  fmt.Sprintf("%s/%d", basePath, removeIndex),
+			Value: current[removeIndex],
+		})
+		operations = append(operations, jsonPatchOperation{
+			Op:   "remove",
+			Path: fmt.Sprintf("%s/%d", basePath, removeIndex),
 		})
 	}
-	patch := map[string]interface{}{
-		"spec": map[string]interface{}{
-			"template": map[string]interface{}{
-				"spec": map[string]interface{}{
-					"containers": []map[string]interface{}{
-						{
-							"name":    opts.ContainerName,
-							"envFrom": envFrom,
-						},
-					},
-				},
-			},
-		},
+	if len(current) == 0 {
+		operations = append(operations, jsonPatchOperation{
+			Op:    "add",
+			Path:  basePath,
+			Value: missing,
+		})
+	} else {
+		for _, source := range missing {
+			operations = append(operations, jsonPatchOperation{
+				Op:    "add",
+				Path:  basePath + "/-",
+				Value: source,
+			})
+		}
 	}
-	payload, err := json.Marshal(patch)
+
+	payload, err := json.Marshal(operations)
 	if err != nil {
-		return err
+		return false, err
 	}
-	_, err = runSSOCommand("kubectl", []string{"-n", opts.Namespace, "patch", "statefulset", opts.WorkloadName, "--type=strategic", "-p", string(payload)}, nil)
-	return err
+	_, err = runSSOCommand("kubectl", []string{
+		"-n", opts.Namespace,
+		"patch", "statefulset", opts.WorkloadName,
+		"--type=json", "-p", string(payload),
+	}, nil)
+	return err == nil, err
 }
 
-func removeSSOEnvFrom(opts ssoOptions) error {
-	patch := map[string]interface{}{
-		"spec": map[string]interface{}{
-			"template": map[string]interface{}{
-				"spec": map[string]interface{}{
-					"containers": []map[string]interface{}{
-						{
-							"name":    opts.ContainerName,
-							"envFrom": nil,
-						},
-					},
-				},
-			},
-		},
+func managedSSOEnvFromKey(source ssoEnvFromSource, opts ssoOptions) (string, bool) {
+	if source.Prefix != "" {
+		return "", false
 	}
-	payload, err := json.Marshal(patch)
-	if err != nil {
-		return err
+	if source.ConfigMapRef != nil && source.SecretRef == nil &&
+		source.ConfigMapRef.Name == opts.ConfigMapName && source.ConfigMapRef.Optional == nil {
+		return "configmap:" + opts.ConfigMapName, true
 	}
-	_, err = runSSOCommand("kubectl", []string{"-n", opts.Namespace, "patch", "statefulset", opts.WorkloadName, "--type=strategic", "-p", string(payload)}, nil)
-	return err
+	if source.SecretRef != nil && source.ConfigMapRef == nil &&
+		source.SecretRef.Name == opts.SecretName && source.SecretRef.Optional == nil {
+		return "secret:" + opts.SecretName, true
+	}
+	return "", false
+}
+
+func desiredSSOEnvFromKey(key string, desired []ssoEnvFromSource) bool {
+	for _, source := range desired {
+		if source.ConfigMapRef != nil && key == "configmap:"+source.ConfigMapRef.Name {
+			return true
+		}
+		if source.SecretRef != nil && key == "secret:"+source.SecretRef.Name {
+			return true
+		}
+	}
+	return false
 }
 
 func deleteSSOConfigMap(opts ssoOptions) error {
@@ -470,6 +610,11 @@ func rolloutSSOWorkload(opts ssoOptions) error {
 	if _, err := runSSOCommand("kubectl", []string{"-n", opts.Namespace, "rollout", "restart", "statefulset/" + opts.WorkloadName}, nil); err != nil {
 		return err
 	}
+	_, err := runSSOCommand("kubectl", []string{"-n", opts.Namespace, "rollout", "status", "statefulset/" + opts.WorkloadName, "--timeout=180s"}, nil)
+	return err
+}
+
+func waitForSSOWorkloadRollout(opts ssoOptions) error {
 	_, err := runSSOCommand("kubectl", []string{"-n", opts.Namespace, "rollout", "status", "statefulset/" + opts.WorkloadName, "--timeout=180s"}, nil)
 	return err
 }
@@ -525,8 +670,24 @@ func realCommandRunner(name string, args []string, stdin []byte) ([]byte, error)
 		}
 		return output, fmt.Errorf("%s %s failed: %w", name, strings.Join(args, " "), err)
 	}
-	if len(output) > 0 {
+	if len(output) > 0 && !isSSOWorkloadJSONGet(name, args) {
 		fmt.Print(string(output))
 	}
 	return output, nil
+}
+
+func isSSOWorkloadJSONGet(name string, args []string) bool {
+	if name != "kubectl" {
+		return false
+	}
+	for index := 0; index+1 < len(args); index++ {
+		if args[index] == "get" && index+2 < len(args) && args[index+1] == "statefulset" {
+			for outputIndex := index + 2; outputIndex+1 < len(args); outputIndex++ {
+				if args[outputIndex] == "-o" && args[outputIndex+1] == "json" {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
