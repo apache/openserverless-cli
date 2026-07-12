@@ -249,9 +249,9 @@ func TestLoginCmd(t *testing.T) {
 		t.Setenv("SSO_CLIENT_MODE", "confidential")
 		t.Setenv("OPS_SSO_DISABLE_BROWSER", "true")
 		t.Setenv("OPS_PASSWORD", "")
-		t.Setenv("OPS_USER", "stale-workspace")
+		t.Setenv("OPS_USER", "previous-ops-workspace")
 		t.Setenv("OPS_APIHOST", "")
-		t.Setenv("OPSDEV_USERNAME", "nuvolaris")
+		t.Setenv("OPSDEV_USERNAME", "previous-ide-workspace")
 
 		pollCount := 0
 		mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -260,7 +260,7 @@ func TestLoginCmd(t *testing.T) {
 				require.Equal(t, http.MethodPost, r.Method)
 				var payload map[string]string
 				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
-				require.Equal(t, "michelem", payload["namespace"])
+				require.Equal(t, "requested-workspace", payload["namespace"])
 				_, _ = w.Write([]byte(`{
 					"flow_id": "flow-1",
 					"user_code": "ABCD-EFGH",
@@ -273,20 +273,20 @@ func TestLoginCmd(t *testing.T) {
 				var payload map[string]string
 				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
 				require.Equal(t, "flow-1", payload["flow_id"])
-				require.Equal(t, "michelem", payload["namespace"])
+				require.Equal(t, "requested-workspace", payload["namespace"])
 				pollCount++
-				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"michelem"}`))
+				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"requested-workspace"}`))
 			default:
 				http.NotFound(w, r)
 			}
 		}))
 		defer mockServer.Close()
 
-		os.Args = []string{"login", mockServer.URL, "michelem"}
+		os.Args = []string{"login", mockServer.URL, "requested-workspace"}
 		loginResult, err := LoginCmd()
 		require.NoError(t, err)
 		require.NotNil(t, loginResult)
-		require.Equal(t, "michelem", loginResult.Login)
+		require.Equal(t, "requested-workspace", loginResult.Login)
 		require.Equal(t, "oidc-auth", loginResult.Auth)
 		require.Equal(t, 1, pollCount)
 	})
@@ -298,9 +298,9 @@ func TestLoginCmd(t *testing.T) {
 		t.Setenv("SSO_CLIENT_MODE", "confidential")
 		t.Setenv("OPS_SSO_DISABLE_BROWSER", "true")
 		t.Setenv("OPS_PASSWORD", "")
-		t.Setenv("OPS_USER", "stale-ops-user")
+		t.Setenv("OPS_USER", "previous-ops-workspace")
 		t.Setenv("OPS_APIHOST", "")
-		t.Setenv("OPSDEV_USERNAME", "nuvolaris")
+		t.Setenv("OPSDEV_USERNAME", "previous-ide-workspace")
 
 		mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			switch r.URL.Path {
@@ -319,7 +319,7 @@ func TestLoginCmd(t *testing.T) {
 				require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
 				require.Equal(t, "flow-1", payload["flow_id"])
 				require.NotContains(t, payload, "namespace")
-				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"michelem"}`))
+				_, _ = w.Write([]byte(`{"AUTH":"oidc-auth","NAMESPACE":"authenticated-workspace"}`))
 			default:
 				http.NotFound(w, r)
 			}
@@ -330,7 +330,7 @@ func TestLoginCmd(t *testing.T) {
 		loginResult, err := LoginCmd()
 		require.NoError(t, err)
 		require.NotNil(t, loginResult)
-		require.Equal(t, "michelem", loginResult.Login)
+		require.Equal(t, "authenticated-workspace", loginResult.Login)
 		require.Equal(t, "oidc-auth", loginResult.Auth)
 	})
 

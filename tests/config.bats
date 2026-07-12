@@ -138,7 +138,7 @@ setup() {
 
 @test "set an empty config value" {
     run rm -f ~/.ops/config.json
-    run ops -config OPSDEV_USERNAME=nuvolaris
+    run ops -config OPSDEV_USERNAME=previous-workspace
     assert_success
 
     run ops -config OPSDEV_USERNAME=
