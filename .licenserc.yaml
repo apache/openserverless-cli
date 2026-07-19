@@ -47,9 +47,10 @@ header:
     - DISCLAIMER
     - LICENSE
     - NOTICE
+    - '_patches/**'
 
 dependency:
   files:
     - go.mod
-    - package.json 
+    - package.json
 
