@@ -43,15 +43,20 @@ func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 	}
 
 	opsBranchDir := joinpath(opsDir, branch)
-	localDir, err := homedir.Expand(joinpath(opsBranchDir, "olaris"))
+	tasksDir := findTasksDir(opsBranchDir)
+	alreadyCloned := tasksDir != ""
+	if !alreadyCloned {
+		tasksDir = TASKS_DIR
+	}
+	localDir, err := homedir.Expand(joinpath(opsBranchDir, tasksDir))
 	if err != nil {
 		return "", err
 	}
 	debug("localDir", localDir)
 
 	// Updating existing tools
-	if exists(opsBranchDir, "olaris") {
-		trace("Updating olaris in", opsBranchDir)
+	if alreadyCloned {
+		trace("Updating", tasksDir, "in", opsBranchDir)
 		fmt.Println("Updating tasks...")
 		r, err := git.PlainOpen(localDir)
 		if err != nil {
@@ -96,7 +101,7 @@ func downloadTasksFromGitHub(force bool, silent bool) (string, error) {
 	_, err = git.PlainClone(localDir, false, cloneOpts)
 	if err != nil {
 		os.RemoveAll(opsBranchDir)
-		warn(fmt.Sprintf("failed to clone olaris on branch '%s'", branch))
+		warn(fmt.Sprintf("failed to clone %s on branch '%s'", tasksDir, branch))
 		return "", err
 	}
 
@@ -176,19 +181,23 @@ func locateOpsRoot(cur string) (string, error) {
 		return search, nil
 	}
 
-	// is there  olaris folder?
-	olaris := joinpath(cur, "olaris")
-	if exists(cur, "olaris") && exists(olaris, OPSFILE) && exists(olaris, OPSROOT) {
-		trace("found sub olaris:", olaris)
-		return olaris, nil
+	// is there a tasks folder (olaris or oplugins)?
+	for _, name := range TASKS_DIRS {
+		tasks := joinpath(cur, name)
+		if exists(cur, name) && exists(tasks, OPSFILE) && exists(tasks, OPSROOT) {
+			trace("found sub tasks:", tasks)
+			return tasks, nil
+		}
 	}
 
-	// is there an olaris folder in ~/.ops ?
-	opsOlarisDir := fmt.Sprintf("~/.ops/%s/olaris", getOpsBranch())
-	olaris, err = homedir.Expand(opsOlarisDir)
-	if err == nil && exists(olaris, OPSFILE) && exists(olaris, OPSROOT) {
-		trace("found sub", opsOlarisDir, ":", olaris)
-		return olaris, nil
+	// is there a tasks folder in ~/.ops ?
+	for _, name := range TASKS_DIRS {
+		opsTasksDir := fmt.Sprintf("~/.ops/%s/%s", getOpsBranch(), name)
+		tasks, err := homedir.Expand(opsTasksDir)
+		if err == nil && exists(tasks, OPSFILE) && exists(tasks, OPSROOT) {
+			trace("found sub", opsTasksDir, ":", tasks)
+			return tasks, nil
+		}
 	}
 
 	return "", fmt.Errorf("cannot find opsfiles, download them with ops -update")
@@ -231,9 +240,9 @@ func checkOperatorVersion(opsRootConfig map[string]interface{}) error {
 	return cmd.Run()
 }
 
-func setOpsOlarisHash(olarisDir string) error {
-	trace("setOpsOlarisHash", olarisDir)
-	r, err := git.PlainOpen(olarisDir)
+func setOpsOlarisHash(tasksDir string) error {
+	trace("setOpsOlarisHash", tasksDir)
+	r, err := git.PlainOpen(tasksDir)
 	if err != nil {
 		return err
 	}
@@ -241,8 +250,19 @@ func setOpsOlarisHash(olarisDir string) error {
 	if err != nil {
 		return err
 	}
-	debug("olaris hash", h.Hash().String())
-	os.Setenv("OPS_OLARIS", h.Hash().String())
-	trace("OPS_OLARIS", os.Getenv("OPS_OLARIS"))
+	debug("tasks hash", h.Hash().String())
+	os.Setenv("OPS_TASKS", h.Hash().String())
+	trace("OPS_TASKS", os.Getenv("OPS_TASKS"))
 	return nil
+}
+
+// findTasksDir returns the name of the tasks folder (olaris or oplugins)
+// existing under base, or "" if none is found
+func findTasksDir(base string) string {
+	for _, name := range TASKS_DIRS {
+		if isDir(joinpath(base, name)) {
+			return name
+		}
+	}
+	return ""
 }

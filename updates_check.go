@@ -31,14 +31,15 @@ const LATESTCHECK = ".latestcheck"
 
 func checkUpdated(base string, timeInterval time.Duration) {
 	trace("checkUpdated", base)
-	olaris_base := joinpath(base, getOpsBranch())
-	latest_check_path := joinpath(olaris_base, LATESTCHECK)
-	olaris_path := joinpath(olaris_base, "olaris")
+	tasks_base := joinpath(base, getOpsBranch())
+	latest_check_path := joinpath(tasks_base, LATESTCHECK)
 
-	// if no olaris dir, no update check
-	if !isDir(olaris_path) {
+	// if no tasks dir (olaris or oplugins), no update check
+	tasks_dir := findTasksDir(tasks_base)
+	if tasks_dir == "" {
 		return
 	}
+	tasks_path := joinpath(tasks_base, tasks_dir)
 
 	// get info on latest_check file
 	file, ok := checkLatestFile(latest_check_path)
@@ -55,8 +56,8 @@ func checkUpdated(base string, timeInterval time.Duration) {
 		// touch latest_check file ONLY if enough time has passed
 		touchLatestCheckFile(latest_check_path)
 
-		// check if remote olaris is newer
-		if checkRemoteOlarisNewer(olaris_path) {
+		// check if remote tasks are newer
+		if checkRemoteOlarisNewer(tasks_path) {
 			fmt.Print("New tasks available! Use 'ops -update' to update.\n\n")
 		} else {
 			fmt.Print("Tasks up to date!\n\n")
@@ -94,29 +95,29 @@ func touchLatestCheckFile(latest_check_path string) {
 	}
 }
 
-func checkRemoteOlarisNewer(olaris_path string) bool {
-	trace("checkRemoteOlarisNewer", olaris_path)
-	repo, err := git.PlainOpen(olaris_path)
+func checkRemoteOlarisNewer(tasks_path string) bool {
+	trace("checkRemoteOlarisNewer", tasks_path)
+	repo, err := git.PlainOpen(tasks_path)
 	if err != nil {
-		warn("failed to check olaris folder", err)
+		warn("failed to check tasks folder", err)
 		return false
 	}
 
 	localRef, err := repo.Head()
 	if err != nil {
-		warn("failed to check olaris folder", err)
+		warn("failed to check tasks folder", err)
 		return false
 	}
 
 	remote, err := repo.Remote("origin")
 	if err != nil {
-		warn("failed to check remote olaris", err)
+		warn("failed to check remote tasks", err)
 		return false
 	}
 	_ = remote.Fetch(&git.FetchOptions{})
 	remoteRefs, err := remote.List(&git.ListOptions{})
 	if err != nil {
-		warn("failed to check remote olaris", err)
+		warn("failed to check remote tasks", err)
 		return false
 	}
 

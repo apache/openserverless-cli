@@ -100,7 +100,7 @@ func info() {
 	fmt.Println("OPS_ROOT:", os.Getenv("OPS_ROOT"))
 	fmt.Println("OPS_REPO:", os.Getenv("OPS_REPO"))
 	fmt.Println("OPS_PWD:", os.Getenv("OPS_PWD"))
-	fmt.Println("OPS_OLARIS:", os.Getenv("OPS_OLARIS"))
+	fmt.Println("OPS_TASKS:", os.Getenv("OPS_TASKS"))
 	fmt.Println("OPS_ROOT_PLUGIN:", os.Getenv("OPS_ROOT_PLUGIN"))
 	//fmt.Println("OPS_TOOLS:", os.Getenv("OPS_TOOLS"))
 	//fmt.Println("OPS_COREUTILS:", os.Getenv("OPS_COREUTILS"))
@@ -203,7 +203,7 @@ func executeTools(args []string, opsHome string) int {
 			log.Fatalf("error: %v", err)
 		}
 		if err := setOpsOlarisHash(dir); err != nil {
-			log.Fatal("unable to set OPS_OLARIS...", err.Error())
+			log.Fatal("unable to set OPS_TASKS...", err.Error())
 		}
 		return 0
 
@@ -370,13 +370,13 @@ func Main() {
 	// OPS_REPO && OPS_ROOT_PLUGIN
 	getOpsRepo()
 	setOpsRootPluginEnv()
-	// Check if olaris exists. If not, download tasks
-	olarisDir, err := getOpsRoot()
+	// Check if the tasks folder exists. If not, download tasks
+	tasksDir, err := getOpsRoot()
 	if err != nil {
-		olarisDir := joinpath(joinpath(opsHome, getOpsBranch()), "olaris")
-		if !isDir(olarisDir) {
+		opsBranchDir := joinpath(opsHome, getOpsBranch())
+		if findTasksDir(opsBranchDir) == "" {
 			log.Println("Welcome to ops! Setting up...")
-			olarisDir, err = pullTasks(true, true)
+			tasksDir, err = pullTasks(true, true)
 			if err != nil {
 				log.Fatalf("cannot locate or download OPS_ROOT: %s", err.Error())
 			}
@@ -385,12 +385,12 @@ func Main() {
 				os.Exit(0)
 			}
 		} else {
-			// check if olaris was recently updated
+			// check if the tasks were recently updated
 			checkUpdated(opsHome, 24*time.Hour)
 		}
 	}
-	if err = setOpsOlarisHash(olarisDir); err != nil {
-		os.Setenv("OPS_OLARIS", "<local>")
+	if err = setOpsOlarisHash(tasksDir); err != nil {
+		os.Setenv("OPS_TASKS", "<local>")
 	}
 
 	// set the enviroment variables from the config
@@ -448,7 +448,7 @@ func parseInvokeArgs(rest []string) []string {
 	return args
 }
 
-// getRootDirOrExit returns the olaris dir or exits (Fatal) if not found
+// getRootDirOrExit returns the tasks dir or exits (Fatal) if not found
 func getRootDirOrExit() string {
 	dir, err := getOpsRoot()
 	if err != nil {

@@ -92,11 +92,11 @@ setup() {
 
 @test "ops -plugin with wrong name" {
     run ops -plugin https://github.com/giusdp/olari
-    assert_line "error: plugin repository must be a https url and plugin must start with 'olaris-'"
+    assert_line "error: plugin repository must be a https url and plugin must start with 'oplugins-' or 'olaris-'"
     assert_failure
 
     run ops -plugin olaris-test
-    assert_line "error: plugin repository must be a https url and plugin must start with 'olaris-'"
+    assert_line "error: plugin repository must be a https url and plugin must start with 'oplugins-' or 'olaris-'"
     assert_failure
 }
 
