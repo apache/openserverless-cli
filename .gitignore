@@ -41,3 +41,6 @@ _patch/bin/task
 _patch/bin/gosh
 _patch/bin/wsk
 _patch/bin/openwhisk-wskdeploy
+
+# release archives built by dist.sh
+dist/

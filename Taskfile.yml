@@ -40,13 +40,30 @@ tasks:
     - git tag -f "v$(cat version.txt)"
  
 
-  trigger:
-    desc: create tag and push triggering a build
+  ci:
+    aliases: [trigger]
+    desc: create tag and push it, triggering the release build in GitHub Actions
     prompt: did you commit everyting?
     cmds:
     - git diff --exit-code
     - task: tag
     - git push origin main --tags
+
+  dist:
+    desc: build one release archive (GOOS=<os> GOARCH=<arch>, defaults to host)
+    cmds:
+    - ./dist.sh
+
+  dist-all:
+    desc: build the release archives for all supported platforms into dist/
+    cmds:
+    - rm -rf dist
+    - GOOS=linux   GOARCH=amd64 ./dist.sh
+    - GOOS=linux   GOARCH=arm64 ./dist.sh
+    - GOOS=darwin  GOARCH=arm64 ./dist.sh
+    - GOOS=windows GOARCH=amd64 ./dist.sh
+    - cd dist && sha256sum *.tar.gz *.zip > "openserverless-cli_$(cat ../version.txt)_checksums.txt"
+    - ls -l dist
 
   rebuild:
     - rm -f ops
@@ -137,6 +154,7 @@ tasks:
 
   clean:
     - rm ops || true
+    - rm -rf dist
     - go clean -cache -modcache -testcache -fuzzcache
 
   utestdiff:

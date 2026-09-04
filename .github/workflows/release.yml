@@ -23,35 +23,98 @@ on:
       - "v*"
     branches-ignore:
       - "*"
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  goreleaser:
+
+  # Tests and license compliance run before anything is published.
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Check Dependencies' License
-        uses: apache/skywalking-eyes/dependency@main      # always prefer to use a revision instead of `main`.
+        uses: apache/skywalking-eyes/dependency@main
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '>=1.22.5'
+          go-version-file: go.mod
       - name: Run Tests
         run: |
-             ls -l
-             sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
-             task install
-             source ~/.bashrc
-             ops -version
-             task tests
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+          sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+          task install
+          export PATH="$HOME/.local/bin:$PATH"
+          ops -version
+          task tests
+
+  # Cross compile every supported platform and upload one archive each.
+  # Building is pure `go build`: the version is taken from the embedded
+  # version.txt, so no linker flags and no external release tooling.
+  build:
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          distribution: goreleaser
-          version: '~> v2'
-          args: release --clean
+          go-version-file: go.mod
+      - name: Build archive
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: ./dist.sh
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
+
+  # Collect the per-platform archives, checksum them together and publish.
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download archives
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: dist-*
+          merge-multiple: true
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum *.tar.gz *.zip > "openserverless-cli_$(cat ../version.txt)_checksums.txt"
+          ls -l
+      - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --generate-notes \
+            dist/*
