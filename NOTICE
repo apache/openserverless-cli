@@ -4,3 +4,145 @@ Copyright 2024 The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
+===============================================================================
+THIRD-PARTY ATTRIBUTIONS
+===============================================================================
+
+The Apache OpenServerless CLI ("ops") is written in Go and is distributed as a
+statically linked binary. It therefore redistributes, in compiled form, the Go
+modules enumerated in the appendix of the accompanying LICENSE file, which also
+reproduces the full text of every one of their licenses.
+
+All of those dependencies are licensed under permissive licenses that the
+Apache Software Foundation classifies as "Category A", and are therefore
+compatible with the Apache License, Version 2.0. No dependency is licensed
+under a reciprocal or otherwise incompatible license (GPL, LGPL, AGPL, MPL,
+CDDL, EPL, SSPL or similar). The distribution of licenses is:
+
+    MIT               48 modules
+    BSD-3-Clause      21 modules
+    Apache-2.0        15 modules
+    BSD-2-Clause       6 modules
+    ISC                1 module
+    Public Domain      1 module
+    ---------------------------
+    TOTAL             92 modules
+
+-------------------------------------------------------------------------------
+Required notices from bundled Apache License, Version 2.0 dependencies
+-------------------------------------------------------------------------------
+
+This product bundles the following software, which carries its own NOTICE that
+is reproduced here as required by section 4(d) of the Apache License, Version
+2.0.
+
+Apache OpenWhisk Client Go (github.com/apache/openwhisk-client-go)
+Copyright 2016-2021 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+---
+
+Apache OpenWhisk Command-line Interface (CLI)
+(github.com/sciabarracom/openwhisk-cli, a fork of
+github.com/apache/openwhisk-cli)
+Copyright 2016-2021 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+---
+
+Apache OpenWhisk Wskdeploy
+(github.com/sciabarracom/openwhisk-wskdeploy, a fork of
+github.com/apache/openwhisk-wskdeploy)
+Copyright 2016-2021 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+---
+
+Skeema Knownhosts (github.com/skeema/knownhosts)
+Copyright 2024 Skeema LLC and the Skeema Knownhosts authors
+
+Licensed under the Apache License, Version 2.0.
+
+---
+
+gopkg.in/yaml.v2
+Copyright 2011-2016 Canonical Ltd.
+
+Licensed under the Apache License, Version 2.0. Portions of this software (the
+files ported from the C library "libyaml") are covered by an MIT license,
+Copyright (c) 2006-2010 Kirill Simonov. See the LICENSE file for details.
+
+---
+
+gopkg.in/yaml.v3
+Copyright (c) 2011-2019 Canonical Ltd.
+
+Licensed under the Apache License, Version 2.0. Portions of this software (the
+files ported from the C library "libyaml") are covered by an MIT license,
+Copyright (c) 2006-2010 Kirill Simonov. See the LICENSE file for details.
+
+-------------------------------------------------------------------------------
+Other bundled Apache License, Version 2.0 dependencies
+-------------------------------------------------------------------------------
+
+The following bundled modules are licensed under the Apache License, Version
+2.0 and do not ship a NOTICE file of their own:
+
+    github.com/cloudfoundry/jibber_jabber
+    github.com/dominikbraun/graph
+    github.com/go-git/go-billy/v5
+    github.com/go-git/go-git/v5
+    github.com/golang/groupcache
+    github.com/Masterminds/goutils
+    github.com/pjbgf/sha1cd
+    github.com/spf13/cobra
+    github.com/xanzy/ssh-agent
+
+-------------------------------------------------------------------------------
+Bundled software under other Category A licenses
+-------------------------------------------------------------------------------
+
+This product bundles software under the MIT, BSD 2-Clause, BSD 3-Clause and ISC
+licenses, as well as software dedicated to the public domain. The complete list
+of those modules, together with the verbatim text of each of their licenses and
+their copyright notices, is provided in the appendix of the accompanying LICENSE
+file.
+
+Notable attributions among them:
+
+  * github.com/go-task/template, github.com/Ladicle/tabwriter,
+    github.com/ProtonMail/go-crypto and the golang.org/x/... modules contain
+    code from the Go project.
+    Copyright (c) 2009 The Go Authors. All rights reserved. (BSD-3-Clause)
+
+  * github.com/xi2/xz is a modified version of XZ Embedded
+    (http://tukaani.org/xz/embedded.html), written by Michael Cross,
+    Lasse Collin and/or Igor Pavlov and placed in the public domain.
+
+  * github.com/sciabarracom/task/v3 is a fork of github.com/go-task/task.
+    Copyright (c) 2016 Andrey Nering (MIT)
+
+  * github.com/sciabarracom/sh/v3 is a fork of mvdan.cc/sh.
+    Copyright (c) 2016, Daniel Martí. All rights reserved. (BSD-3-Clause)
+
+  * github.com/nuvolaris/goawk is a fork of github.com/benhoyt/goawk.
+    Copyright (c) 2022 Ben Hoyt (MIT)
+
+  * github.com/nuvolaris/gron is a fork of github.com/tomnomnom/gron.
+    Copyright (c) 2016 Tom Hudson (MIT)
+
+  * github.com/nuvolaris/jj is a fork of github.com/tidwall/jj.
+    Copyright (c) 2016 Josh Baker (MIT)
+
+  * github.com/nuvolaris/go-replace is a fork of
+    github.com/webdevops/go-replace.
+    Copyright (c) 2017 WebDevOps (MIT)
+
+  * github.com/nuvolaris/envsubst is a fork of github.com/a8m/envsubst.
+    Copyright (c) 2017 envsubst contributors (MIT)
