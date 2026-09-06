@@ -19,7 +19,7 @@ version: "3"
 
 vars:
   BASEVER: "0.9.0"
-  VARIANT: "SNAPSHOT"
+  SUFFIX: "-snapshot"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
   DEBUG: ""
@@ -33,7 +33,7 @@ tasks:
     desc: tag the cli to generate the build
     cmds:
     - git tag -d $(git tag)
-    - echo "{{.BASEVER}}-$(date +%y%m%d%H%M).{{.VARIANT}}" >version.txt
+    - echo "{{.BASEVER}}-$(date +%y%m%d%H%M){{.SUFFIX}}" >version.txt
     - echo "{{.BASEVER}}" >branch.txt
     - git add version.txt branch.txt
     - git commit -m "$(cat version.txt)" || true
