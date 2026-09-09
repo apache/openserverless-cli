@@ -223,7 +223,7 @@ func downloadPrereq(name string, version string) error {
 		fmt.Printf("downloading %s %s\n", name, version)
 		touch(bindir, name)
 	} else {
-		fmt.Printf("ensuring prerequisite %s %s\n", name, version)
+		fmt.Fprintf(os.Stderr, "ensuring prerequisite %s %s\n", name, version)
 		execPrereqTask(bindir, name)
 		// check if file and version exists
 
