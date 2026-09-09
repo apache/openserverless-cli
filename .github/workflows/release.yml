@@ -43,9 +43,13 @@ jobs:
         with:
           go-version: '>=1.22.5'
       - name: Setup upstream repo
-        run: echo "$OPS_REPO" >repo.txt
+        run: |
+          if test -n "$CUSTOM_REPO"
+          then echo "$CUSTOM_REPO" >repo.txt
+          else echo "CUSTOM_REPO not set, keeping repo.txt: $(cat repo.txt)"
+          fi
         env:
-          OPS_REPO: ${{vars.OPS_REPO}}
+          CUSTOM_REPO: ${{vars.CUSTOM_REPO}}
       - name: Build and Test CLI
         run: |
              ls -l
@@ -80,9 +84,13 @@ jobs:
         with:
           go-version: '>=1.22.5'
       - name: Setup upstream repo
-        run: echo "$OPS_REPO" >repo.txt
+        run: |
+          if test -n "$CUSTOM_REPO"
+          then echo "$CUSTOM_REPO" >repo.txt
+          else echo "CUSTOM_REPO not set, keeping repo.txt: $(cat repo.txt)"
+          fi
         env:
-          OPS_REPO: ${{vars.OPS_REPO}}
+          CUSTOM_REPO: ${{vars.CUSTOM_REPO}}
       - name: Build and package
         env:
           CGO_ENABLED: "0"
@@ -98,7 +106,7 @@ jobs:
           else BIN=ops
           fi
           go build -o dist/"$BASE"/$BIN ./cmd/ops
-          cp LICENSE NOTICE DISCLAIMER README.md dist/"$BASE"/
+          cp LICENSE NOTICE DISCLAIMER dist/"$BASE"/
           cd dist
           if test "$GOOS" = "windows"
           then zip -r "$BASE.zip" "$BASE"
