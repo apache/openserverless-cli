@@ -114,7 +114,7 @@ jobs:
           fi
           rm -rf "$BASE"
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist-${{ matrix.goos }}-${{ matrix.goarch }}
           path: dist/*
@@ -127,7 +127,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: dist
           pattern: dist-*
@@ -140,7 +140,7 @@ jobs:
           sha256sum * >"${PROJECT_NAME}_${VERSION}_checksums.txt"
           ls -l
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: dist/*
           fail_on_unmatched_files: true
