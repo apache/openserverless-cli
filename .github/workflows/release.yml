@@ -27,8 +27,11 @@ on:
 permissions:
   contents: write
 
+env:
+  PROJECT_NAME: openserverless-cli
+
 jobs:
-  goreleaser:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,11 +54,87 @@ jobs:
              source ~/.bashrc
              ops -version
              task tests
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up Go
+        uses: actions/setup-go@v6
         with:
-          distribution: goreleaser
-          version: '~> v2'
-          args: release --clean
+          go-version: '>=1.22.5'
+      - name: Setup upstream repo
+        run: echo "$OPS_REPO" >repo.txt
+        env:
+          OPS_REPO: ${{vars.OPS_REPO}}
+      - name: Build and package
+        env:
+          CGO_ENABLED: "0"
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          set -e
+          VERSION="$(cat version.txt)"
+          BASE="${PROJECT_NAME}_${VERSION}_${GOOS}_${GOARCH}"
+          mkdir -p dist/"$BASE"
+          if test "$GOOS" = "windows"
+          then BIN=ops.exe
+          else BIN=ops
+          fi
+          go build -o dist/"$BASE"/$BIN ./cmd/ops
+          cp LICENSE NOTICE DISCLAIMER README.md dist/"$BASE"/
+          cd dist
+          if test "$GOOS" = "windows"
+          then zip -r "$BASE.zip" "$BASE"
+          else tar czf "$BASE.tar.gz" "$BASE"
+          fi
+          rm -rf "$BASE"
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: dist-*
+          merge-multiple: true
+      - name: Generate checksums
+        run: |
+          set -e
+          VERSION="$(cat version.txt)"
+          cd dist
+          sha256sum * >"${PROJECT_NAME}_${VERSION}_checksums.txt"
+          ls -l
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -55,10 +55,10 @@ func Example_download() {
 	// Output:
 	// Cloning tasks...
 	// Tasks downloaded successfully
-	// 1 <nil> /home/.ops/0.1.0/olaris
+	// 1 <nil> /home/.ops/0.1.0/oplugins
 	// Updating tasks...
 	// Tasks are already up to date!
-	// 2 <nil> /home/.ops/0.1.0/olaris
+	// 2 <nil> /home/.ops/0.1.0/oplugins
 }
 
 func Example_locate_root() {

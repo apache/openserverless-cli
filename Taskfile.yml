@@ -19,7 +19,8 @@ version: "3"
 
 vars:
   BRANCH: "0.9.0"
-  VARIANT: "snapshot"
+  VARIANT: "incubating"
+  SUFFIX: "-snapshot"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
   DEBUG: ""
@@ -36,17 +37,16 @@ tasks:
         sh: date '+%y %m %d %H %M' | awk '{printf "%s%s%02d%s%02d\n", $1, substr("abcdefghijkl",$2+0,1), $3, substr("abcdefghijklmnopqrstuvwx",$4+1,1), $5}'
     cmds:
     - |
-      if test -n "$OPS_REPO"
-      then echo "$OPS_REPO" >repo.txt
-      else echo using OPS_REPO=$(cat repo.txt)
+      if test -n "$CUSTOM_OPS_REPO"
+      then echo "$CUSTOM_OPS_REPO" >repo.txt
+      else echo using CUSTOM_OPS_REPO=$(cat repo.txt)
       fi
-    - echo "{{.BRANCH}}-{{.TS}}.{{.VARIANT}}" >version.txt
+    - echo "{{.BRANCH}}-{{.VARIANT}}+{{.TS}}{{.SUFFIX}}" >version.txt
     - echo "{{.BRANCH}}" >branch.txt
     - git tag | xargs git tag -d
     - git add version.txt branch.txt repo.txt
     - git commit -m "$(cat version.txt)" || true
     - git tag -f "v$(cat version.txt)"
-
 
   ci:
     desc: create tag and push triggering a build
@@ -138,7 +138,7 @@ tasks:
     dir: tests
     cmds:
       - task: bats
-      - rm -Rf ~/.ops/olaris
+      - rm -Rf ~/.ops/oplugins ~/.ops/olaris
       - |
         unset DEBUG
         unset TRACE
