@@ -60,13 +60,13 @@ func printPluginUsage() {
 	fmt.Println(`Usage: ops -plugin <repo-url>
 
 Install/update plugins from a remote repository.
-The name of the repository must start with 'olaris-'.`)
+The name of the repository must start with 'oplugins-' (or the legacy 'olaris-').`)
 }
 
 func downloadPluginTasksFromRepo(repo string) error {
 	isNameValid, repoName := checkGitRepo(repo)
 	if !isNameValid {
-		return fmt.Errorf("plugin repository must be a https url and plugin must start with 'olaris-'")
+		return fmt.Errorf("plugin repository must be a https url and plugin must start with 'oplugins-' or 'olaris-'")
 	}
 
 	pluginDir, err := homedir.Expand("~/.ops/" + repoName)
@@ -128,9 +128,10 @@ func checkGitRepo(url string) (bool, string) {
 	parts := strings.Split(url, "/")
 	repoName := parts[len(parts)-1]
 
-	// Check if the repository name matches the pattern "https://...olaris-*"
+	// Check if the repository name matches the pattern "https://...oplugins-*"
+	// or the legacy "https://...olaris-*"
 	matchProtocol, _ := regexp.MatchString(`^https://.*$`, url)
-	matchName, _ := regexp.MatchString(`^olaris-.*$`, repoName)
+	matchName := hasPluginPrefix(repoName)
 
 	if matchName && matchProtocol {
 		return true, repoName
@@ -147,7 +148,7 @@ func printPluginsHelp() error {
 	return nil
 }
 
-// GetOpsRootPlugins returns the map with all the olaris-*/opsroot.json files
+// GetOpsRootPlugins returns the map with all the olaris-*/oplugins-*/opsroot.json files
 // in the local and ~/.ops folders, pointed by their plugin names.
 // If the same plugin is found in both folders, the one in the local folder
 // is used.
@@ -188,16 +189,14 @@ func findTaskInPlugins(plg string) (string, error) {
 
 	// check that plg is the suffix of a folder name in plgs.local
 	for _, path := range plgs.local {
-		folder := filepath.Base(path)
-		if strings.TrimPrefix(folder, "olaris-") == plg {
+		if getPluginName(path) == plg {
 			return path, nil
 		}
 	}
 
 	// check that plg is the suffix of a folder name in plgs.ops
 	for _, path := range plgs.ops {
-		folder := filepath.Base(path)
-		if strings.TrimPrefix(folder, "olaris-") == plg {
+		if getPluginName(path) == plg {
 			return path, nil
 		}
 	}
@@ -205,7 +204,7 @@ func findTaskInPlugins(plg string) (string, error) {
 	return "", &TaskNotFoundErr{input: plg}
 }
 
-// plugins struct holds the list of local and ~/.ops olaris-* folders
+// plugins struct holds the list of local and ~/.ops olaris-*/oplugins-* folders
 type plugins struct {
 	local []string
 	ops   []string
@@ -213,45 +212,58 @@ type plugins struct {
 
 func newPlugins() (*plugins, error) {
 	localDir := os.Getenv("OPS_ROOT_PLUGIN")
-	localOlarisFolders := make([]string, 0)
-	opsOlarisFolders := make([]string, 0)
 
-	// Search in directory (localDir/olaris-*)
-	dir := filepath.Join(localDir, "olaris-*")
-	olarisFolders, err := filepath.Glob(dir)
+	// Search in directory (localDir/olaris-*, localDir/oplugins-*)
+	localPluginFolders, err := globPluginFolders(localDir)
 	if err != nil {
 		return nil, err
 	}
 
-	// filter all folders that are do not contain opsfile.yaml
-	for _, folder := range olarisFolders {
-		if !isDir(folder) || !exists(folder, OPSFILE) {
-			continue
-		}
-		localOlarisFolders = append(localOlarisFolders, folder)
-	}
-
-	// Search in ~/.ops/olaris-*
+	// Search in ~/.ops/olaris-*, ~/.ops/oplugins-*
 	opsHome, err := homedir.Expand("~/.ops")
 	if err != nil {
 		return nil, err
 	}
 
-	olarisOpsFolders, err := filepath.Glob(filepath.Join(opsHome, "olaris-*"))
+	opsPluginFolders, err := globPluginFolders(opsHome)
 	if err != nil {
 		return nil, err
 	}
-	for _, folder := range olarisOpsFolders {
-		if !isDir(folder) || !exists(folder, OPSFILE) {
-			continue
-		}
-		opsOlarisFolders = append(opsOlarisFolders, folder)
-	}
 
 	return &plugins{
-		local: localOlarisFolders,
-		ops:   opsOlarisFolders,
+		local: localPluginFolders,
+		ops:   opsPluginFolders,
 	}, nil
+}
+
+// globPluginFolders returns the folders in base matching any of the plugin
+// prefixes and containing an opsfile
+func globPluginFolders(base string) ([]string, error) {
+	result := make([]string, 0)
+	for _, prefix := range PLUGIN_PREFIXES {
+		folders, err := filepath.Glob(filepath.Join(base, prefix+"*"))
+		if err != nil {
+			return nil, err
+		}
+		// filter all folders that do not contain opsfile.yaml
+		for _, folder := range folders {
+			if !isDir(folder) || !exists(folder, OPSFILE) {
+				continue
+			}
+			result = append(result, folder)
+		}
+	}
+	return result, nil
+}
+
+// hasPluginPrefix tells whether name starts with one of the plugin prefixes
+func hasPluginPrefix(name string) bool {
+	for _, prefix := range PLUGIN_PREFIXES {
+		if strings.HasPrefix(name, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *plugins) print() {
@@ -278,10 +290,15 @@ func (p *plugins) print() {
 }
 
 // getPluginName returns the plugin name from the plugin path, removing the
-// olaris- prefix
+// olaris- or oplugins- prefix
 func getPluginName(plg string) string {
-	// remove olaris- prefix
-	plgName := strings.TrimPrefix(filepath.Base(plg), "olaris-")
+	// remove the plugin prefix
+	plgName := filepath.Base(plg)
+	for _, prefix := range PLUGIN_PREFIXES {
+		if strings.HasPrefix(plgName, prefix) {
+			return strings.TrimPrefix(plgName, prefix)
+		}
+	}
 	return plgName
 
 }

@@ -75,8 +75,8 @@ See below for details
 
 When you run `ops [<args>...]` it will first look for its `ops` root.
 
-The `olaris` root is a folder with two files inside: `opsfile.yml` (a yaml taskfile) and `opsroot.json` (a json file
-with release information).
+The `ops` root is a folder with two files inside: `opsfile.yml` (a yaml taskfile) and `opsroot.json` (a json file
+with release information). It is named `oplugins` (the legacy name `olaris` is still accepted).
 
 The first step is to locate the root folder. The algorithm to find the tools is the following.
 
@@ -85,9 +85,10 @@ The first step is to locate the root folder. The algorithm to find the tools is 
 2. Then it will look in the current folder if there is a `opsfile.yml`. If there is, it will also look
    for `opsroot.json`. If it is not there, it will go up one level looking for a directory with `opsfile.yml`
    and `opstools.json`, and selects it as the `ops` root.
-3. If there is not a `opsfile.yml` it will look for a folder called `olaris` with both a `opsfile.yml`
-   and `opstools.json` in it and will select it as the `ops` root.
-4. Then it will look in `~/.ops` if there is an `olaris` folder with `opsfile.yml` and `opsroot.json`.
+3. If there is not a `opsfile.yml` it will look for a folder called `oplugins` (or the legacy `olaris`) with both a
+   `opsfile.yml` and `opstools.json` in it and will select it as the `ops` root.
+4. Then it will look in `~/.ops` if there is an `oplugins` (or the legacy `olaris`) folder with `opsfile.yml`
+   and `opsroot.json`.
 
 ### Download Tasks
 
@@ -103,8 +104,8 @@ with the environment variable `OPS_REPO`.
 The branch to use is defined at build time. It is noramlly named as the base version of the CLI. It can be overriden
 with the enviroment variable `OPS_BRANCH`.
 
-When you run `ops -update`, if there is not a `~/.ops/<branch>/olaris` it will clone the current branch, otherwise it
-will update it.
+When you run `ops -update`, if there is not a `~/.ops/<branch>/oplugins` nor a `~/.ops/<branch>/olaris` it will clone
+the current branch into `~/.ops/<branch>/oplugins`, otherwise it will update the existing one.
 
 ## How `ops` execute tasks
 
@@ -203,7 +204,8 @@ The following environment variables are always set and you **can override** them
   usually the base version (without the patch level). Check `branch.txt` for the current value
 - `OPS_ROOT` is the folder where `ops` looks for its tasks. If not defined, if will follow the algorithm described
   before to finding it locally. Otherwise download it from GitHub, git clones or git updates the `$OPS_REPO` in
-  the `$OPS_BRANCH` and store it is `$OPS_HOME/$OPS_BRANCH/olaris`.
+  the `$OPS_BRANCH` and store it is `$OPS_HOME/$OPS_BRANCH/oplugins` (an existing legacy
+  `$OPS_HOME/$OPS_BRANCH/olaris` is used and updated instead, if present).
 - `OPS_BIN` is the folder where `ops` looks for binaries (external command line tools). If not defined, it defaults
   to `~/.ops/{{.OS}}-{{.ARCH}}/bin`. All the prerequisites are downloaded in this directory. It is automatically added
   to the PATH at the beginning when executing opsfiles.
@@ -218,7 +220,7 @@ The following environment variables are always set and you **can override** them
   where  `ops` is located.
 - `OPS_PORT` is the port where `ops` will run embedded web server for the configurator. If not defined, it defaults
   to `9678`.
-- `OPS_OLARIS` holds the head commit hash of the used olaris repo. If it is a local version its value is `<local>`. You
+- `OPS_TASKS` holds the head commit hash of the used tasks repo. If it is a local version its value is `<local>`. You
   can see the hash with `ops -info`.
 
 ## Special purpose environment variables

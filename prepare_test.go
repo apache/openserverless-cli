@@ -83,5 +83,5 @@ func Test_setOpsOlarisHash(t *testing.T) {
 	dir, _ := downloadTasksFromGitHub(true, true)
 	err := setOpsOlarisHash(dir)
 	require.NoError(t, err)
-	require.NotEmpty(t, os.Getenv("OPS_OLARIS"))
+	require.NotEmpty(t, os.Getenv("OPS_TASKS"))
 }

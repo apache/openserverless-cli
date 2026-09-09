@@ -37,6 +37,6 @@ setup() {
     assert_line "OPS_PWD: $WD"
     assert_line "OPS_ROOT: $WD/olaris"
     assert_line "OPS_TMP: $HOME/.ops/tmp"
-    assert_line --partial "OPS_OLARIS: "
+    assert_line --partial "OPS_TASKS: "
     assert_success
 }

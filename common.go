@@ -38,6 +38,17 @@ const DOCOPTS_MD = "docopts.md"
 const PREREQ = "prereq.yml"
 const CONFIGFILE = "config.json"
 
+// names of the folders holding the tasks, in lookup order
+// the legacy "olaris" name is still accepted for existing checkouts
+var TASKS_DIRS = []string{"oplugins", "olaris"}
+
+// name of the folder used when downloading the tasks
+const TASKS_DIR = "oplugins"
+
+// prefixes of the plugin folders, in lookup order
+// the legacy "olaris-" prefix is still accepted for existing plugins
+var PLUGIN_PREFIXES = []string{"oplugins-", "olaris-"}
+
 // branch where download tasks
 // defaults to test - will be changed in compilation
 
