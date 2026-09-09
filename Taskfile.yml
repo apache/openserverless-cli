@@ -20,6 +20,7 @@ version: "3"
 vars:
   BRANCH: "0.9.0"
   VARIANT: "incubating"
+  SUFFIX: "-snapshot"
   VERSION:
     sh: git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD
   DEBUG: ""
@@ -31,24 +32,26 @@ tasks:
 
   tag:
     desc: tag the cli to generate the build
+    vars:
+      TS:
+        sh: date '+%y %m %d %H %M' | awk '{printf "%s%s%02d%s%02d\n", $1, substr("abcdefghijkl",$2+0,1), $3, substr("abcdefghijklmnopqrstuvwx",$4+1,1), $5}'
     cmds:
-    - test -n "$OPS_REPO" || { echo "OPS_REPO env var undefined " ; exit 1; }
-    - echo "$OPS_REPO" >repo.txt
-    - git tag | xargs git tag -d
-    - echo "{{.BRANCH}}-$(date +%y%m%d%H%M).{{.VARIANT}}" >version.txt
+    - |
+      if test -n "$CUSTOM_OPS_REPO"
+      then echo "$CUSTOM_OPS_REPO" >repo.txt
+      else echo using CUSTOM_OPS_REPO=$(cat repo.txt)
+      fi
+    - echo "{{.BRANCH}}-{{.VARIANT}}+{{.TS}}{{.SUFFIX}}" >version.txt
     - echo "{{.BRANCH}}" >branch.txt
-    - git add version.txt branch.txt
+    - git tag | xargs git tag -d
+    - git add version.txt branch.txt repo.txt
     - git commit -m "$(cat version.txt)" || true
     - git tag -f "v$(cat version.txt)"
 
-
-  trigger:
+  ci:
     desc: create tag and push triggering a build
-    prompt: did you commit everyting?
     cmds:
-    - git diff --exit-code
-    - task: tag
-    - git push origin main --tags
+    - git push origin --tags
 
   rebuild:
     - rm -f ops
@@ -135,7 +138,7 @@ tasks:
     dir: tests
     cmds:
       - task: bats
-      - rm -Rf ~/.ops/olaris
+      - rm -Rf ~/.ops/oplugins ~/.ops/olaris
       - |
         unset DEBUG
         unset TRACE

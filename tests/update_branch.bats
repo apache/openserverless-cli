@@ -25,11 +25,11 @@ setup() {
     export LC_ALL=en_US.UTF-8
     rm -rf ~/.ops
     ops -update
-    cd ~/.ops/$OPS_BRANCH/olaris
+    cd ~/.ops/$OPS_BRANCH/oplugins
     ops -info
 }
 
-@test "ops -update on olaris with old commit updates correctly" {
+@test "ops -update on tasks with old commit updates correctly" {
     run git reset --hard HEAD~1
     run git status
     assert_line --partial "Your branch is behind"

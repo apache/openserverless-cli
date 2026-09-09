@@ -39,19 +39,34 @@ func changeLatestCheckTime(base string, t time.Duration) {
 }
 
 func resetOneCommit(repo *git.Repository) {
-	commIter, _ := repo.Log(&git.LogOptions{
+	if repo == nil {
+		pr("cannot reset: repo was not cloned")
+		return
+	}
+
+	commIter, err := repo.Log(&git.LogOptions{
 		Order: git.LogOrderCommitterTime,
 	})
+	if err != nil {
+		pr("failed to read the commit log", err)
+		return
+	}
 
 	if _, err := commIter.Next(); err != nil {
 		pr("failed to get first commit", err)
+		return
 	}
 	secondLastCommit, err := commIter.Next()
 	if err != nil {
 		pr("failed to get second last commit", err)
+		return
 	}
 
-	w, _ := repo.Worktree()
+	w, err := repo.Worktree()
+	if err != nil {
+		pr("failed to get the worktree", err)
+		return
+	}
 	if err := w.Reset(&git.ResetOptions{
 		Mode:   git.HardReset,
 		Commit: secondLastCommit.Hash,
@@ -69,12 +84,13 @@ func Example_checkUpdated_uptodate() {
 	}
 	defer RemoveAll(tmpDir)
 	tmpDirBranch := joinpath(tmpDir, getOpsBranch())
-	olarisTmpPath := joinpath(tmpDirBranch, "olaris")
+	tasksTmpPath := joinpath(tmpDirBranch, TASKS_DIR)
 
-	_, _ = git.PlainClone(olarisTmpPath, false, &git.CloneOptions{
+	if _, err := git.PlainClone(tasksTmpPath, false, &git.CloneOptions{
 		URL: getOpsRepo(),
-	},
-	)
+	}); err != nil {
+		pr("failed to clone tasks repo", err)
+	}
 
 	// run checkUpdated and check if it creates the latest_check file
 	createLatestCheckFile(tmpDirBranch)
@@ -104,12 +120,14 @@ func Example_checkUpdated_outdated() {
 	defer RemoveAll(tmpDir)
 
 	tmpDirBranch := joinpath(tmpDir, getOpsBranch())
-	olarisTmpPath := joinpath(tmpDirBranch, "olaris")
+	tasksTmpPath := joinpath(tmpDirBranch, TASKS_DIR)
 
-	repo, _ := git.PlainClone(olarisTmpPath, false, &git.CloneOptions{
+	repo, err := git.PlainClone(tasksTmpPath, false, &git.CloneOptions{
 		URL: getOpsRepo(),
-	},
-	)
+	})
+	if err != nil {
+		pr("failed to clone tasks repo", err)
+	}
 
 	// run checkUpdated and check if it creates the latest_check file
 	createLatestCheckFile(tmpDirBranch)

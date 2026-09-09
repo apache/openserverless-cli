@@ -36,7 +36,7 @@ setup() {
     run ops -info
     assert_failure
     assert_output --partial "Welcome to ops! Setting up..."
-    assert_output --partial "failed to clone olaris on branch 'wrong'"
+    assert_output --partial "failed to clone oplugins on branch 'wrong'"
 }
 
 @test "correct branch setups" {

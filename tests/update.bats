@@ -48,6 +48,7 @@ setup() {
 }
 
 @test "ops -update on branch" {
+    skip "Skipping ops -update on branch test until published the release"
     OPS_BRANCH=main run env OPS_SKIP_UPDATE_CLI=1 ops -update
     assert_line "Tasks downloaded successfully"
     assert test -d ~/.ops/main
