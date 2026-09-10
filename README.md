@@ -24,6 +24,8 @@ This is the `ops` cli, the starting point to install and manage Apache OpenServe
 
 Check [the installation instructions](https://openserverless.apache.org/docs/installation/install-cli/)
 
+For `ops config sso`, see [SSO command ownership and 0.9.0 prerequisites](docs/SSO.md).
+
 
 **NOTE** in windows there are some features like the ide that requires you use a devcontainer
 with `ops ide devcontainer`
