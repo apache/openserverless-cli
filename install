@@ -58,8 +58,7 @@ TAG="v${VERSION//+/%2B}"
 URL="https://github.com/apache/openserverless-cli/releases/download/$TAG/$FILE"
 
 mkdir -p ~/.local/bin
-if !
-curl -fsSL "$URL" -o "/tmp/$FILE"
+if ! curl -fsSL "$URL" -o "/tmp/$FILE"
 then echo "cannot download ops from:"
      echo "$URL"
      exit 1
