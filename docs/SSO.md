@@ -89,17 +89,17 @@ The `0.9.0` deployment manifests and the SSO defaults use different names:
 
 | Resource | `0.9.0` deployment | Embedded SSO / `0.9.1` deployment |
 | --- | --- | --- |
-| Namespace | `openserverless` | `nuvolaris` |
-| Admin-api StatefulSet and container | `openserverless-system-api` | `nuvolaris-system-api` |
-| `WhiskUser` API version | `openserverless.org/v1` | `nuvolaris.org/v1` in the `0.9.1` admin-api/operator |
+| Namespace | `openserverless` | `openserverless` |
+| Admin-api StatefulSet and container | `openserverless-system-api` | `openserverless-system-api` |
+| `WhiskUser` API version | `openserverless.org/v1` | `openserverless.org/v1` in the `0.9.1` admin-api/operator |
 
 See the task repository's
 [0.9.0 admin-api template](https://github.com/apache/openserverless-task/blob/eeac57e4179381ee18fba290ab79d6cec1dafb09/setup/openserverless/system-api/api-template.yaml)
 and the operator's
 [0.9.0 WhiskUser CRD](https://github.com/apache/openserverless-operator/blob/5df76feda569b374276f4e2c72a46d3a980a4b77/deploy/openserverless-permissions/whisk-user-crd.yaml).
 The corresponding
-[0.9.1 CRD](https://github.com/apache/openserverless-operator/blob/fdcbbdf2332ae5aa8e22afba0704b37fdb1697bd/deploy/nuvolaris-permissions/whisk-user-crd.yaml)
-uses `nuvolaris.org`.
+[0.9.1 CRD](https://github.com/apache/openserverless-operator/blob/fdcbbdf2332ae5aa8e22afba0704b37fdb1697bd/deploy/openserverless-permissions/whisk-user-crd.yaml)
+uses `openserverless.org`.
 
 `--namespace`, `--statefulset`, and `--container` select the resources patched
 by the configuration command. They do not change the namespace or API group

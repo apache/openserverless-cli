@@ -34,8 +34,8 @@ setup() {
 
 @test "ops -login with OPS_PASSWORD env does not prompt for password" {
     export OPS_PASSWORD=1234
-    run ops -login nuvolaris.dev
-    assert_line --partial "Logging in https://nuvolaris.dev"
+    run ops -login openserverless.dev
+    assert_line --partial "Logging in https://openserverless.dev"
     refute_line "Enter Password:"
 }
 
@@ -61,7 +61,7 @@ setup() {
     unset OPS_USER
     run ops -login
     assert_failure
-    assert_line "Logging in http://localhost as nuvolaris"
+    assert_line "Logging in http://localhost as openserverless"
 }
 
 @test "ops -login with OPS_APIHOST and OPS_USER env" {

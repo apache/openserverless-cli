@@ -207,7 +207,7 @@ The following environment variables are always set and you **can override** them
 - `OPS_TMP` is a temporary folder where you can store temp files - defaults to `~/.ops/tmp`
 - `OPS_APIHOST` is the host for `ops -login`. It is used in place of the first argument of `ops -login`. If empty, the
   command will expect the first argument to be the apihost.
-- `OPS_USER` is set the username for `ops -login`. The default is `nuvolaris`. It can be overriden by passing the
+- `OPS_USER` is set the username for `ops -login`. The default is `openserverless`. It can be overriden by passing the
   username as an argument to `ops -login` or by setting the environment variable.
 - `OPS_PASSWORD`: set the password for `ops -login`. If not set, `ops -login` will prompt for the password. It is useful
   for tests and non-interactive environments.

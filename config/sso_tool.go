@@ -29,11 +29,11 @@ import (
 )
 
 const (
-	defaultSSONamespace = "nuvolaris"
+	defaultSSONamespace = "openserverless"
 	defaultSSOConfigMap = "openserverless-sso-config"
 	defaultSSOSecret    = "openserverless-sso-secret"
-	defaultSSOWorkload  = "nuvolaris-system-api"
-	defaultSSOContainer = "nuvolaris-system-api"
+	defaultSSOWorkload  = "openserverless-system-api"
+	defaultSSOContainer = "openserverless-system-api"
 )
 
 type commandRunner func(name string, args []string, stdin []byte) ([]byte, error)
@@ -142,11 +142,11 @@ Options:
   --groups-claim CLAIM     OIDC groups claim. Default: groups
   --client-id CLIENT_ID    OIDC client id. Defaults to --audience when omitted
   --client-secret SECRET   OIDC confidential client secret stored only in Kubernetes Secret
-  --namespace NS           Kubernetes namespace. Default: nuvolaris
+  --namespace NS           Kubernetes namespace. Default: openserverless
   --configmap NAME         Kubernetes ConfigMap name. Default: openserverless-sso-config
   --secret NAME            Kubernetes Secret name. Default: openserverless-sso-secret
-  --statefulset NAME       admin-api StatefulSet name. Default: nuvolaris-system-api
-  --container NAME         admin-api container name. Default: nuvolaris-system-api
+  --statefulset NAME       admin-api StatefulSet name. Default: openserverless-system-api
+  --container NAME         admin-api container name. Default: openserverless-system-api
   --no-rollout             Do not restart or wait for admin-api rollout
 `)
 }

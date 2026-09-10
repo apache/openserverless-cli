@@ -44,8 +44,8 @@ setup() {
 }
 
 @test "-awk replace" {
-    run echo "$(echo "Hello World" | ops -awk '{$2="Nuvolaris"; print $0}')"
-    assert_line "Hello Nuvolaris"
+    run echo "$(echo "Hello World" | ops -awk '{$2="OpenServerless"; print $0}')"
+    assert_line "Hello OpenServerless"
     assert_success
 }
 
