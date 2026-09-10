@@ -53,7 +53,9 @@ then echo "cannot determine version from $OPSROOT - exiting"
      exit 1
 fi
 FILE="openserverless-cli_${VERSION}$SUFFIX$EXT"
-URL="https://github.com/apache/openserverless-cli/releases/download/v$VERSION/$FILE"
+# the version can contain a '+' which must be percent-encoded in the url path
+TAG="v${VERSION//+/%2B}"
+URL="https://github.com/apache/openserverless-cli/releases/download/$TAG/$FILE"
 
 mkdir -p ~/.local/bin
 if !
@@ -63,12 +65,14 @@ then echo "cannot download ops from:"
      exit 1
 fi
 
+DIR="openserverless-cli_${VERSION}$SUFFIX"
 if test "$EXT" = ".zip"
 then
-   unzip -o -d ~/.local/bin "/tmp/$FILE" "$CMD"
+   unzip -o -j -d ~/.local/bin "/tmp/$FILE" "$DIR/$CMD"
 else
-   tar xzvf "/tmp/$FILE" -C ~/.local/bin "$CMD"
+   tar xzvf "/tmp/$FILE" -C ~/.local/bin --strip-components=1 "$DIR/$CMD"
 fi
+chmod +x ~/.local/bin/"$CMD"
 rm -f "/tmp/$FILE"
 
 
@@ -124,7 +128,9 @@ if (-not $VERSION) {
     exit 1
 }
 $FILE = "openserverless-cli_${VERSION}$SUFFIX$EXT"
-$URL = "https://github.com/apache/openserverless-cli/releases/download/v$VERSION/$FILE"
+# the version can contain a '+' which must be percent-encoded in the url path
+$TAG = "v" + $VERSION.Replace("+", "%2B")
+$URL = "https://github.com/apache/openserverless-cli/releases/download/$TAG/$FILE"
 
 # Create the directory if it doesn't exist
 $BinPath = "$HOME\.local\bin"
@@ -142,12 +148,17 @@ try {
     exit 1
 }
 
-# Unpack the file
-Expand-Archive -Path "$TmpFile" -DestinationPath $BinPath -Force
-Remove-Item -Path "$TmpFile" -Force -ErrorAction SilentlyContinue
+# Unpack to a temp folder, then install just the command
+$DIR = "openserverless-cli_${VERSION}$SUFFIX"
+$TmpDir = Join-Path ([System.IO.Path]::GetTempPath()) "openserverless-cli-$VERSION"
+Remove-Item -LiteralPath "$TmpDir" -Recurse -Force -ErrorAction SilentlyContinue
+Expand-Archive -LiteralPath "$TmpFile" -DestinationPath "$TmpDir" -Force
+Move-Item -LiteralPath (Join-Path (Join-Path "$TmpDir" $DIR) $CMD) -Destination (Join-Path $BinPath $CMD) -Force
+Remove-Item -LiteralPath "$TmpDir" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath "$TmpFile" -Force -ErrorAction SilentlyContinue
 
 # Verify installation
-if (-not (Test-Path "$BinPath\$CMD")) {
+if (-not (Test-Path -LiteralPath (Join-Path $BinPath $CMD))) {
     Write-Host "Cannot install ops - download and unpack it in a folder in the path from here:"
     Write-Host $URL
     exit 1
