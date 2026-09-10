@@ -20,19 +20,12 @@
 
 # `ops`, the Apache OpenServerless all-mighty CLI tool.
 
-Quick install in Linux, MacOS and Windows with WSL or GitBash:
+This is the `ops` cli, the starting point to install and manage Apache OpenServerless.
 
-```
-curl -sL n7s.co/get-ops | bash
-````
+Check [the installation instructions](https://openserverless.apache.org/docs/installation/install-cli/)
 
-Quick install in Windows with PowerShell
 
-```
-irm n7s.co/get-ops-exe | iex
-````
-
-**NOTE** in windows there are some features like the ide that requires you use a devcontainer 
+**NOTE** in windows there are some features like the ide that requires you use a devcontainer
 with `ops ide devcontainer`
 
 # What is `ops`?
