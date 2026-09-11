@@ -84,7 +84,7 @@ func TestLoginCmd(t *testing.T) {
 	})
 
 	t.Run("with only apihost, add received credentials", func(t *testing.T) {
-		mockServer := setupMockServer(t, "nuvolaris", "a password", "{\"AUTH\": \"test\"}")
+		mockServer := setupMockServer(t, "openserverless", "a password", "{\"AUTH\": \"test\"}")
 		defer mockServer.Close()
 
 		oldPwdReader := pwdReader

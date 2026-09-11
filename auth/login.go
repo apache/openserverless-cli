@@ -86,7 +86,7 @@ type backendDevicePollResponse struct {
 const usage = `Usage:
 ops -login [options] <apihost> [<user>]
 
-Login to an OpenServerless instance. If no user is specified, the default user "nuvolaris" is used.
+Login to an OpenServerless instance. If no user is specified, the default user "openserverless" is used.
 You can set the environment variables OPS_APIHOST and OPS_USER to avoid specifying them on the command line.
 You can set OPS_PASSWORD to avoid entering the password interactively.
 When SSO is enabled, set OPS_SSO_LOGIN_FLOW=password or pass --sso-flow password to use
@@ -105,8 +105,8 @@ const oidcLoginPath = "/system/api/v1/auth/oidc"
 const oidcDeviceStartPath = "/system/api/v1/auth/oidc/device/start"
 const oidcDevicePollPath = "/system/api/v1/auth/oidc/device/poll"
 const oidcPasswordPath = "/system/api/v1/auth/oidc/password"
-const defaultUser = "nuvolaris"
-const opsSecretServiceName = "nuvolaris"
+const defaultUser = "openserverless"
+const opsSecretServiceName = "openserverless"
 
 func LoginCmd() (*LoginResult, error) {
 

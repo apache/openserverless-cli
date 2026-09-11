@@ -24,6 +24,8 @@ This is the `ops` cli, the starting point to install and manage Apache OpenServe
 
 Check [the installation instructions](https://openserverless.apache.org/docs/installation/install-cli/)
 
+For `ops config sso`, see [SSO command ownership and 0.9.0 prerequisites](docs/SSO.md).
+
 
 **NOTE** in windows there are some features like the ide that requires you use a devcontainer
 with `ops ide devcontainer`
@@ -205,7 +207,7 @@ The following environment variables are always set and you **can override** them
 - `OPS_TMP` is a temporary folder where you can store temp files - defaults to `~/.ops/tmp`
 - `OPS_APIHOST` is the host for `ops -login`. It is used in place of the first argument of `ops -login`. If empty, the
   command will expect the first argument to be the apihost.
-- `OPS_USER` is set the username for `ops -login`. The default is `nuvolaris`. It can be overriden by passing the
+- `OPS_USER` is set the username for `ops -login`. The default is `openserverless`. It can be overriden by passing the
   username as an argument to `ops -login` or by setting the environment variable.
 - `OPS_PASSWORD`: set the password for `ops -login`. If not set, `ops -login` will prompt for the password. It is useful
   for tests and non-interactive environments.

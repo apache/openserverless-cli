@@ -22,7 +22,7 @@ on:
     tags:
       - "v*"
     branches-ignore:
-      - "*"
+      - "**"
 
 permissions:
   contents: write
