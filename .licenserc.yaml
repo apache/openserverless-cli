@@ -22,32 +22,16 @@ header:
     copyright-owner: Apache Software Foundation
 
   paths-ignore:
-    - version.txt
-    - branch.txt
-    - nuv
-    - ops
-    - env
-    - go.mod
-    - go.sum
-    - '**/*.help'
-    - 'attic/**'
-    - 'bin/**'
-    - 'tools/*/**'
-    - '**/_*'
-    - '*.off'
-    - 'tryit/**'
-    - '**/*.json'
-    - 'LICENSE'
-    - 'tests/bats/**'
-    - 'tests/test_helper/**'
-    - '**/*.md'
-    - '**/*.txt'
-    - '*.code-workspace'
-    - 'empty_file'
     - DISCLAIMER
     - LICENSE
     - NOTICE
-    - '_patches/**'
+    - HEADER
+    - WARN
+    # gitignored
+    - ops
+    - go.sum
+    - '**/*.json'
+    - 'empty_file'
 
 dependency:
   files:

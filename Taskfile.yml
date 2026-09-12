@@ -18,6 +18,7 @@
 version: "3"
 
 vars:
+  REPO: "https://github.com/apache/openserverless-task"
   BRANCH: "0.9.0"
   VARIANT: "incubating"
   SUFFIX: "-snapshot"
@@ -35,18 +36,23 @@ tasks:
     vars:
       TS:
         sh: date '+%y %m %d %H %M' | awk '{printf "%s%s%02d%s%02d\n", $1, substr("abcdefghijkl",$2+0,1), $3, substr("abcdefghijklmnopqrstuvwx",$4+1,1), $5}'
+      VERSION:
+        sh: echo "{{.BRANCH}}-{{.VARIANT}}+{{.TS}}{{.SUFFIX}}"
     cmds:
+    - cp -v HEADER version.txt
+    - cp -v HEADER branch.txt
+    - cp -v HEADER repo.txt
+    - echo {{.VERSION}} >>version.txt
+    - echo "{{.BRANCH}}" >>branch.txt
     - |
       if test -n "$CUSTOM_OPS_REPO"
       then echo "$CUSTOM_OPS_REPO" >repo.txt
-      else echo using CUSTOM_OPS_REPO=$(cat repo.txt)
+      else echo {{.REPO}} >>repo.txt
       fi
-    - echo "{{.BRANCH}}-{{.VARIANT}}+{{.TS}}{{.SUFFIX}}" >version.txt
-    - echo "{{.BRANCH}}" >branch.txt
     - git tag | xargs git tag -d
     - git add version.txt branch.txt repo.txt
-    - git commit -m "$(cat version.txt)" || true
-    - git tag -f "v$(cat version.txt)"
+    - git commit -m {{.VERSION}} || true
+    - git tag -f "v{{.VERSION}}"
 
   ci:
     desc: create tag and push triggering a build
@@ -56,6 +62,25 @@ tasks:
   rebuild:
     - rm -f ops
     - task: build
+
+  add-header:
+  - |
+    find . -name \*.licensed | while read FILE
+    do
+      echo "adding header to $FILE"
+      cat HEADER ${FILE%.licensed} >$FILE
+    done
+
+  strip-header:
+    vars:
+      START:
+        sh: wc -l HEADER | awk '{print $1 + 1}'
+    cmds:
+    - |
+      find . -name \*.licensed | while read FILE
+      do
+        tail -n +{{.START}} $FILE >${FILE%.licensed}
+      done
 
   build:
     aliases: [b]

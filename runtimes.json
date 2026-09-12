@@ -1,94 +1,259 @@
 {
-  "runtimes": {
-    "nodejs": [
-      {
-        "kind": "nodejs:20",
-        "default": true,
-        "image": {
-          "prefix": "apacheopenserverless",
-          "name": "runtime-nodejs-v20",
-          "tag": "latest"
-        },
-        "deprecated": false,
-        "attached": {
-          "attachmentName": "codefile",
-          "attachmentType": "text/plain"
-        },
-        "stemCells": [
-          {
-            "initialCount": 1,
-            "memory": "256 MB",
-            "reactive": {
-              "minCount": 1,
-              "maxCount": 4,
-              "ttl": "2 minutes",
-              "threshold": 1,
-              "increment": 1
-            }
-          }
-        ]
-      }
-    ],
-    "python": [
-      {
-        "kind": "python:3",
-        "default": true,
-        "image": {
-          "prefix": "apacheopenserverless",
-          "name": "runtime-python-v3.11",
-          "tag": "latest"
-        },
-        "deprecated": false,
-        "attached": {
-          "attachmentName": "codefile",
-          "attachmentType": "text/plain"
-        },
-        "stemCells": [
-          {
-            "initialCount": 1,
-            "memory": "256 MB",
-            "reactive": {
-              "minCount": 1,
-              "maxCount": 4,
-              "ttl": "2 minutes",
-              "threshold": 1,
-              "increment": 1
-            }
-          }
-        ]
-      }
-    ],
-    "go": [
-      {
-        "kind": "go:1.22",
-        "default": true,
-        "deprecated": false,
-        "attached": {
-          "attachmentName": "codefile",
-          "attachmentType": "text/plain"
-        },
-        "image": {
-          "prefix": "apacheopenserverless",
-          "name": "runtime-golang-v1.22",
-          "tag": "latest"
+    "license": "Apache-2.0",
+    "licenses": [
+        {
+            "type": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
         }
-      }
     ],
-    "php": [
-      {
-        "kind": "php:8.3",
-        "default": true,
-        "deprecated": false,
-        "image": {
-          "prefix": "apacheopenserverless",
-          "name": "runtime-php-v8.3",
-          "tag": "latest"
-        },
-        "attached": {
-          "attachmentName": "codefile",
-          "attachmentType": "text/plain"
-        }
-      }
-    ]
-  }
+    "description": [
+        "This file describes the different languages (aka. managed action runtimes) supported by the system",
+        "as well as blackbox images that support the runtime specification.",
+        "Only actions with runtime families / kinds defined here can be created / read / updated / deleted / invoked.",
+        "Define a list of runtime families (example: 'nodejs') with at least one kind per family (example: 'nodejs:14').",
+        "Each runtime family needs a default kind (default: true).",
+        "When removing or renaming runtime families or runtime kinds from this file, preexisting actions",
+        "with the affected kinds can no longer be read / updated / deleted / invoked. In order to remove or rename",
+        "runtime families or runtime kinds, mark all affected runtime kinds as deprecated (deprecated: true) and",
+        "perform a manual migration of all affected actions.",
+        "",
+        "This file is meant to list all stable runtimes supported by the Apache Openwhisk community."
+    ],
+    "runtimes": {
+        "go": [
+            {
+                "kind": "go:1.27",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-go",
+                    "tag": "v1.27-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "go:1.26",
+                "default": true,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-go",
+                    "tag": "v1.26-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "go:1.25",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-go",
+                    "tag": "v1.25-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "java": [
+            {
+                "kind": "java:21",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-java",
+                    "tag": "v21-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "requireMain": true
+            },
+            {
+                "kind": "java:17",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-java",
+                    "tag": "v17-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "requireMain": true
+            },
+            {
+                "kind": "java:11",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-java",
+                    "tag": "v11-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "requireMain": true
+            },
+            {
+                "kind": "java:8",
+                "default": true,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-java",
+                    "tag": "v8-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "requireMain": true
+            }
+        ],
+        "nodejs": [
+            {
+                "kind": "nodejs:24",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-nodejs",
+                    "tag": "v24-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "nodejs:22",
+                "default": true,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-nodejs",
+                    "tag": "v22-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "stemCells": [
+                    {
+                        "initialCount": 1,
+                        "memory": "256 MB",
+                        "reactive": {
+                            "minCount": 1,
+                            "maxCount": 4,
+                            "ttl": "2 minutes",
+                            "threshold": 1,
+                            "increment": 1
+                        }
+                    }
+                ]
+            },
+            {
+                "kind": "nodejs:20",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-nodejs",
+                    "tag": "v20-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ],
+        "python": [
+            {
+                "kind": "python:sys",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-python",
+                    "tag": "sys-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "python:3.13",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-python",
+                    "tag": "v3.13-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "python:3.12",
+                "default": true,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-python",
+                    "tag": "v3.12-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "stemCells": [
+                    {
+                        "initialCount": 1,
+                        "memory": "256 MB",
+                        "reactive": {
+                            "minCount": 1,
+                            "maxCount": 4,
+                            "ttl": "2 minutes",
+                            "threshold": 1,
+                            "increment": 1
+                        }
+                    }
+                ]
+            },
+            {
+                "kind": "python:3.11",
+                "default": false,
+                "image": {
+                    "prefix": "docker.io/apache",
+                    "name": "openserverless-runtime-python",
+                    "tag": "v3.11-26i10j35-snapshot"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
+        ]
+    },
+    "blackboxes": []
 }
