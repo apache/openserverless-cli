@@ -1,9 +1,13 @@
 {
-"license": "Apache-2.0",
+    "license": "Apache-2.0",
     "licenses": [
         {
             "type": "Apache-2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0"
         }
-    ]
+    ],
+    "version": "0.3.0",
+    "config": {
+        "key": "value"
+    }
 }

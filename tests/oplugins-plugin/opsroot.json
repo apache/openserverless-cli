@@ -6,9 +6,11 @@
             "url": "http://www.apache.org/licenses/LICENSE-2.0"
         }
     ],
-    "a-key": "a-value",
-    "nested": {
-        "b-key": "b-value"
-    },
-    "a-number": 1
+    "version": "0.3.0",
+    "config": {
+        "key": "value",
+        "another": {
+            "key": "a plugin value"
+        }
+    }
 }
