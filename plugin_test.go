@@ -48,22 +48,22 @@ func copyFile(srcPath, destPath string) error {
 }
 func setupPluginTest(dir string, t *testing.T) string {
 	t.Helper()
-	// create the olaris-test folder
-	olarisTestDir := filepath.Join(dir, "olaris-test")
-	err := os.MkdirAll(olarisTestDir, 0755)
+	// create the oplugins-test folder
+	opluginsTestDir := filepath.Join(dir, "oplugins-test")
+	err := os.MkdirAll(opluginsTestDir, 0755)
 	require.NoError(t, err)
 
-	// copy the opsroot.json from tests/olaris into the olaris-test folder
-	opsRootJSON := filepath.Join("tests", "olaris", "opsroot.json")
-	err = copyFile(opsRootJSON, filepath.Join(olarisTestDir, "opsroot.json"))
+	// copy the opsroot.json from tests/oplugins into the oplugins-test folder
+	opsRootJSON := filepath.Join("tests", "oplugins", "opsroot.json")
+	err = copyFile(opsRootJSON, filepath.Join(opluginsTestDir, "opsroot.json"))
 	require.NoError(t, err)
 
-	// copy opsfile.yml from tests/olaris into the olaris-test folder
-	opsfileYML := filepath.Join("tests", "olaris", "opsfile.yml")
-	err = copyFile(opsfileYML, filepath.Join(olarisTestDir, "opsfile.yml"))
+	// copy opsfile.yml from tests/oplugins into the oplugins-test folder
+	opsfileYML := filepath.Join("tests", "oplugins", "opsfile.yml")
+	err = copyFile(opsfileYML, filepath.Join(opluginsTestDir, "opsfile.yml"))
 	require.NoError(t, err)
 
-	return olarisTestDir
+	return opluginsTestDir
 }
 
 func TestGetAllOpsRootPlugins(t *testing.T) {
@@ -83,29 +83,29 @@ func TestGetAllOpsRootPlugins(t *testing.T) {
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 		plgFolder := setupPluginTest(tempDir, t)
 
-		// create the olaris-test2 folder
-		olarisTestDir := filepath.Join(tempDir, "olaris-test2")
-		err := os.MkdirAll(olarisTestDir, 0755)
+		// create the oplugins-test2 folder
+		opluginsTestDir := filepath.Join(tempDir, "oplugins-test2")
+		err := os.MkdirAll(opluginsTestDir, 0755)
 		require.NoError(t, err)
 
-		// copy the opsroot.json from tests/olaris into the olaris-test folder
-		opsRootJSON := filepath.Join("tests", "olaris", "opsroot.json")
-		err = copyFile(opsRootJSON, filepath.Join(olarisTestDir, "opsroot.json"))
+		// copy the opsroot.json from tests/oplugins into the oplugins-test folder
+		opsRootJSON := filepath.Join("tests", "oplugins", "opsroot.json")
+		err = copyFile(opsRootJSON, filepath.Join(opluginsTestDir, "opsroot.json"))
 		require.NoError(t, err)
 
-		// copy opsfile.yml from tests/olaris into the olaris-test folder
-		opsfileYML := filepath.Join("tests", "olaris", "opsfile.yml")
-		err = copyFile(opsfileYML, filepath.Join(olarisTestDir, "opsfile.yml"))
+		// copy opsfile.yml from tests/oplugins into the oplugins-test folder
+		opsfileYML := filepath.Join("tests", "oplugins", "opsfile.yml")
+		err = copyFile(opsfileYML, filepath.Join(opluginsTestDir, "opsfile.yml"))
 		require.NoError(t, err)
 
 		opsRoots, err := GetOpsRootPlugins()
 		require.NoError(t, err)
 		require.Len(t, opsRoots, 2)
 		require.Equal(t, joinpath(plgFolder, OPSROOT), opsRoots[getPluginName(plgFolder)])
-		require.Equal(t, joinpath(olarisTestDir, OPSROOT), opsRoots[getPluginName(olarisTestDir)])
+		require.Equal(t, joinpath(opluginsTestDir, OPSROOT), opsRoots[getPluginName(opluginsTestDir)])
 	})
 
-	t.Run("empty: no plugins folder found (olaris-*)", func(t *testing.T) {
+	t.Run("empty: no plugins folder found (oplugins-*)", func(t *testing.T) {
 		tempDir := t.TempDir()
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
@@ -117,7 +117,7 @@ func TestGetAllOpsRootPlugins(t *testing.T) {
 }
 
 func TestFindPluginTask(t *testing.T) {
-	t.Run("success: plugin task found in ./olaris-test", func(t *testing.T) {
+	t.Run("success: plugin task found in ./oplugins-test", func(t *testing.T) {
 		tempDir := t.TempDir()
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 		plgFolder := setupPluginTest(tempDir, t)
@@ -127,7 +127,7 @@ func TestFindPluginTask(t *testing.T) {
 		require.Equal(t, plgFolder, fld)
 	})
 
-	t.Run("error: no plugins folder found (olaris-*)", func(t *testing.T) {
+	t.Run("error: no plugins folder found (oplugins-*)", func(t *testing.T) {
 		tempDir := t.TempDir()
 		os.Setenv("OPS_ROOT_PLUGIN", tempDir)
 
@@ -179,14 +179,14 @@ func TestCheckGitRepo(t *testing.T) {
 		expectedName string
 	}{
 		{
-			url:          "https://github.com/giusdp/olaris-test",
+			url:          "https://github.com/giusdp/oplugins-test",
 			expectedRepo: true,
-			expectedName: "olaris-test",
+			expectedName: "oplugins-test",
 		},
 		{
-			url:          "https://github.com/giusdp/olaris-test.git",
+			url:          "https://github.com/giusdp/oplugins-test.git",
 			expectedRepo: true,
-			expectedName: "olaris-test",
+			expectedName: "oplugins-test",
 		},
 		{
 			url:          "https://github.com/giusdp/some-repo",
@@ -194,12 +194,12 @@ func TestCheckGitRepo(t *testing.T) {
 			expectedName: "",
 		},
 		{
-			url:          "https://github.com/giusdp/olaris-repo.git",
+			url:          "https://github.com/giusdp/oplugins-repo.git",
 			expectedRepo: true,
-			expectedName: "olaris-repo",
+			expectedName: "oplugins-repo",
 		},
 		{
-			url:          "https://github.com/olaris-1234/repo",
+			url:          "https://github.com/oplugins-1234/repo",
 			expectedRepo: false,
 			expectedName: "",
 		},
@@ -211,9 +211,9 @@ func TestCheckGitRepo(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		isOlarisRepo, repoName := checkGitRepo(test.url)
+		isOpluginsRepo, repoName := checkGitRepo(test.url)
 		require.Equal(t, test.expectedName, repoName)
-		require.Equal(t, test.expectedRepo, isOlarisRepo)
+		require.Equal(t, test.expectedRepo, isOpluginsRepo)
 	}
 }
 
@@ -224,11 +224,11 @@ func Test_getPluginName(t *testing.T) {
 		expected string
 	}{
 		{
-			name:     "olaris-test",
+			name:     "oplugins-test",
 			expected: "test",
 		},
 		{
-			name:     "olaris-test-123",
+			name:     "oplugins-test-123",
 			expected: "test-123",
 		},
 		{
@@ -236,7 +236,7 @@ func Test_getPluginName(t *testing.T) {
 			expected: "test",
 		},
 		{
-			name:     "a/fake/path/to/olaris-test",
+			name:     "a/fake/path/to/oplugins-test",
 			expected: "test",
 		},
 	}

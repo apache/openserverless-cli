@@ -30,7 +30,7 @@ import (
 
 func TestIndex(t *testing.T) {
 	_ = os.Chdir(workDir)
-	webDir, _ := filepath.Abs(filepath.Join("tests", "olaris", "web"))
+	webDir, _ := filepath.Abs(filepath.Join("tests", "oplugins", "web"))
 	handler := webFileServerHandler(webDir)
 	ts := httptest.NewServer(handler)
 	defer ts.Close()

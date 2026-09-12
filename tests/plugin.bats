@@ -19,7 +19,8 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    export OPS_BRANCH="$(cat ../branch.txt)"
+    # branch.txt carries an Apache license header: skip comment lines
+    export OPS_BRANCH="$(grep -v '^#' ../branch.txt | tr -d '\r\n')"
     run rm -rf ~/.ops/$OPS_BRANCH
 }
 
@@ -30,10 +31,10 @@ setup() {
 }
 
 @test "ops skips invalid plugin folders (without opsfile.yml)" {
-    run mkdir olaris-test2
+    run mkdir oplugins-test2
     run ops -t
     refute_line "  test2 (local)"
-    run rm -rf olaris-test2
+    run rm -rf oplugins-test2
 }
 
 @test "ops help on sub cmds plugin" {
@@ -58,7 +59,7 @@ setup() {
     assert_line 'PLUGIN_ANOTHER_KEY=a plugin value'
 }
 
-@test "other plugin without olaris is shown" {
+@test "other plugin without oplugins is shown" {
     cd testdata
     run ops -update
     run ops -t
@@ -95,7 +96,7 @@ setup() {
     assert_line "error: plugin repository must be a https url and plugin must start with 'oplugins-' or 'olaris-'"
     assert_failure
 
-    run ops -plugin olaris-test
+    run ops -plugin oplugins-test
     assert_line "error: plugin repository must be a https url and plugin must start with 'oplugins-' or 'olaris-'"
     assert_failure
 }

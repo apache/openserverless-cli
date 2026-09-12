@@ -21,17 +21,25 @@ header:
     spdx-id: Apache-2.0
     copyright-owner: Apache Software Foundation
 
+  languages:
+    Text:
+      extensions:
+        - ".txt"
+      comment_style_id: Hashtag
+
   paths-ignore:
     - DISCLAIMER
     - LICENSE
     - NOTICE
     - HEADER
     - WARN
-    # gitignored
     - ops
     - go.sum
     - '**/*.json'
     - 'empty_file'
+    # data files parsed verbatim by the code or asserted on by tests:
+    # a license header would corrupt their contents
+    - '**/*.txt'
 
 dependency:
   files:

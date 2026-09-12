@@ -17,9 +17,9 @@
   ~ under the License.
   ~
 -->
-# Welcome to olaris
+# Welcome to oplugins
 
-What is this? Is ops's olaris, aka tasks for ops.
+What is this? Is ops's oplugins, aka tasks for ops.
 
 In other words, the scripts executed by `ops`.
 

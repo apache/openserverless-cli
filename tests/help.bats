@@ -19,8 +19,9 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    EXPECTED_VERSION="$(tr -d '\r\n' < ../version.txt)"
-    EXPECTED_BRANCH="$(tr -d '\r\n' < ../branch.txt)"
+    # the files carry an Apache license header: the value is the last non-empty line
+    EXPECTED_VERSION="$(grep -v '^#' ../version.txt | tr -d '\r\n')"
+    EXPECTED_BRANCH="$(grep -v '^#' ../branch.txt | tr -d '\r\n')"
     #ops -reset force
     ops -reset clean
     cd ..

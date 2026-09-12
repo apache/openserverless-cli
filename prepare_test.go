@@ -28,14 +28,14 @@ func Example_locate() {
 	_ = os.Chdir(workDir)
 	dir, err := locateOpsRoot("tests")
 	pr(1, err, npath(dir))
-	dir, err = locateOpsRoot(joinpath("tests", "olaris"))
+	dir, err = locateOpsRoot(joinpath("tests", "oplugins"))
 	pr(2, err, npath(dir))
-	dir, err = locateOpsRoot(joinpath("tests", joinpath("olaris", "sub")))
+	dir, err = locateOpsRoot(joinpath("tests", joinpath("oplugins", "sub")))
 	pr(3, err, npath(dir))
 	// Output:
-	// 1 <nil> /work/tests/olaris
-	// 2 <nil> /work/tests/olaris
-	// 3 <nil> /work/tests/olaris
+	// 1 <nil> /work/tests/oplugins
+	// 2 <nil> /work/tests/oplugins
+	// 3 <nil> /work/tests/oplugins
 }
 
 // TODO: undestand why it fails when executed with others
@@ -72,7 +72,7 @@ func Example_locate_root() {
 	pr(2, err, npath(dir))
 	// Output:
 	// 1 cannot find opsfiles, download them with ops -update
-	// 2 <nil> /work/tests/olaris
+	// 2 <nil> /work/tests/oplugins
 }
 
 func Test_setOpsOlarisHash(t *testing.T) {
