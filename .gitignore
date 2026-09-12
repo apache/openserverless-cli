@@ -43,3 +43,4 @@ _patch/bin/wsk
 _patch/bin/openwhisk-wskdeploy
 # generated
 WARN
+tools/empty_file
