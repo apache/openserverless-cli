@@ -35,10 +35,8 @@ header:
     - WARN
     - ops
     - go.sum
-    - '**/*.json'
     - 'empty_file'
-    # data files parsed verbatim by the code or asserted on by tests:
-    # a license header would corrupt their contents
+    - '**/*.json'
     - '**/*.txt'
 
 dependency:

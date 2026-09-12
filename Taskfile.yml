@@ -164,7 +164,7 @@ tasks:
     dir: tests
     cmds:
       - task: bats
-      - task: strip-header
+      - task: add-header
       #- rm -Rf ~/.ops/oplugins ~/.ops/olaris
       - ops -reset force
       - ops -t
