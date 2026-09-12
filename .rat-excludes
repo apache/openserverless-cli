@@ -14,32 +14,11 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-.DS_Store
-.git-hooks/
-.vscode/
-.idea/
-.task/
-.latestcheck
-.test_fail_then_succeed
-.direnv/
-cookie.txt
-attic/
-*.zip
-_*
-7*
-!cmd/ops/
-ops
-tests/bats/
-tests/test_helper/bats-assert/
-tests/test_helper/bats-support/
-tests/prereq/olaris/bin
-tests/coreutils*
-tests/7z*
+# Exclusions for Apache RAT (used together with --input-exclude-parsed-scm GIT).
+# Kept in sync with the paths-ignore section of .licenserc.yaml.
 
-# generated
-WARN
-tools/empty_file
+# Vendored third-party test frameworks, cloned by the "bats" task.
+# Not part of the source release; each carries its own license.
 tests/bats/**
 tests/test_helper/**
 
@@ -48,9 +27,10 @@ tests/test_helper/**
 .vscode/**
 tests/_bin/**
 
-tests/oplugins-plugin/sub/opts/docopts.txt
-tests/oplugins/docopts/both/docopts.txt
-tests/oplugins/docopts/legacy/docopts.txt
-tests/oplugins/grep.txt
-tests/oplugins/sub/opts/docopts.txt
-tests/testdata/testfiletype.txt
+# Generated files.
+go.sum
+
+# Data files parsed verbatim by the code or asserted on by the tests:
+# a license header would corrupt their contents.
+**/*.txt
+**/*.json

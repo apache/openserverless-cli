@@ -24,7 +24,7 @@ header:
   languages:
     Text:
       extensions:
-        - ".txt"
+      - ".txt"
       comment_style_id: Hashtag
 
   paths-ignore:
