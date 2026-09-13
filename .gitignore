@@ -54,3 +54,4 @@ tests/oplugins/docopts/legacy/docopts.txt
 tests/oplugins/grep.txt
 tests/oplugins/sub/opts/docopts.txt
 tests/testdata/testfiletype.txt
+tools/testdata/no_main_files/sample.txt
