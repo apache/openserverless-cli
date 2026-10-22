@@ -35,7 +35,7 @@ func Example_loadPrereq() {
 	t, v, err := loadPrereq(dir)
 	fmt.Println(err, len(t), len(v))
 	dir = joinpath(dir, "prereq")
-	//dir = "/home/msciab/.ops/0.1.0/olaris/"
+	//dir = "/home/msciab/.ops/0.1.0/oplugins/"
 	tasks, versions, err := loadPrereq(dir)
 	//fmt.Println(prq)
 	fmt.Println(err, tasks)

@@ -36,8 +36,22 @@ tests/test_helper/bats-support/
 tests/prereq/olaris/bin
 tests/coreutils*
 tests/7z*
-!_patch
-_patch/bin/task
-_patch/bin/gosh
-_patch/bin/wsk
-_patch/bin/openwhisk-wskdeploy
+
+# generated
+WARN
+tools/empty_file
+tests/bats/**
+tests/test_helper/**
+
+# Build/tooling artifacts and downloaded binaries.
+.task/**
+.vscode/**
+tests/_bin/**
+
+tests/oplugins-plugin/sub/opts/docopts.txt
+tests/oplugins/docopts/both/docopts.txt
+tests/oplugins/docopts/legacy/docopts.txt
+tests/oplugins/grep.txt
+tests/oplugins/sub/opts/docopts.txt
+tests/testdata/testfiletype.txt
+tools/testdata/no_main_files/sample.txt

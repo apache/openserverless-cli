@@ -20,7 +20,8 @@ setup() {
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
     cd testdata
-    ops -reset force
+    #ops -reset force
+    ops -reset clean
 }
 
 @test "first run auto setups" {

@@ -35,7 +35,7 @@ setup() {
     WD=$(pwd)
     assert_line "OPS_VERSION: test"
     assert_line "OPS_PWD: $WD"
-    assert_line "OPS_ROOT: $WD/olaris"
+    assert_line "OPS_ROOT: $WD/oplugins"
     assert_line "OPS_TMP: $HOME/.ops/tmp"
     assert_line --partial "OPS_TASKS: "
     assert_success

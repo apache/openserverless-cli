@@ -1,6 +1,0 @@
-Task: docopts legacy
-
-Simple task with flag
-
-Usage:
-  legacy simple [-f]

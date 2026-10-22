@@ -98,7 +98,7 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
         run: |
           set -e
-          VERSION="$(cat version.txt)"
+          VERSION="$(tail -1 version.txt)"
           BASE="${PROJECT_NAME}_${VERSION}_${GOOS}_${GOARCH}"
           mkdir -p dist/"$BASE"
           if test "$GOOS" = "windows"
@@ -135,7 +135,7 @@ jobs:
       - name: Generate checksums
         run: |
           set -e
-          VERSION="$(cat version.txt)"
+          VERSION="$(tail -1 version.txt)"
           cd dist
           sha256sum * >"${PROJECT_NAME}_${VERSION}_checksums.txt"
           ls -l

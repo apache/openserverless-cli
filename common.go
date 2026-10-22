@@ -64,6 +64,24 @@ var OpsBranch string
 //go:embed runtimes.json
 var WSK_RUNTIMES_JSON string
 
+// the embedded files carry an Apache license header, so the actual value
+// is the last non-empty line of the file
+func lastLine(s string) string {
+	lines := strings.Split(s, "\n")
+	for i := len(lines) - 1; i >= 0; i-- {
+		if line := strings.TrimSpace(lines[i]); line != "" {
+			return line
+		}
+	}
+	return ""
+}
+
+func init() {
+	OpsRepo = lastLine(OpsRepo)
+	OpsVersion = lastLine(OpsVersion)
+	OpsBranch = lastLine(OpsBranch)
+}
+
 // Represents opsroot.json. It is used to parse the file.
 type OpsRootJSON struct {
 	Version string                 `json:"version"`

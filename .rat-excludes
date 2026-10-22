@@ -1,0 +1,36 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+# Exclusions for Apache RAT (used together with --input-exclude-parsed-scm GIT).
+# Kept in sync with the paths-ignore section of .licenserc.yaml.
+
+# Vendored third-party test frameworks, cloned by the "bats" task.
+# Not part of the source release; each carries its own license.
+tests/bats/**
+tests/test_helper/**
+
+# Build/tooling artifacts and downloaded binaries.
+.task/**
+.vscode/**
+tests/_bin/**
+
+# Generated files.
+go.sum
+
+# Data files parsed verbatim by the code or asserted on by the tests:
+# a license header would corrupt their contents.
+**/*.txt
+**/*.json

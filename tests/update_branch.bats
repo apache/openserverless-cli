@@ -19,7 +19,8 @@ setup() {
     load 'test_helper/bats-support/load'
     load 'test_helper/bats-assert/load'
     export NO_COLOR=1
-    export OPS_BRANCH="$(cat ../branch.txt)"
+    # branch.txt carries an Apache license header: skip comment lines
+    export OPS_BRANCH="$(grep -v '^#' ../branch.txt | tr -d '\r\n')"
     export LANG=en_US.UTF-8
     export LANGUAGE=en_US.UTF-8
     export LC_ALL=en_US.UTF-8

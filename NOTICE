@@ -1,6 +1,93 @@
 Apache OpenServerless (Incubating)
-Copyright 2024 The Apache Software Foundation
+Copyright 2024-2026 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (https://www.apache.org/).
+
+This product contains parts that were originally based on software from
+Nuvolaris (https://github.com/nuvolaris).
+Copyright (C) 2022-2024 Nuvolaris S.r.l.
+
+---------------
+
+This product bundles github.com/apache/openwhisk-client-go (v0.0.0-20210311185314-87edc2364717), which was released under an Apache 2.0 license.
+
+Apache OpenWhisk Client Go
+Copyright 2016-2021 The Apache Software Foundation
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
+---------------
+
+This product bundles github.com/sciabarracom/openwhisk-cli (v1.2.1), which was released under an Apache 2.0 license.
+
+Apache OpenWhisk Command-line Interface (CLI)
+Copyright 2016-2021 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+---------------
+
+This product bundles github.com/sciabarracom/openwhisk-wskdeploy (v1.2.1), which was released under an Apache 2.0 license.
+
+Apache OpenWhisk Wskdeploy
+Copyright 2016-2021 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+---------------
+
+This product bundles github.com/skeema/knownhosts (v1.2.2), which was released under an Apache 2.0 license.
+
+Copyright 2024 Skeema LLC and the Skeema Knownhosts authors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+---------------
+
+This product bundles gopkg.in/yaml.v2 (v2.4.0), which was released under an Apache 2.0 license.
+
+Copyright 2011-2016 Canonical Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+---------------
+
+This product bundles gopkg.in/yaml.v3 (v3.0.1), which was released under an Apache 2.0 license.
+
+Copyright 2011-2016 Canonical Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

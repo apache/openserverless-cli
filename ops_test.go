@@ -30,26 +30,26 @@ import (
 func Example_opsArg1() {
 	// test
 	_ = os.Chdir(workDir)
-	olaris, _ := filepath.Abs(joinpath("tests", "olaris"))
-	err := Ops(olaris, split("testcmd"))
+	oplugins, _ := filepath.Abs(joinpath("tests", "oplugins"))
+	err := Ops(oplugins, split("testcmd"))
 	fmt.Println(err)
 
 	/*
 		pr(2, err)
-		err = Ops(olaris, split("testcmd arg"))
+		err = Ops(oplugins, split("testcmd arg"))
 		pr(3, err)
-		err = Ops(olaris, split("testcmd arg VAR=1"))
+		err = Ops(oplugins, split("testcmd arg VAR=1"))
 		pr(4, err)
-		err = Ops(olaris, split("testcmd VAR=1 arg"))
+		err = Ops(oplugins, split("testcmd VAR=1 arg"))
 		pr(5, err)
 		// Output:
-		// (olaris) task [-t opsfile.yml testcmd --]
+		// (oplugins) task [-t opsfile.yml testcmd --]
 		// 2 <nil>
-		// (olaris) task [-t opsfile.yml testcmd -- arg]
+		// (oplugins) task [-t opsfile.yml testcmd -- arg]
 		// 3 <nil>
-		// (olaris) task [-t opsfile.yml testcmd VAR=1 -- arg]
+		// (oplugins) task [-t opsfile.yml testcmd VAR=1 -- arg]
 		// 4 <nil>
-		// (olaris) task [-t opsfile.yml testcmd VAR=1 -- arg]
+		// (oplugins) task [-t opsfile.yml testcmd VAR=1 -- arg]
 		//5 <nil>
 	*/
 }
@@ -57,23 +57,23 @@ func Example_opsArg1() {
 func Example_opsArg() {
 	// test
 	_ = os.Chdir(workDir)
-	olaris, _ := filepath.Abs(joinpath("tests", "olaris"))
-	err := Ops(olaris, split("testcmd"))
+	oplugins, _ := filepath.Abs(joinpath("tests", "oplugins"))
+	err := Ops(oplugins, split("testcmd"))
 	pr(2, err)
-	err = Ops(olaris, split("testcmd arg"))
+	err = Ops(oplugins, split("testcmd arg"))
 	pr(3, err)
-	err = Ops(olaris, split("testcmd arg VAR=1"))
+	err = Ops(oplugins, split("testcmd arg VAR=1"))
 	pr(4, err)
-	err = Ops(olaris, split("testcmd VAR=1 arg"))
+	err = Ops(oplugins, split("testcmd VAR=1 arg"))
 	pr(5, err)
 	// Output:
-	// (olaris) task [-t opsfile.yml testcmd --]
+	// (oplugins) task [-t opsfile.yml testcmd --]
 	// 2 <nil>
-	// (olaris) task [-t opsfile.yml testcmd -- arg]
+	// (oplugins) task [-t opsfile.yml testcmd -- arg]
 	// 3 <nil>
-	// (olaris) task [-t opsfile.yml testcmd VAR=1 -- arg]
+	// (oplugins) task [-t opsfile.yml testcmd VAR=1 -- arg]
 	// 4 <nil>
-	// (olaris) task [-t opsfile.yml testcmd VAR=1 -- arg]
+	// (oplugins) task [-t opsfile.yml testcmd VAR=1 -- arg]
 	//5 <nil>
 }
 
@@ -81,17 +81,17 @@ func ExampleOps() {
 	// test
 	_ = os.Chdir(workDir)
 	os.Setenv("TEST_VAR", "evar")
-	olaris, _ := filepath.Abs(joinpath("tests", "olaris"))
-	err := Ops(olaris, split(""))
+	oplugins, _ := filepath.Abs(joinpath("tests", "oplugins"))
+	err := Ops(oplugins, split(""))
 	pr(1, err)
-	err = Ops(olaris, split("sub"))
+	err = Ops(oplugins, split("sub"))
 	pr(4, err)
-	err = Ops(olaris, split("sub opts"))
+	err = Ops(oplugins, split("sub opts"))
 	pr(5, err)
-	_ = Ops(olaris, split("sub opts ciao 1"))
+	_ = Ops(oplugins, split("sub opts ciao 1"))
 	// pr(6, err)
 	// Output:
-	// (olaris) task [-t opsfile.yml -l]
+	// (oplugins) task [-t opsfile.yml -l]
 	//
 	// Plugins:
 	// 1 <nil>
@@ -114,7 +114,7 @@ func ExampleOps() {
 
 func ExampleParseArgs() {
 	_ = os.Chdir(workDir)
-	usage := readfile("tests/olaris/sub/opts/docopts.txt")
+	usage := readfile("tests/oplugins/sub/opts/docopts.txt")
 	args := parseArgs(usage, split("ciao mike miri max"))
 	pr(1, args)
 	args = parseArgs(usage, split("ciao mike -c"))

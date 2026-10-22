@@ -77,7 +77,7 @@ func resetOneCommit(repo *git.Repository) {
 }
 
 func Example_checkUpdated_uptodate() {
-	// clone olaris folder into a temp folder
+	// clone oplugins folder into a temp folder
 	tmpDir, err := os.MkdirTemp("", "ops-test")
 	if err != nil {
 		pr("failed to create temp dir", err)
@@ -112,7 +112,7 @@ func Example_checkUpdated_uptodate() {
 }
 
 func Example_checkUpdated_outdated() {
-	// clone olaris folder into a temp folder
+	// clone oplugins folder into a temp folder
 	tmpDir, err := os.MkdirTemp("", "ops-test")
 	if err != nil {
 		pr("failed to create temp dir", err)
@@ -139,7 +139,7 @@ func Example_checkUpdated_outdated() {
 	// change latest_check file mtime to 2 seconds ago
 	changeLatestCheckTime(tmpDirBranch, -2*time.Second)
 
-	// git reset olaris to a previous commit
+	// git reset oplugins to a previous commit
 	resetOneCommit(repo)
 
 	// re-run checkUpdated and check output
